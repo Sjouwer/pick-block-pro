@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "pickblockpro",
+  "version": "${version}",
+
+  "name": "Pick Block Pro",
+  "description": "Pick blocks from a great distance and grab ID's with ease.",
+  "authors": [
+    "Sjouwer"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/pick-block-pro",
+    "sources": "https://github.com/Sjouwer/pick-block-pro",
+    "issues": "https://github.com/Sjouwer/pick-block-pro/issues"
+  },
+
+  "license": "GNU LGPLv3",
+  "icon": "assets/pickblockpro/icon.png",
+
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "io.github.sjouwer.pickblockpro.PickBlockPro"
+    ],
+    "modmenu": [ "io.github.sjouwer.pickblockpro.config.ModMenuApiImpl" ]
+  },
+
+  "depends": {
+    "minecraft": "1.17.x",
+    "fabricloader": ">=0.11.2",
+    "fabric": ">=0.31.0",
+    "cloth-config2": ">=5.0.0"
+  }
+}
