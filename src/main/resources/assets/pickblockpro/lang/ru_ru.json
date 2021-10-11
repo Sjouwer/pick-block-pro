@@ -3,7 +3,7 @@
     "key.pick_block_pro.id_picker": "Получение id",
     "key.pick_block_pro.block_picker": "Выбор блока",
 
-    "text.autoconfig.pick_block_pro.title": "Настройка Pick Block Pro",
+    "text.autoconfig.pick_block_pro.title": "Настройки Pick Block Pro",
 
     "text.autoconfig.pick_block_pro.category.block_picker_settings": "Выбор блока",
     "text.autoconfig.pick_block_pro.option.blockPickRange": "Расстояние выбора блока",
@@ -13,13 +13,13 @@
     "text.autoconfig.pick_block_pro.option.blockPickEntities": "Выбирать сущности",
     "text.autoconfig.pick_block_pro.option.blockPickEntities.@Tooltip": "Должны ли выбираться сущности?",
     "text.autoconfig.pick_block_pro.option.blockPickFluids": "Выбирать жидкости",
-    "text.autoconfig.pick_block_pro.option.blockPickFluids.@Tooltip": "Получать ведро жидкости, которая была взята",
+    "text.autoconfig.pick_block_pro.option.blockPickFluids.@Tooltip": "Получать ведро жидкости, которая была выбрана",
     "text.autoconfig.pick_block_pro.option.blockPickFire": "Выбирать огонь",
     "text.autoconfig.pick_block_pro.option.blockPickFire.@Tooltip": "Получать огниво при выборе огня",
 
     "text.autoconfig.pick_block_pro.category.id_picker_settings": "Получение id",
     "text.autoconfig.pick_block_pro.option.idPickRange": "Расстояние выбора id",
-    "text.autoconfig.pick_block_pro.option.idPickRange.@Tooltip": "Предельное расстояние в блоках для копирования id",
+    "text.autoconfig.pick_block_pro.option.idPickRange.@Tooltip": "Предельное расстояние в блоках для получения id",
     "text.autoconfig.pick_block_pro.option.idPickFluids": "Выбирать id жидкости",
     "text.autoconfig.pick_block_pro.option.idPickFluids.@Tooltip": "Получение id жидкостей",
     "text.autoconfig.pick_block_pro.option.idPickBlocks": "Выбирать id блока",
