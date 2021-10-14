@@ -36,10 +36,10 @@ public class ModConfig implements ConfigData {
     private boolean idPickEntities = true;
     @ConfigEntry.Category("id_picker_settings")
     @ConfigEntry.Gui.Tooltip
-    private boolean showNamespace = true;
+    private boolean addNamespace = true;
     @ConfigEntry.Category("id_picker_settings")
     @ConfigEntry.Gui.Tooltip
-    private boolean showProperties = true;
+    private boolean addProperties = true;
     @ConfigEntry.Category("id_picker_settings")
     @ConfigEntry.Gui.Tooltip
     private boolean copyToClipboard = true;
@@ -55,6 +55,9 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.Category("tool_picker_settings")
     @ConfigEntry.Gui.Tooltip
     private boolean preferSwordForBamboo = true;
+    @ConfigEntry.Category("tool_picker_settings")
+    @ConfigEntry.Gui.Tooltip
+    private boolean enchantTools = true;
     @ConfigEntry.Category("inventory_settings")
     @ConfigEntry.Gui.Tooltip
     private boolean lockSlot1 = false;
@@ -131,12 +134,12 @@ public class ModConfig implements ConfigData {
         return idPickEntities;
     }
 
-    public boolean showNamespace() {
-        return showNamespace;
+    public boolean addNamespace() {
+        return addNamespace;
     }
 
-    public boolean showProperties() {
-        return showProperties;
+    public boolean addProperties() {
+        return addProperties;
     }
 
     public boolean copyToClipboard() {
@@ -153,6 +156,10 @@ public class ModConfig implements ConfigData {
 
     public boolean preferSwordForBamboo() {
         return preferSwordForBamboo;
+    }
+
+    public boolean enchantTools() {
+        return enchantTools;
     }
 
     public boolean isSlotLocked(int slot) {

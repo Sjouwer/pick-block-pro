@@ -49,7 +49,7 @@ public class IdPicker {
         String fullId = block.toString();
 
         String namespace = "";
-        if (config.showNamespace() && fullId.indexOf('{') >= 0 && fullId.indexOf(':') >= 0) {
+        if (config.addNamespace() && fullId.indexOf('{') >= 0 && fullId.indexOf(':') >= 0) {
             namespace = fullId.substring(fullId.indexOf('{') + 1, fullId.indexOf(':') + 1);
         }
 
@@ -59,7 +59,7 @@ public class IdPicker {
         }
 
         String properties = "";
-        if (config.showProperties() && fullId.indexOf('[') >= 0) {
+        if (config.addProperties() && fullId.indexOf('[') >= 0) {
             properties = fullId.substring(fullId.indexOf('['));
         }
 
@@ -81,7 +81,7 @@ public class IdPicker {
 
         if (fullId.indexOf(':') >= 0) {
             String namespace = "";
-            if (config.showNamespace()) {
+            if (config.addNamespace()) {
                 namespace = fullId.substring(0, fullId.indexOf(':') + 1);
             }
 

@@ -26,10 +26,10 @@
     "text.autoconfig.pick_block_pro.option.idPickBlocks.@Tooltip": "Get ID's of blocks",
     "text.autoconfig.pick_block_pro.option.idPickEntities": "Pick entity ID's",
     "text.autoconfig.pick_block_pro.option.idPickEntities.@Tooltip": "Get ID's of entities",
-    "text.autoconfig.pick_block_pro.option.showNamespace": "Show ID namespace",
-    "text.autoconfig.pick_block_pro.option.showNamespace.@Tooltip": "Show the namespace (creator) of the block that's been ID picked",
-    "text.autoconfig.pick_block_pro.option.showProperties": "Show ID properties",
-    "text.autoconfig.pick_block_pro.option.showProperties.@Tooltip": "Show the properties of the block that's been ID picked",
+    "text.autoconfig.pick_block_pro.option.addNamespace": "Add namespace to ID",
+    "text.autoconfig.pick_block_pro.option.addNamespace.@Tooltip": "Add the namespace of what has been ID picked",
+    "text.autoconfig.pick_block_pro.option.addProperties": "Add properties to ID",
+    "text.autoconfig.pick_block_pro.option.addProperties.@Tooltip": "Add the properties of what has been ID picked",
     "text.autoconfig.pick_block_pro.option.copyToClipboard": "Easy ID copy",
     "text.autoconfig.pick_block_pro.option.copyToClipboard.@Tooltip": "Copy the picked ID directly to the clipboard",
 
@@ -42,6 +42,8 @@
     "text.autoconfig.pick_block_pro.option.preferEfficiency.@Tooltip": "Always prefer the highest efficiency over other enchantments (only affects survival)",
     "text.autoconfig.pick_block_pro.option.preferSwordForBamboo": "Prefer sword for bamboo",
     "text.autoconfig.pick_block_pro.option.preferSwordForBamboo.@Tooltip": "Prefer a sword over an axe to cut down bamboo",
+    "text.autoconfig.pick_block_pro.option.enchantTools": "Enchant Tools",
+    "text.autoconfig.pick_block_pro.option.enchantTools.@Tooltip": "Enchant tools when tool picking in creative (not all servers support this)",
 
     "text.autoconfig.pick_block_pro.category.inventory_settings": "Inventory",
     "text.autoconfig.pick_block_pro.option.lockSlot1": "Lock 1st Slot",
