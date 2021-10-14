@@ -2,6 +2,7 @@
     "key.categories.pick_block_pro": "Pick Block Pro",
     "key.pick_block_pro.id_picker": "Получение id",
     "key.pick_block_pro.block_picker": "Выбор блока",
+    "key.pick_block_pro.tool_picker": "Выбор инструмента",
 
     "text.autoconfig.pick_block_pro.title": "Настройки Pick Block Pro",
 
@@ -42,6 +43,8 @@
     "text.autoconfig.pick_block_pro.option.preferEfficiency.@Tooltip": "Всегда предпочитать самый эффективный инструмент другим чарам (только для выживания)",
     "text.autoconfig.pick_block_pro.option.preferSwordForBamboo": "Предпочитать выбор меча для бамбука",
     "text.autoconfig.pick_block_pro.option.preferSwordForBamboo.@Tooltip": "Предпочитать меч топору для срубания бамбука",
+    "text.autoconfig.pick_block_pro.option.enchantTools": "Зачарованные инструменты",
+    "text.autoconfig.pick_block_pro.option.enchantTools.@Tooltip": "Зачаровывать инструменты при их выборе в режиме креатива (доступно не на всех серверах)",
 
     "text.autoconfig.pick_block_pro.category.inventory_settings": "Инвентарь",
     "text.autoconfig.pick_block_pro.option.lockSlot1": "Заблокировать первый слот",
