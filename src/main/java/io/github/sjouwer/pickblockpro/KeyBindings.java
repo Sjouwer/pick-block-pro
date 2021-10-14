@@ -15,11 +15,12 @@ public class KeyBindings {
     private static final String CATEGORY = "key.categories.pick_block_pro";
 
     public void setKeyBindings() {
-        setKeyBindingSnipeId();
-        setKeyBindingSnipeBlock();
+        setKeyBindingPickId();
+        setKeyBindingPickBlock();
+        setKeyBindingPickTool();
     }
 
-    private void setKeyBindingSnipeId() {
+    private void setKeyBindingPickId() {
         KeyBinding idPickerKey = new KeyBinding("key.pick_block_pro.id_picker", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, CATEGORY);
         KeyBindingHelper.registerKeyBinding(idPickerKey);
 
@@ -30,18 +31,24 @@ public class KeyBindings {
         });
     }
 
-    private void setKeyBindingSnipeBlock() {
+    private void setKeyBindingPickBlock() {
         KeyBinding blockPickerKey = new KeyBinding("key.pick_block_pro.block_picker", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, CATEGORY);
         KeyBindingHelper.registerKeyBinding(blockPickerKey);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (blockPickerKey.wasPressed()) {
-                if (Screen.hasShiftDown()) {
-                    toolPicker.pickTool();
-                }
-                else {
-                    blockPicker.pickBlock();
-                }
+                blockPicker.pickBlock();
+            }
+        });
+    }
+
+    private void setKeyBindingPickTool() {
+        KeyBinding toolPickerKey = new KeyBinding("key.pick_block_pro.tool_picker", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, CATEGORY);
+        KeyBindingHelper.registerKeyBinding(toolPickerKey);
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (toolPickerKey.wasPressed()) {
+                toolPicker.pickTool();
             }
         });
     }
