@@ -119,7 +119,7 @@ public class BlockPicker {
     }
 
     private ItemStack getLightFromSun() {
-        int viewDistance = (minecraft.options.viewDistance * 2) * 16;
+        int viewDistance = minecraft.options.viewDistance * 32;
         HitResult hit = Raycast.getHit(viewDistance, RaycastContext.FluidHandling.ANY, false);
         if (hit.getType() == HitResult.Type.ENTITY) {
             return null;
@@ -136,13 +136,13 @@ public class BlockPicker {
             skyAngle *= 360;
 
             Vec3d playerVector = minecraft.cameraEntity.getRotationVec(minecraft.getTickDelta());
-            double playerAngle = Math.atan2(playerVector.y,playerVector.x)*180/Math.PI;
+            double playerAngle = Math.atan2(playerVector.y,playerVector.x) * 180 / Math.PI;
             if (playerAngle < 0) {
                 playerAngle += 360;
             }
 
-            double angelDifference = skyAngle - playerAngle;
-            if (Math.abs(playerVector.z) < 0.0755 && Math.abs(angelDifference) < 4.3) {
+            double angleDifference = skyAngle - playerAngle;
+            if (Math.abs(playerVector.z) < 0.076 && Math.abs(angleDifference) < 4.3) {
                 return new ItemStack(Items.LIGHT);
             }
         }
