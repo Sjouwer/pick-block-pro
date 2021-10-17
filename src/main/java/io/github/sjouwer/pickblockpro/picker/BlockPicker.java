@@ -19,7 +19,9 @@ import net.minecraft.state.property.Property;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.RaycastContext;
 
 public class BlockPicker {
     private final ModConfig config;
@@ -64,11 +66,18 @@ public class BlockPicker {
         BlockView world = minecraft.world;
         BlockState state = world.getBlockState(blockPos);
 
+        ItemStack item;
         if (state.isAir()) {
-            return null;
+            item = getLightFromSun();
+
+            if (item == null) {
+                return null;
+            }
+        }
+        else {
+            item = state.getBlock().getPickStack(world, blockPos, state);
         }
 
-        ItemStack item = state.getBlock().getPickStack(world, blockPos, state);
         if (item.isEmpty()) {
             //Check for extra pick stacks that mc doesn't include by default
             ItemStack extraItem = extraPickStackCheck(state);
@@ -104,6 +113,38 @@ public class BlockPicker {
         }
         if ((state.isOf(Blocks.FIRE) || (state.isOf(Blocks.SOUL_FIRE)) && config.blockPickFire())) {
             return new ItemStack(Items.FLINT_AND_STEEL);
+        }
+
+        return null;
+    }
+
+    private ItemStack getLightFromSun() {
+        int viewDistance = (minecraft.options.viewDistance * 2) * 16;
+        HitResult hit = Raycast.getHit(viewDistance, RaycastContext.FluidHandling.ANY, false);
+        if (hit.getType() == HitResult.Type.ENTITY) {
+            return null;
+        }
+
+        BlockHitResult blockHit = (BlockHitResult) hit;
+        BlockState state = minecraft.world.getBlockState(blockHit.getBlockPos());
+
+        if (state.isAir()) {
+            double skyAngle = minecraft.world.getSkyAngle(minecraft.getTickDelta()) + .25;
+            if (skyAngle > 1) {
+                skyAngle --;
+            }
+            skyAngle *= 360;
+
+            Vec3d playerVector = minecraft.cameraEntity.getRotationVec(minecraft.getTickDelta());
+            double playerAngle = Math.atan2(playerVector.y,playerVector.x)*180/Math.PI;
+            if (playerAngle < 0) {
+                playerAngle += 360;
+            }
+
+            double angelDifference = skyAngle - playerAngle;
+            if (Math.abs(playerVector.z) < 0.0755 && Math.abs(angelDifference) < 4.3) {
+                return new ItemStack(Items.LIGHT);
+            }
         }
 
         return null;
