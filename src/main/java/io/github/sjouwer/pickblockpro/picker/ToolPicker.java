@@ -105,7 +105,7 @@ public class ToolPicker {
 
                 if (tool.getClassType().isInstance(itemStack.getItem())) {
                     int score = calculateToolScore(itemStack);
-                    if (score > bestToolScore) {
+                    if (score > bestToolScore || (bestTool != null && score == bestToolScore && itemStack.getDamage() < bestTool.getDamage())) {
                         bestTool = itemStack;
                         bestToolScore = score;
                     }
