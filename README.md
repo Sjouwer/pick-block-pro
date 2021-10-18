@@ -10,11 +10,14 @@ Make sure to set the keybindings in the settings to be able to use this mod.
 ## **Features**
 Everything below is configurable in the config settings using the config file or Mod Menu
 - Extended block pick range, decide how far the picker should be able to reach
-- Pick fluids (get a bucket of the fluid) and fire (get a flint & steel)
+- Pick block extra things:  
+      - Pick fluids and get a bucket of the fluid  
+      - Pick fire and get a flint & steel  
+      - Pick the sun and get a light block  
 - Lock inventory slots to prevent the picker from switching or replacing the item in that slot
-- Pick block ID's and copy them directly to your clipboard, for easy WorldEdit command creation
 - Hold ALT while picking and add BlockState data to the block/item (stacks with CTRL for BlockEntity data)
-- Hold SHIFT while picking and get the best available tool to break the block or kill the entity
+- Pick ID's with the ID Picker and copy them directly to your clipboard, for easy WorldEdit command creation
+- Use the Tool Picker and get the best available tool to break the block or kill the entity
 - Creative inventory management (not just the hotbar) is now actually possible when picking blocks
 
 ## **Dependencies**
