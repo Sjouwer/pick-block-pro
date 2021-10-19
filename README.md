@@ -4,8 +4,7 @@ Pick Block: Get the block/item of what you're looking at in creative or switch t
 This mod is an advanced version of this and adds a lot of extra features (see below)
 
 **Important:**  
-This mod does not alter the default pick block, instead it adds a new one.  
-Make sure to set the keybindings in the settings to be able to use this mod.
+This mod replaces the default Pick Block, however the ID and Tool picker use their own keybindings.  
 
 ## **Features**
 Everything below is configurable in the config settings using the config file or Mod Menu
