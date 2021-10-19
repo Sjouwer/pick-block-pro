@@ -119,30 +119,26 @@ public class BlockPicker {
     }
 
     private ItemStack getLightFromSun() {
-        int viewDistance = minecraft.options.viewDistance * 32;
-        HitResult hit = Raycast.getHit(viewDistance, RaycastContext.FluidHandling.ANY, false);
-        if (hit.getType() == HitResult.Type.ENTITY) {
-            return null;
+        double skyAngle = minecraft.world.getSkyAngle(minecraft.getTickDelta()) + .25;
+        if (skyAngle > 1) {
+            skyAngle --;
+        }
+        skyAngle *= 360;
+
+        Vec3d playerVector = minecraft.cameraEntity.getRotationVec(minecraft.getTickDelta());
+        double playerAngle = Math.atan2(playerVector.y,playerVector.x) * 180 / Math.PI;
+        if (playerAngle < 0) {
+            playerAngle += 360;
         }
 
-        BlockHitResult blockHit = (BlockHitResult) hit;
-        BlockState state = minecraft.world.getBlockState(blockHit.getBlockPos());
-
-        if (state.isAir()) {
-            double skyAngle = minecraft.world.getSkyAngle(minecraft.getTickDelta()) + .25;
-            if (skyAngle > 1) {
-                skyAngle --;
-            }
-            skyAngle *= 360;
-
-            Vec3d playerVector = minecraft.cameraEntity.getRotationVec(minecraft.getTickDelta());
-            double playerAngle = Math.atan2(playerVector.y,playerVector.x) * 180 / Math.PI;
-            if (playerAngle < 0) {
-                playerAngle += 360;
-            }
-
-            double angleDifference = skyAngle - playerAngle;
-            if (Math.abs(playerVector.z) < 0.076 && Math.abs(angleDifference) < 4.3) {
+        double angleDifference = skyAngle - playerAngle;
+        if (Math.abs(playerVector.z) < 0.076 && Math.abs(angleDifference) < 4.3) {
+            //Do another raycast with a longer reach to make sure there is nothing in the way of the sun
+            int viewDistance = minecraft.options.viewDistance * 32;
+            HitResult hit = Raycast.getHit(viewDistance, RaycastContext.FluidHandling.ANY, true);
+            BlockHitResult blockHit = (BlockHitResult) hit;
+            BlockState state = minecraft.world.getBlockState(blockHit.getBlockPos());
+            if (state.isAir()) {
                 return new ItemStack(Items.LIGHT);
             }
         }
