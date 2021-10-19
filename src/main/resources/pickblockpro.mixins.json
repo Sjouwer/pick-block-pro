@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "io.github.sjouwer.pickblockpro.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "client": [
+    "MixinMinecraftClient"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

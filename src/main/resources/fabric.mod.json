@@ -28,6 +28,9 @@
     ],
     "modmenu": [ "io.github.sjouwer.pickblockpro.config.ModMenuApiImpl" ]
   },
+  "mixins": [
+    "pickblockpro.mixins.json"
+  ],
 
   "depends": {
     "minecraft": "1.17.x",

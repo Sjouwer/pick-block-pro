@@ -24,11 +24,20 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.RaycastContext;
 
 public class BlockPicker {
+    private static BlockPicker INSTANCE;
     private final ModConfig config;
     private static final MinecraftClient minecraft = MinecraftClient.getInstance();
 
     public BlockPicker() {
         config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+    }
+
+    public static BlockPicker getInstance() {
+        if(INSTANCE == null) {
+            INSTANCE = new BlockPicker();
+        }
+
+        return INSTANCE;
     }
 
     public void pickBlock() {
