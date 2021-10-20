@@ -156,7 +156,7 @@ public class BlockPicker {
     }
 
     private void addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
-        NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
+        NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData();
         NbtCompound nbtCompound3;
         if (stack.getItem() instanceof SkullItem && nbtCompound.contains("SkullOwner")) {
             nbtCompound3 = nbtCompound.getCompound("SkullOwner");
