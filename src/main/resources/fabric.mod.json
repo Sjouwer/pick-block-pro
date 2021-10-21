@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Pick Block Pro",
-  "description": "Pick blocks from a great distance and grab ID's with ease.",
+  "description": "An advanced block, ID and tool picker",
   "authors": [
     "Sjouwer"
   ],
