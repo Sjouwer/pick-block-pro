@@ -25,12 +25,12 @@ repositories {
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:21w42a"
-	mappings "net.fabricmc:yarn:21w42a+build.1:v2"
-	modImplementation "net.fabricmc:fabric-loader:0.12.2"
+	minecraft "com.mojang:minecraft:21w44a"
+	mappings "net.fabricmc:yarn:21w44a+build.1:v2"
+	modImplementation "net.fabricmc:fabric-loader:0.12.4"
 
 	//Fabric api
-	modImplementation "net.fabricmc.fabric-api:fabric-api:0.41.1+1.18"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:0.41.4+1.18"
 
 	//Mod Menu
 	modImplementation("com.terraformersmc:modmenu:3.0.0") {
