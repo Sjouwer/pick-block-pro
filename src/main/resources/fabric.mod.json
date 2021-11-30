@@ -33,9 +33,22 @@
     "pickblockpro.mixins.json"
   ],
 
+  "custom": {
+    "modmanager": {
+      "modrinth": "6kI7U1sT"
+    },
+    "modmenu": {
+      "updates": {
+        "provider": "modrinth",
+        "projectId": "6kI7U1sT",
+        "channel": "release"
+      }
+    }
+  },
+
   "depends": {
     "minecraft": "1.18.x",
-    "fabricloader": ">=0.11.2",
+    "fabricloader": ">=0.12.0",
     "fabric": ">=0.40.3",
     "cloth-config": ">=6.0.0"
   }
