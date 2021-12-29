@@ -7,7 +7,7 @@ This mod is an advanced version of this and adds a lot of extra features (see be
 This mod replaces the default Pick Block, however the ID and Tool picker use their own keybindings.  
 
 ## **Features**
-Everything below is configurable in the config settings using the config file or Mod Menu
+Most things below are configurable in the config settings using the config file or Mod Menu
 - Extended block pick range, decide how far the picker should be able to reach
 - Pick block extra things:  
       - Pick fluids and get a bucket of the fluid  
@@ -15,7 +15,9 @@ Everything below is configurable in the config settings using the config file or
       - Pick the sun and get a light block  
 - Lock inventory slots to prevent the picker from switching or replacing the item in that slot
 - Hold ALT while picking and add BlockState data to the block/item (stacks with CTRL for BlockEntity data)
-- Pick ID's with the ID Picker and copy them directly to your clipboard, for easy WorldEdit command creation
+- Copy ID's of hotbar slot blocks/items directly into your chat, for easy WorldEdit command creation  
+(Use CTRL + 0 through 9 while your chat is open, 0 is for the off hand slot)
+- Pick ID's of blocks in the world with the ID Picker and copy them directly to your clipboard
 - Use the Tool Picker and get the best available tool to break the block or kill the entity
 - Creative inventory management (not just the hotbar) is now actually possible when picking blocks
 

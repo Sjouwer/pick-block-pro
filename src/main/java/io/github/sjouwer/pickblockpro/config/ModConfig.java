@@ -2,90 +2,67 @@ package io.github.sjouwer.pickblockpro.config;
 
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
-import me.shedaniel.autoconfig.annotation.ConfigEntry;
+import me.shedaniel.autoconfig.annotation.ConfigEntry.Category;
+import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.Tooltip;
 import net.minecraft.world.RaycastContext;
 
 @Config(name = "pick_block_pro")
 public class ModConfig implements ConfigData {
-    @ConfigEntry.Category("block_picker_settings")
-    @ConfigEntry.Gui.Tooltip
+    @Tooltip @Category("block_picker_settings")
     private int blockPickRange = 100;
-    @ConfigEntry.Category("block_picker_settings")
-    @ConfigEntry.Gui.Tooltip
+    @Tooltip @Category("block_picker_settings")
     private boolean blockPickBlocks = true;
-    @ConfigEntry.Category("block_picker_settings")
-    @ConfigEntry.Gui.Tooltip
+    @Tooltip @Category("block_picker_settings")
     private boolean blockPickEntities = true;
-    @ConfigEntry.Category("block_picker_settings")
-    @ConfigEntry.Gui.Tooltip
+    @Tooltip @Category("block_picker_settings")
     private boolean blockPickFluids = true;
-    @ConfigEntry.Category("block_picker_settings")
-    @ConfigEntry.Gui.Tooltip
+    @Tooltip @Category("block_picker_settings")
     private boolean blockPickFire = true;
-    @ConfigEntry.Category("id_picker_settings")
-    @ConfigEntry.Gui.Tooltip
-    private int idPickRange = 100;
-    @ConfigEntry.Category("id_picker_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean idPickFluids = true;
-    @ConfigEntry.Category("id_picker_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean idPickBlocks = true;
-    @ConfigEntry.Category("id_picker_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean idPickEntities = true;
-    @ConfigEntry.Category("id_picker_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean addNamespace = true;
-    @ConfigEntry.Category("id_picker_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean addProperties = true;
-    @ConfigEntry.Category("id_picker_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean copyToClipboard = true;
-    @ConfigEntry.Category("tool_picker_settings")
-    @ConfigEntry.Gui.Tooltip
-    private int toolPickRange = 100;
-    @ConfigEntry.Category("tool_picker_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean preferSilkTouch = true;
-    @ConfigEntry.Category("tool_picker_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean preferEfficiency = false;
-    @ConfigEntry.Category("tool_picker_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean preferSwordForBamboo = true;
-    @ConfigEntry.Category("tool_picker_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean enchantTools = true;
-    @ConfigEntry.Category("inventory_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean lockSlot1 = false;
-    @ConfigEntry.Category("inventory_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean lockSlot2 = false;
-    @ConfigEntry.Category("inventory_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean lockSlot3 = false;
-    @ConfigEntry.Category("inventory_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean lockSlot4 = false;
-    @ConfigEntry.Category("inventory_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean lockSlot5 = false;
-    @ConfigEntry.Category("inventory_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean lockSlot6 = false;
-    @ConfigEntry.Category("inventory_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean lockSlot7 = false;
-    @ConfigEntry.Category("inventory_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean lockSlot8 = false;
-    @ConfigEntry.Category("inventory_settings")
-    @ConfigEntry.Gui.Tooltip
-    private boolean lockSlot9 = false;
 
+    @Tooltip @Category("id_picker_settings")
+    private int idPickRange = 100;
+    @Tooltip @Category("id_picker_settings")
+    private boolean idPickFluids = true;
+    @Tooltip @Category("id_picker_settings")
+    private boolean idPickBlocks = true;
+    @Tooltip @Category("id_picker_settings")
+    private boolean idPickEntities = true;
+    @Tooltip @Category("id_picker_settings")
+    private boolean addNamespace = false;
+    @Tooltip @Category("id_picker_settings")
+    private boolean addProperties = true;
+    @Tooltip @Category("id_picker_settings")
+    private boolean copyToClipboard = true;
+
+    @Tooltip @Category("tool_picker_settings")
+    private int toolPickRange = 100;
+    @Tooltip @Category("tool_picker_settings")
+    private boolean preferSilkTouch = true;
+    @Tooltip @Category("tool_picker_settings")
+    private boolean preferEfficiency = false;
+    @Tooltip @Category("tool_picker_settings")
+    private boolean preferSwordForBamboo = true;
+    @Tooltip @Category("tool_picker_settings")
+    private boolean enchantTools = true;
+
+    @Tooltip @Category("inventory_settings")
+    private boolean lockSlot1 = false;
+    @Tooltip @Category("inventory_settings")
+    private boolean lockSlot2 = false;
+    @Tooltip @Category("inventory_settings")
+    private boolean lockSlot3 = false;
+    @Tooltip @Category("inventory_settings")
+    private boolean lockSlot4 = false;
+    @Tooltip @Category("inventory_settings")
+    private boolean lockSlot5 = false;
+    @Tooltip @Category("inventory_settings")
+    private boolean lockSlot6 = false;
+    @Tooltip @Category("inventory_settings")
+    private boolean lockSlot7 = false;
+    @Tooltip @Category("inventory_settings")
+    private boolean lockSlot8 = false;
+    @Tooltip @Category("inventory_settings")
+    private boolean lockSlot9 = false;
 
     public int blockPickRange() {
         return blockPickRange;
