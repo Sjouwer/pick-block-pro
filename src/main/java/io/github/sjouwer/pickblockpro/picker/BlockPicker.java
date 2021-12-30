@@ -9,6 +9,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SkullItem;
@@ -148,12 +149,42 @@ public class BlockPicker {
             BlockHitResult blockHit = (BlockHitResult) hit;
             BlockState state = minecraft.world.getBlockState(blockHit.getBlockPos());
             if (state.isAir()) {
-                return new ItemStack(Items.LIGHT);
+                if (minecraft.player.getMainHandStack().isOf(Items.LIGHT)) {
+                    cycleLightLevel();
+                }
+                else {
+                    return new ItemStack(Items.LIGHT);
+                }
             }
         }
 
         return null;
     }
+
+    private void cycleLightLevel() {
+        NbtCompound blockStateTag = minecraft.player.getMainHandStack().getSubNbt("BlockStateTag");
+        int newLightLvl;
+
+        if (blockStateTag == null) {
+            blockStateTag = new NbtCompound();
+            newLightLvl = 0;
+        }
+        else {
+            newLightLvl = blockStateTag.getInt("level") + 1;
+        }
+        if (newLightLvl == 16) {
+            newLightLvl = 0;
+        }
+
+        ItemStack light = new ItemStack(Items.LIGHT);
+        blockStateTag.putInt("level", newLightLvl);
+        light.setSubNbt("BlockStateTag", blockStateTag);
+
+        PlayerInventory inventory = minecraft.player.getInventory();
+        inventory.setStack(inventory.selectedSlot, light);
+        Inventory.updateCreativeSlot(inventory.selectedSlot);
+    }
+
 
     private void addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
         NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData();
