@@ -149,8 +149,9 @@ public class BlockPicker {
             BlockHitResult blockHit = (BlockHitResult) hit;
             BlockState state = minecraft.world.getBlockState(blockHit.getBlockPos());
             if (state.isAir()) {
-                if (minecraft.player.getMainHandStack().isOf(Items.LIGHT)) {
-                    cycleLightLevel();
+                ItemStack mainHandStack = minecraft.player.getMainHandStack();
+                if (mainHandStack.isOf(Items.LIGHT)) {
+                    cycleLightLevel(mainHandStack);
                 }
                 else {
                     return new ItemStack(Items.LIGHT);
@@ -161,8 +162,8 @@ public class BlockPicker {
         return null;
     }
 
-    private void cycleLightLevel() {
-        NbtCompound blockStateTag = minecraft.player.getMainHandStack().getSubNbt("BlockStateTag");
+    private void cycleLightLevel(ItemStack light) {
+        NbtCompound blockStateTag = light.getSubNbt("BlockStateTag");
         int newLightLvl;
 
         if (blockStateTag == null) {
@@ -176,7 +177,6 @@ public class BlockPicker {
             newLightLvl = 0;
         }
 
-        ItemStack light = new ItemStack(Items.LIGHT);
         blockStateTag.putInt("level", newLightLvl);
         light.setSubNbt("BlockStateTag", blockStateTag);
 
