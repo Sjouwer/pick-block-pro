@@ -50,13 +50,14 @@ public class BlockPicker {
         HitResult hit = Raycast.getHit(config.blockPickRange(), config.blockFluidHandling(), !config.blockPickEntities());
 
         ItemStack item = null;
-        //Check first if there is an entity in sight
         if (hit.getType() == HitResult.Type.ENTITY) {
             item = getEntityItemStack(hit);
         }
-        //If there is no entity in sight check for a block instead
-        else if (config.blockPickBlocks()) {
+        if (hit.getType() == HitResult.Type.BLOCK && config.blockPickBlocks()) {
             item = getBlockItemStack(hit);
+        }
+        if (hit.getType() == HitResult.Type.MISS) {
+            item = getLightFromSun();
         }
 
         if (item != null) {
@@ -65,31 +66,17 @@ public class BlockPicker {
     }
 
     private ItemStack getEntityItemStack(HitResult hit) {
-        EntityHitResult entityHit = (EntityHitResult) hit;
-        Entity entity = entityHit.getEntity();
+        Entity entity = ((EntityHitResult) hit).getEntity();
         return entity.getPickBlockStack();
     }
 
     private ItemStack getBlockItemStack(HitResult hit) {
-        BlockHitResult blockHit = (BlockHitResult) hit;
-        BlockPos blockPos = blockHit.getBlockPos();
+        BlockPos blockPos = ((BlockHitResult) hit).getBlockPos();
         BlockView world = minecraft.world;
         BlockState state = world.getBlockState(blockPos);
-
-        ItemStack item;
-        if (state.isAir()) {
-            item = getLightFromSun();
-
-            if (item == null) {
-                return null;
-            }
-        }
-        else {
-            item = state.getBlock().getPickStack(world, blockPos, state);
-        }
+        ItemStack item = state.getBlock().getPickStack(world, blockPos, state);
 
         if (item.isEmpty()) {
-            //Check for extra pick stacks that mc doesn't include by default
             ItemStack extraItem = extraPickStackCheck(state);
             if (extraItem == null) {
                 return null;
@@ -98,14 +85,12 @@ public class BlockPicker {
         }
 
         if (minecraft.player.getAbilities().creativeMode) {
-            //Add BlockEntity NBT if ctrl is being held down
             if (Screen.hasControlDown() && state.hasBlockEntity()) {
                 BlockEntity blockEntity = world.getBlockEntity(blockPos);
                 if (blockEntity != null) {
                     addBlockEntityNbt(item, blockEntity);
                 }
             }
-            //Add BlockState NBT if alt is being held down
             if (Screen.hasAltDown()) {
                 addBlockStateNbt(item, state);
             }
@@ -123,6 +108,9 @@ public class BlockPicker {
         }
         if ((state.isOf(Blocks.FIRE) || (state.isOf(Blocks.SOUL_FIRE)) && config.blockPickFire())) {
             return new ItemStack(Items.FLINT_AND_STEEL);
+        }
+        if (state.isOf(Blocks.SPAWNER)) {
+            return new ItemStack(Items.SPAWNER);
         }
 
         return null;
@@ -146,9 +134,7 @@ public class BlockPicker {
             //Do another raycast with a longer reach to make sure there is nothing in the way of the sun
             int viewDistance = minecraft.options.viewDistance * 32;
             HitResult hit = Raycast.getHit(viewDistance, RaycastContext.FluidHandling.ANY, true);
-            BlockHitResult blockHit = (BlockHitResult) hit;
-            BlockState state = minecraft.world.getBlockState(blockHit.getBlockPos());
-            if (state.isAir()) {
+            if (hit.getType() == HitResult.Type.MISS) {
                 ItemStack mainHandStack = minecraft.player.getMainHandStack();
                 if (mainHandStack.isOf(Items.LIGHT)) {
                     cycleLightLevel(mainHandStack);
