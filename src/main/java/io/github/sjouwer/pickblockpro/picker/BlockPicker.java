@@ -3,6 +3,7 @@ package io.github.sjouwer.pickblockpro.picker;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
 import io.github.sjouwer.pickblockpro.util.*;
 import me.shedaniel.autoconfig.AutoConfig;
+import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -22,7 +23,6 @@ import net.minecraft.util.hit.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.RaycastContext;
 
 public class BlockPicker {
     private static BlockPicker INSTANCE;
@@ -57,7 +57,12 @@ public class BlockPicker {
             item = getBlockItemStack(hit);
         }
         if (hit.getType() == HitResult.Type.MISS) {
-            item = getLightFromSun();
+            //Do another raycast with a longer reach to make sure there is nothing in the way of the sun or moon
+            int distance = minecraft.options.viewDistance * 32;
+            hit = Raycast.getHit(distance, config.blockFluidHandling(), false);
+            if (hit.getType() == HitResult.Type.MISS) {
+                item = getLightFromSunOrMoon();
+            }
         }
 
         if (item != null) {
@@ -87,9 +92,7 @@ public class BlockPicker {
         if (minecraft.player.getAbilities().creativeMode) {
             if (Screen.hasControlDown() && state.hasBlockEntity()) {
                 BlockEntity blockEntity = world.getBlockEntity(blockPos);
-                if (blockEntity != null) {
-                    addBlockEntityNbt(item, blockEntity);
-                }
+                addBlockEntityNbt(item, blockEntity);
             }
             if (Screen.hasAltDown()) {
                 addBlockStateNbt(item, state);
@@ -116,7 +119,7 @@ public class BlockPicker {
         return null;
     }
 
-    private ItemStack getLightFromSun() {
+    private ItemStack getLightFromSunOrMoon() {
         double skyAngle = minecraft.world.getSkyAngle(minecraft.getTickDelta()) + .25;
         if (skyAngle > 1) {
             skyAngle --;
@@ -129,20 +132,31 @@ public class BlockPicker {
             playerAngle += 360;
         }
 
+        //Sun
         double angleDifference = skyAngle - playerAngle;
         if (Math.abs(playerVector.z) < 0.076 && Math.abs(angleDifference) < 4.3) {
-            //Do another raycast with a longer reach to make sure there is nothing in the way of the sun
-            int viewDistance = minecraft.options.viewDistance * 32;
-            HitResult hit = Raycast.getHit(viewDistance, RaycastContext.FluidHandling.ANY, true);
-            if (hit.getType() == HitResult.Type.MISS) {
-                ItemStack mainHandStack = minecraft.player.getMainHandStack();
-                if (mainHandStack.isOf(Items.LIGHT)) {
-                    cycleLightLevel(mainHandStack);
-                }
-                else {
-                    return new ItemStack(Items.LIGHT);
-                }
-            }
+            return giveOrCycleLight(15);
+        }
+
+        //Moon
+        if (Math.abs(playerVector.z) < 0.051 && Math.abs(angleDifference - 180) < 3) {
+            return giveOrCycleLight(7);
+        }
+
+        return null;
+    }
+
+    private ItemStack giveOrCycleLight(int lightLvl) {
+        ItemStack mainHandStack = minecraft.player.getMainHandStack();
+        if (mainHandStack.isOf(Items.LIGHT)) {
+            cycleLightLevel(mainHandStack);
+        }
+        else {
+            ItemStack light = new ItemStack(Items.LIGHT);
+            NbtCompound blockStateTag = new NbtCompound();
+            blockStateTag.putInt("level", lightLvl);
+            light.setSubNbt("BlockStateTag", blockStateTag);
+            return light;
         }
 
         return null;
@@ -180,7 +194,7 @@ public class BlockPicker {
             stack.getOrCreateNbt().put("SkullOwner", nbtCompound3);
         } else {
             stack.setSubNbt("BlockEntityTag", nbtCompound);
-            addNbtTag(stack);
+            addNbtTag(stack, "\"(+BlockEntity NBT)\"");
         }
     }
 
@@ -191,14 +205,17 @@ public class BlockPicker {
                 nbtCompound.putString(property.getName(), state.get(property).toString());
             }
             stack.setSubNbt("BlockStateTag", nbtCompound);
-            addNbtTag(stack);
+            addNbtTag(stack, "\"(+BlockState NBT)\"");
         }
     }
 
-    private void addNbtTag(ItemStack stack) {
-        NbtCompound nbtCompound = new NbtCompound();
-        NbtList nbtList = new NbtList();
-        nbtList.add(NbtString.of("\"(+NBT)\""));
+    private void addNbtTag(ItemStack stack, String tag) {
+        NbtCompound nbtCompound = stack.getOrCreateSubNbt("display");
+        NbtList nbtList = nbtCompound.getList("Lore", NbtType.STRING);
+        if (nbtList == null) {
+            nbtList = new NbtList();
+        }
+        nbtList.add(NbtString.of(tag));
         nbtCompound.put("Lore", nbtList);
         stack.setSubNbt("display", nbtCompound);
     }
