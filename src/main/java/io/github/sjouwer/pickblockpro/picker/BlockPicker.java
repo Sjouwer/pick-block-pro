@@ -56,7 +56,7 @@ public class BlockPicker {
         if (hit.getType() == HitResult.Type.BLOCK && config.blockPickBlocks()) {
             item = getBlockItemStack(hit);
         }
-        if (hit.getType() == HitResult.Type.MISS) {
+        if (hit.getType() == HitResult.Type.MISS && config.blockPickLight()) {
             //Do another raycast with a longer reach to make sure there is nothing in the way of the sun or moon
             int distance = minecraft.options.viewDistance * 32;
             hit = Raycast.getHit(distance, config.blockFluidHandling(), false);

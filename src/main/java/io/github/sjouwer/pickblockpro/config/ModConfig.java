@@ -18,6 +18,8 @@ public class ModConfig implements ConfigData {
     private boolean blockPickFluids = true;
     @Tooltip @Category("block_picker_settings")
     private boolean blockPickFire = true;
+    @Tooltip @Category("block_picker_settings")
+    private boolean blockPickLight = true;
 
     @Tooltip @Category("id_picker_settings")
     private int idPickRange = 100;
@@ -93,6 +95,10 @@ public class ModConfig implements ConfigData {
 
     public boolean blockPickFire() {
         return blockPickFire;
+    }
+
+    public boolean blockPickLight() {
+        return blockPickLight;
     }
 
     public boolean blockPickBlocks() {
