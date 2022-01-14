@@ -17,7 +17,9 @@
     "text.autoconfig.pick_block_pro.option.blockPickFluids.@Tooltip": "Получать ведро жидкости, которая была выбрана",
     "text.autoconfig.pick_block_pro.option.blockPickFire": "Выбирать огонь",
     "text.autoconfig.pick_block_pro.option.blockPickFire.@Tooltip": "Получать огниво при выборе огня",
-
+    "text.autoconfig.pick_block_pro.option.blockPickLight": "Выбирать свет",
+    "text.autoconfig.pick_block_pro.option.blockPickLight.@Tooltip": "Получать блок света при выборе солнца или луны",
+    
     "text.autoconfig.pick_block_pro.category.id_picker_settings": "Получение id",
     "text.autoconfig.pick_block_pro.option.idPickRange": "Расстояние выбора id",
     "text.autoconfig.pick_block_pro.option.idPickRange.@Tooltip": "Предельное расстояние в блоках для получения id",
