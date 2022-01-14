@@ -17,6 +17,8 @@
     "text.autoconfig.pick_block_pro.option.blockPickFluids.@Tooltip": "Get a bucket of the fluid that's been picked",
     "text.autoconfig.pick_block_pro.option.blockPickFire": "Pick fire",
     "text.autoconfig.pick_block_pro.option.blockPickFire.@Tooltip": "Get a flint & steel when picking fire",
+    "text.autoconfig.pick_block_pro.option.blockPickLight": "Pick light",
+    "text.autoconfig.pick_block_pro.option.blockPickLight.@Tooltip": "Get a light block when picking the sun or moon",
 
     "text.autoconfig.pick_block_pro.category.id_picker_settings": "ID Picker",
     "text.autoconfig.pick_block_pro.option.idPickRange": "ID picker range",

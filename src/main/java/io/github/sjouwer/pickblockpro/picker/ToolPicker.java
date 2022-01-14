@@ -9,6 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.*;
 import net.minecraft.tag.BlockTags;
@@ -30,57 +31,59 @@ public class ToolPicker {
         HitResult hit = Raycast.getHit(config.toolPickRange(), RaycastContext.FluidHandling.ANY, false);
 
         if (hit.getType() == HitResult.Type.ENTITY) {
-            EntityHitResult entityHit = (EntityHitResult) hit;
-            Entity entity = entityHit.getEntity();
+            Entity entity = ((EntityHitResult) hit).getEntity();
             if (entity.isLiving()) {
-                getTool(Tools.SWORD);
+                giveOrSwitchTool(Tools.SWORD, entity);
             }
         }
         else {
-            BlockHitResult blockHit = (BlockHitResult) hit;
-            BlockPos blockPos = blockHit.getBlockPos();
+            BlockPos blockPos = ((BlockHitResult) hit).getBlockPos();
             BlockState state = minecraft.world.getBlockState(blockPos);
-            getMostSuitableTool(state);
+            pickMostSuitableTool(state);
         }
     }
 
-    private void getMostSuitableTool(BlockState state) {
+    private void pickMostSuitableTool(BlockState state) {
         if (state.isIn(BlockTags.WOOL) || state.isOf(Blocks.COBWEB)) {
-            getTool(Tools.SHEARS);
+            giveOrSwitchTool(Tools.SHEARS);
             return;
         }
         if (state.isOf(Blocks.BAMBOO) && config.preferSwordForBamboo()) {
-            getTool(Tools.SWORD);
+            giveOrSwitchTool(Tools.SWORD);
             return;
         }
         if (state.getMaterial().isLiquid() || state.isOf(Blocks.POWDER_SNOW)) {
-            getTool(Tools.BUCKET);
+            giveOrSwitchTool(Tools.BUCKET);
             return;
         }
         if (state.isIn(BlockTags.PICKAXE_MINEABLE)) {
-            getTool(Tools.PICKAXE);
+            giveOrSwitchTool(Tools.PICKAXE);
             return;
         }
         if (state.isIn(BlockTags.AXE_MINEABLE)) {
-            getTool(Tools.AXE);
+            giveOrSwitchTool(Tools.AXE);
             return;
         }
         if (state.isIn(BlockTags.SHOVEL_MINEABLE)) {
-            getTool(Tools.SHOVEL);
+            giveOrSwitchTool(Tools.SHOVEL);
             return;
         }
         if (state.isIn(BlockTags.HOE_MINEABLE)) {
-            getTool(Tools.HOE);
+            giveOrSwitchTool(Tools.HOE);
         }
     }
 
-    private void getTool(Tools tool) {
+    private void giveOrSwitchTool(Tools tool) {
+        this.giveOrSwitchTool(tool, null);
+    }
+
+    private void giveOrSwitchTool(Tools tool, Entity entity) {
         ItemStack bestTool;
         if (minecraft.player.getAbilities().creativeMode) {
             bestTool = createBestTool(tool);
         }
         else {
-            bestTool = findBestTool(tool);
+            bestTool = findBestTool(tool, entity);
         }
 
         if (bestTool != null) {
@@ -88,28 +91,33 @@ public class ToolPicker {
         }
     }
 
-    private ItemStack findBestTool(Tools tool) {
+    private ItemStack findBestTool(Tools tool, Entity entity) {
         PlayerInventory inventory = minecraft.player.getInventory();
-        ItemStack bestTool = null;
-        int bestToolScore = -1;
-
         if (tool == Tools.BUCKET) {
             ItemStack bucket = new ItemStack(Items.BUCKET);
             if (inventory.contains(bucket)) {
-                bestTool = bucket;
+                return bucket;
             }
         }
-        else {
-            for (int i = 0; i < 36; i++) {
-                ItemStack itemStack = inventory.getStack(i);
 
-                if (tool.getClassType().isInstance(itemStack.getItem())) {
-                    int score = calculateToolScore(itemStack);
-                    if (score > bestToolScore || (bestTool != null && score == bestToolScore && itemStack.getDamage() < bestTool.getDamage())) {
-                        bestTool = itemStack;
-                        bestToolScore = score;
-                    }
-                }
+        ItemStack bestTool = null;
+        int bestToolScore = -1;
+        for (int i = 0; i < 36; i++) {
+            ItemStack itemStack = inventory.getStack(i);
+            if (!tool.getClassType().isInstance(itemStack.getItem())) {
+                continue;
+            }
+
+            int score;
+            if (entity == null) {
+                score = calculateToolScore(itemStack);
+            }
+            else {
+                score = calculateSwordScore(itemStack, entity);
+            }
+            if (score > bestToolScore || (bestTool != null && score == bestToolScore && itemStack.getDamage() < bestTool.getDamage())) {
+                bestTool = itemStack;
+                bestToolScore = score;
             }
         }
 
@@ -118,8 +126,8 @@ public class ToolPicker {
 
     private int calculateToolScore(ItemStack item) {
         int score = 0;
-        if (item.getItem() instanceof ToolItem toolitem) {
-            score += toolitem.getMaterial().getMiningLevel() * 10000;
+        if (item.getItem() instanceof ToolItem toolItem) {
+            score += toolItem.getMaterial().getMiningLevel() * 10000;
         }
 
         if (config.preferSilkTouch()) {
@@ -138,7 +146,18 @@ public class ToolPicker {
             score += EnchantmentHelper.getLevel(Enchantments.EFFICIENCY, item) * 10;
         }
 
-        score += EnchantmentHelper.getLevel(Enchantments.SHARPNESS, item);
+        score += EnchantmentHelper.getLevel(Enchantments.UNBREAKING, item);
+        score += EnchantmentHelper.getLevel(Enchantments.MENDING, item) * 5;
+
+        return score;
+    }
+
+    private int calculateSwordScore(ItemStack item, Entity entity) {
+        int score = 0;
+        if (item.getItem() instanceof SwordItem swordItem && entity instanceof LivingEntity livingEntity) {
+            score += swordItem.getAttackDamage();
+            score += EnchantmentHelper.getAttackDamage(item, livingEntity.getGroup());
+        }
 
         return score;
     }

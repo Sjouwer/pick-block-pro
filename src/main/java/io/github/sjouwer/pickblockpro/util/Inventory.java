@@ -84,7 +84,7 @@ public final class Inventory {
         return selectedSlot;
     }
 
-    private static void updateCreativeSlot(int slot) {
+    public static void updateCreativeSlot(int slot) {
         if (slot < 0) {
             return;
         }
