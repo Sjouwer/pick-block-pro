@@ -109,7 +109,7 @@ public class BlockPicker {
         if (state.isOf(Blocks.LAVA)) {
             return new ItemStack(Items.LAVA_BUCKET);
         }
-        if ((state.isOf(Blocks.FIRE) || (state.isOf(Blocks.SOUL_FIRE)) && config.blockPickFire())) {
+        if ((state.isOf(Blocks.FIRE) || (state.isOf(Blocks.SOUL_FIRE))) && config.blockPickFire()) {
             return new ItemStack(Items.FLINT_AND_STEEL);
         }
         if (state.isOf(Blocks.SPAWNER)) {
