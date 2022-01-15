@@ -1,3 +1,6 @@
+## Readme Language
+
+[中文](./READMEzh.md) | English
 # **Pick Block Pro**
 
 Pick Block: Get the block/item of what you're looking at in creative or switch to that block/item in survival.  
