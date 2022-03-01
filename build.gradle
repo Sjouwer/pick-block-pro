@@ -10,9 +10,6 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
-minecraft {
-}
-
 repositories {
 	maven {
 		name = 'ClothConfig'
@@ -33,14 +30,10 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	//Mod Menu
-	modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}") {
-		exclude(group: "net.fabricmc")
-		exclude(group: "net.fabricmc.fabric-api")
-	}
+	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 
 	//Cloth Config
 	modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
-		exclude(group: "net.fabricmc")
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	include "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}"
@@ -55,7 +48,6 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.encoding = "UTF-8"
 	it.options.release = 16
 }
 
@@ -75,16 +67,10 @@ jar {
 // configure the maven publication
 publishing {
 	publications {
-		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
-		}
-	}
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 
 	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
