@@ -1,8 +1,8 @@
 package io.github.sjouwer.pickblockpro.picker;
 
+import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
 import io.github.sjouwer.pickblockpro.util.*;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
@@ -15,12 +15,8 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 
 public class IdPicker {
-    private final ModConfig config;
-    private static final MinecraftClient minecraft = MinecraftClient.getInstance();
-
-    public IdPicker() {
-        config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
-    }
+    private static final MinecraftClient client = MinecraftClient.getInstance();
+    private static final ModConfig config = PickBlockPro.getConfig();
 
     public void pickId() {
         if (!config.idPickEntities() && !config.idPickBlocks()) {
@@ -45,7 +41,7 @@ public class IdPicker {
 
     private BaseText getBlockId(HitResult hit) {
         BlockHitResult blockHit = (BlockHitResult) hit;
-        BlockState block = minecraft.world.getBlockState(blockHit.getBlockPos());
+        BlockState block = client.world.getBlockState(blockHit.getBlockPos());
         String fullId = block.toString();
 
         String namespace = "";
@@ -67,7 +63,7 @@ public class IdPicker {
         BaseText message = new LiteralText(finalId);
 
         if (config.copyToClipboard()){
-            minecraft.keyboard.setClipboard(finalId);
+            client.keyboard.setClipboard(finalId);
             message = new TranslatableText("text.pick_block_pro.message.copied", finalId);
         }
 
@@ -90,7 +86,7 @@ public class IdPicker {
             BaseText message = new LiteralText(finalId);
 
             if (config.copyToClipboard()){
-                minecraft.keyboard.setClipboard(finalId);
+                client.keyboard.setClipboard(finalId);
                 message = new TranslatableText("text.pick_block_pro.message.copied", finalId);
             }
 

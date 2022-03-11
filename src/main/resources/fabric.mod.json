@@ -24,10 +24,12 @@
 
   "environment": "client",
   "entrypoints": {
-    "main": [
+    "client": [
       "io.github.sjouwer.pickblockpro.PickBlockPro"
     ],
-    "modmenu": [ "io.github.sjouwer.pickblockpro.config.ModMenuApiImpl" ]
+    "modmenu": [
+      "io.github.sjouwer.pickblockpro.config.ModMenuApiImpl"
+    ]
   },
   "mixins": [
     "pickblockpro.mixins.json"

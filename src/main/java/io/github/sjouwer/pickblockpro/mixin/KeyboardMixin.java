@@ -13,11 +13,11 @@ import org.lwjgl.glfw.GLFW;
 
 @Mixin(Keyboard.class)
 public class KeyboardMixin {
-    private final MinecraftClient minecraft = MinecraftClient.getInstance();
+    private final MinecraftClient client = MinecraftClient.getInstance();
 
     @Inject(method = "onKey", at = @At("HEAD"), cancellable = true)
     public void onKey(long window, int key, int scancode, int action, int modifiers, final CallbackInfo info) {
-        Screen screen = minecraft.currentScreen;
+        Screen screen = client.currentScreen;
         if (screen instanceof ChatScreen && Screen.hasControlDown() && action == GLFW.GLFW_PRESS && key >= GLFW.GLFW_KEY_0 && key <= GLFW.GLFW_KEY_9) {
             String itemId;
             if (key == GLFW.GLFW_KEY_0) {
@@ -33,6 +33,6 @@ public class KeyboardMixin {
     }
 
     private String getItemId(int slot) {
-        return minecraft.player.getInventory().getStack(slot).getItem().toString();
+        return client.player.getInventory().getStack(slot).getItem().toString();
     }
 }
