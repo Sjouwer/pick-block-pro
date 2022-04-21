@@ -7,8 +7,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.text.BaseText;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -25,8 +25,11 @@ public class IdPicker {
         }
 
         HitResult hit = Raycast.getHit(config.idPickRange(), config.idFluidHandling(), !config.idPickEntities());
+        if (hit == null || client.world == null) {
+            return;
+        }
 
-        BaseText message = null;
+        MutableText message = null;
         if (hit.getType() == HitResult.Type.ENTITY) {
             message = getEntityId(hit);
         }
@@ -39,7 +42,7 @@ public class IdPicker {
         }
     }
 
-    private BaseText getBlockId(HitResult hit) {
+    private MutableText getBlockId(HitResult hit) {
         BlockHitResult blockHit = (BlockHitResult) hit;
         BlockState block = client.world.getBlockState(blockHit.getBlockPos());
         String fullId = block.toString();
@@ -60,17 +63,17 @@ public class IdPicker {
         }
 
         String finalId = namespace + id + properties;
-        BaseText message = new LiteralText(finalId);
+        MutableText message = MutableText.method_43477(new LiteralText(finalId));
 
         if (config.copyToClipboard()){
             client.keyboard.setClipboard(finalId);
-            message = new TranslatableText("text.pick_block_pro.message.copied", finalId);
+            message = MutableText.method_43477(new TranslatableText("text.pick_block_pro.message.copied", finalId));
         }
 
         return message;
     }
 
-    private BaseText getEntityId(HitResult hit) {
+    private MutableText getEntityId(HitResult hit) {
         EntityHitResult entityHit = (EntityHitResult) hit;
         Entity entity = entityHit.getEntity();
         String fullId = EntityType.getId(entity.getType()).toString();
@@ -83,11 +86,11 @@ public class IdPicker {
 
             String id = fullId.substring(fullId.indexOf(':') + 1);
             String finalId = namespace + id;
-            BaseText message = new LiteralText(finalId);
+            MutableText message = MutableText.method_43477(new LiteralText(finalId));
 
             if (config.copyToClipboard()){
                 client.keyboard.setClipboard(finalId);
-                message = new TranslatableText("text.pick_block_pro.message.copied", finalId);
+                message = MutableText.method_43477(new TranslatableText("text.pick_block_pro.message.copied", finalId));
             }
 
             return message;

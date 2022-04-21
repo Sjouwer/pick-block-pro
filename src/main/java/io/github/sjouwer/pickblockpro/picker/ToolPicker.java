@@ -25,6 +25,9 @@ public class ToolPicker {
 
     public void pickTool() {
         HitResult hit = Raycast.getHit(config.toolPickRange(), RaycastContext.FluidHandling.ANY, false);
+        if (hit == null || client.world == null || client.player == null) {
+            return;
+        }
 
         if (hit.getType() == HitResult.Type.ENTITY) {
             Entity entity = ((EntityHitResult) hit).getEntity();

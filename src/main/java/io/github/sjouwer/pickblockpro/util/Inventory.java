@@ -14,6 +14,10 @@ public final class Inventory {
     }
 
     public static void placeItemInsideInventory(ItemStack item) {
+        if (client.player == null || client.interactionManager == null) {
+            return;
+        }
+
         boolean isCreative = client.player.getAbilities().creativeMode;
         PlayerInventory inventory = client.player.getInventory();
         int stackSlot = inventory.getSlotWithStack(item);
@@ -86,7 +90,7 @@ public final class Inventory {
     }
 
     public static void updateCreativeSlot(int slot) {
-        if (slot < 0) {
+        if (slot < 0 || client.player == null || client.interactionManager == null) {
             return;
         }
 

@@ -15,6 +15,10 @@ public final class Raycast {
     }
 
     public static HitResult getHit(int range, RaycastContext.FluidHandling fluidHandling, boolean ignoreEntities) {
+        if (client.cameraEntity == null || client.world == null) {
+            return null;
+        }
+
         Entity player = client.cameraEntity;
         Vec3d vector = player.getRotationVec(client.getTickDelta());
         Vec3d rayStart = player.getCameraPosVec(client.getTickDelta());

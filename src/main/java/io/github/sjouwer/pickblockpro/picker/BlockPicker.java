@@ -22,7 +22,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.BlockView;
 
 public class BlockPicker {
     private static BlockPicker INSTANCE;
@@ -44,6 +43,9 @@ public class BlockPicker {
         }
 
         HitResult hit = Raycast.getHit(config.blockPickRange(), config.blockFluidHandling(), !config.blockPickEntities());
+        if (hit == null || client.world == null || client.player == null) {
+            return;
+        }
 
         ItemStack item = null;
         if (hit.getType() == HitResult.Type.ENTITY) {
@@ -54,7 +56,7 @@ public class BlockPicker {
         }
         if (hit.getType() == HitResult.Type.MISS && config.blockPickLight()) {
             //Do another raycast with a longer reach to make sure there is nothing in the way of the sun or moon
-            int distance = client.options.viewDistance * 32;
+            int distance = client.options.getViewDistance().getValue() * 32;
             hit = Raycast.getHit(distance, config.blockFluidHandling(), false);
             if (hit.getType() == HitResult.Type.MISS) {
                 item = getLightFromSunOrMoon();
@@ -73,9 +75,8 @@ public class BlockPicker {
 
     private ItemStack getBlockItemStack(HitResult hit) {
         BlockPos blockPos = ((BlockHitResult) hit).getBlockPos();
-        BlockView world = client.world;
-        BlockState state = world.getBlockState(blockPos);
-        ItemStack item = state.getBlock().getPickStack(world, blockPos, state);
+        BlockState state = client.world.getBlockState(blockPos);
+        ItemStack item = state.getBlock().getPickStack(client.world, blockPos, state);
 
         if (item.isEmpty()) {
             ItemStack extraItem = extraPickStackCheck(state);
@@ -87,7 +88,7 @@ public class BlockPicker {
 
         if (client.player.getAbilities().creativeMode) {
             if (Screen.hasControlDown() && state.hasBlockEntity()) {
-                BlockEntity blockEntity = world.getBlockEntity(blockPos);
+                BlockEntity blockEntity = client.world.getBlockEntity(blockPos);
                 addBlockEntityNbt(item, blockEntity);
             }
             if (Screen.hasAltDown()) {

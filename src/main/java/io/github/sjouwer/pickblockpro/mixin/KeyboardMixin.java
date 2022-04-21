@@ -27,12 +27,18 @@ public class KeyboardMixin {
                 itemId = getItemId(key - GLFW.GLFW_KEY_1);
             }
 
-            ((ChatScreenAccessor) screen).getChatField().write(itemId);
+            if (itemId != null) {
+                ((ChatScreenAccessor) screen).getChatField().write(itemId);
+            }
+
             info.cancel();
         }
     }
 
     private String getItemId(int slot) {
+        if (client.player == null) {
+            return null;
+        }
         return client.player.getInventory().getStack(slot).getItem().toString();
     }
 }
