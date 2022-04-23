@@ -18,7 +18,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.state.property.Property;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -38,7 +38,7 @@ public class BlockPicker {
 
     public void pickBlock() {
         if (!config.blockPickEntities() && !config.blockPickBlocks()) {
-            Chat.sendError(new TranslatableText("text.pick_block_pro.message.nothingToPick"));
+            Chat.sendError(new TranslatableTextContent("text.pick_block_pro.message.nothingToPick"));
             return;
         }
 
