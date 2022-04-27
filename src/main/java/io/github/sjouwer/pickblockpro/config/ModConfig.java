@@ -15,7 +15,7 @@ public class ModConfig implements ConfigData {
     @Tooltip @Category("block_picker_settings")
     private boolean blockPickEntities = true;
     @Tooltip @Category("block_picker_settings")
-    private boolean blockPickFluids = true;
+    private boolean blockPickFluids = false;
     @Tooltip @Category("block_picker_settings")
     private boolean blockPickFire = true;
     @Tooltip @Category("block_picker_settings")
@@ -24,7 +24,7 @@ public class ModConfig implements ConfigData {
     @Tooltip @Category("id_picker_settings")
     private int idPickRange = 100;
     @Tooltip @Category("id_picker_settings")
-    private boolean idPickFluids = true;
+    private boolean idPickFluids = false;
     @Tooltip @Category("id_picker_settings")
     private boolean idPickBlocks = true;
     @Tooltip @Category("id_picker_settings")
