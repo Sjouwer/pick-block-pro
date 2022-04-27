@@ -1,10 +1,13 @@
 package io.github.sjouwer.pickblockpro.mixin;
 
+import io.github.sjouwer.pickblockpro.PickBlockPro;
+import io.github.sjouwer.pickblockpro.config.ModConfig;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -39,6 +42,17 @@ public class KeyboardMixin {
         if (client.player == null) {
             return null;
         }
-        return client.player.getInventory().getStack(slot).getItem().toString();
+
+        ModConfig config = PickBlockPro.getConfig();
+        Item item = client.player.getInventory().getStack(slot).getItem();
+        String id = item.toString();
+        String key = item.getTranslationKey();
+        String namespace = "";
+
+        if (config.addNamespace() && key.indexOf('.') >= 0 && key.indexOf(".", key.indexOf(".") + 1) >= 0) {
+            namespace = key.substring(key.indexOf('.') + 1, key.indexOf(".", key.indexOf(".") + 1)) + ":";
+        }
+
+        return namespace + id;
     }
 }
