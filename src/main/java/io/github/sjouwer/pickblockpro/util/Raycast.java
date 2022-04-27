@@ -9,17 +9,17 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 
 public final class Raycast {
-    private static final MinecraftClient minecraft = MinecraftClient.getInstance();
+    private static final MinecraftClient client = MinecraftClient.getInstance();
 
     private Raycast() {
     }
 
     public static HitResult getHit(int range, RaycastContext.FluidHandling fluidHandling, boolean ignoreEntities) {
-        Entity player = minecraft.cameraEntity;
-        Vec3d vector = player.getRotationVec(minecraft.getTickDelta());
-        Vec3d rayStart = player.getCameraPosVec(minecraft.getTickDelta());
+        Entity player = client.cameraEntity;
+        Vec3d vector = player.getRotationVec(client.getTickDelta());
+        Vec3d rayStart = player.getCameraPosVec(client.getTickDelta());
         Vec3d rayEnd = rayStart.add(vector.multiply(range));
-        BlockHitResult blockHit = minecraft.world.raycast(new RaycastContext(rayStart, rayEnd, RaycastContext.ShapeType.OUTLINE, fluidHandling, player));
+        BlockHitResult blockHit = client.world.raycast(new RaycastContext(rayStart, rayEnd, RaycastContext.ShapeType.OUTLINE, fluidHandling, player));
 
         if (ignoreEntities) {
             return blockHit;

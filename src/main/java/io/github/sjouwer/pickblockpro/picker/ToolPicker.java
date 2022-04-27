@@ -1,8 +1,8 @@
 package io.github.sjouwer.pickblockpro.picker;
 
+import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
 import io.github.sjouwer.pickblockpro.util.*;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -20,12 +20,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.RaycastContext;
 
 public class ToolPicker {
-    private final ModConfig config;
-    private static final MinecraftClient minecraft = MinecraftClient.getInstance();
-
-    public ToolPicker() {
-        config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
-    }
+    private static final MinecraftClient client = MinecraftClient.getInstance();
+    private static final ModConfig config = PickBlockPro.getConfig();
 
     public void pickTool() {
         HitResult hit = Raycast.getHit(config.toolPickRange(), RaycastContext.FluidHandling.ANY, false);
@@ -38,7 +34,7 @@ public class ToolPicker {
         }
         else {
             BlockPos blockPos = ((BlockHitResult) hit).getBlockPos();
-            BlockState state = minecraft.world.getBlockState(blockPos);
+            BlockState state = client.world.getBlockState(blockPos);
             pickMostSuitableTool(state);
         }
     }
@@ -79,7 +75,7 @@ public class ToolPicker {
 
     private void giveOrSwitchTool(Tools tool, Entity entity) {
         ItemStack bestTool;
-        if (minecraft.player.getAbilities().creativeMode) {
+        if (client.player.getAbilities().creativeMode) {
             bestTool = createBestTool(tool);
         }
         else {
@@ -87,12 +83,12 @@ public class ToolPicker {
         }
 
         if (bestTool != null) {
-            Inventory.placeItemInsideInventory(bestTool, config);
+            Inventory.placeItemInsideInventory(bestTool);
         }
     }
 
     private ItemStack findBestTool(Tools tool, Entity entity) {
-        PlayerInventory inventory = minecraft.player.getInventory();
+        PlayerInventory inventory = client.player.getInventory();
         if (tool == Tools.BUCKET) {
             ItemStack bucket = new ItemStack(Items.BUCKET);
             if (inventory.contains(bucket)) {

@@ -1,8 +1,8 @@
 package io.github.sjouwer.pickblockpro.picker;
 
+import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
 import io.github.sjouwer.pickblockpro.util.*;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -26,12 +26,8 @@ import net.minecraft.world.BlockView;
 
 public class BlockPicker {
     private static BlockPicker INSTANCE;
-    private final ModConfig config;
-    private static final MinecraftClient minecraft = MinecraftClient.getInstance();
-
-    public BlockPicker() {
-        config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
-    }
+    private static final MinecraftClient client = MinecraftClient.getInstance();
+    private static final ModConfig config = PickBlockPro.getConfig();
 
     public static BlockPicker getInstance() {
         if(INSTANCE == null) {
@@ -58,7 +54,7 @@ public class BlockPicker {
         }
         if (hit.getType() == HitResult.Type.MISS && config.blockPickLight()) {
             //Do another raycast with a longer reach to make sure there is nothing in the way of the sun or moon
-            int distance = minecraft.options.viewDistance * 32;
+            int distance = client.options.viewDistance * 32;
             hit = Raycast.getHit(distance, config.blockFluidHandling(), false);
             if (hit.getType() == HitResult.Type.MISS) {
                 item = getLightFromSunOrMoon();
@@ -66,7 +62,7 @@ public class BlockPicker {
         }
 
         if (item != null) {
-            Inventory.placeItemInsideInventory(item, config);
+            Inventory.placeItemInsideInventory(item);
         }
     }
 
@@ -77,7 +73,7 @@ public class BlockPicker {
 
     private ItemStack getBlockItemStack(HitResult hit) {
         BlockPos blockPos = ((BlockHitResult) hit).getBlockPos();
-        BlockView world = minecraft.world;
+        BlockView world = client.world;
         BlockState state = world.getBlockState(blockPos);
         ItemStack item = state.getBlock().getPickStack(world, blockPos, state);
 
@@ -89,7 +85,7 @@ public class BlockPicker {
             item = extraItem;
         }
 
-        if (minecraft.player.getAbilities().creativeMode) {
+        if (client.player.getAbilities().creativeMode) {
             if (Screen.hasControlDown() && state.hasBlockEntity()) {
                 BlockEntity blockEntity = world.getBlockEntity(blockPos);
                 addBlockEntityNbt(item, blockEntity);
@@ -120,13 +116,13 @@ public class BlockPicker {
     }
 
     private ItemStack getLightFromSunOrMoon() {
-        double skyAngle = minecraft.world.getSkyAngle(minecraft.getTickDelta()) + .25;
+        double skyAngle = client.world.getSkyAngle(client.getTickDelta()) + .25;
         if (skyAngle > 1) {
             skyAngle --;
         }
         skyAngle *= 360;
 
-        Vec3d playerVector = minecraft.cameraEntity.getRotationVec(minecraft.getTickDelta());
+        Vec3d playerVector = client.cameraEntity.getRotationVec(client.getTickDelta());
         double playerAngle = Math.atan2(playerVector.y,playerVector.x) * 180 / Math.PI;
         if (playerAngle < 0) {
             playerAngle += 360;
@@ -147,7 +143,7 @@ public class BlockPicker {
     }
 
     private ItemStack giveOrCycleLight(int lightLvl) {
-        ItemStack mainHandStack = minecraft.player.getMainHandStack();
+        ItemStack mainHandStack = client.player.getMainHandStack();
         if (mainHandStack.isOf(Items.LIGHT)) {
             cycleLightLevel(mainHandStack);
         }
@@ -180,7 +176,7 @@ public class BlockPicker {
         blockStateTag.putInt("level", newLightLvl);
         light.setSubNbt("BlockStateTag", blockStateTag);
 
-        PlayerInventory inventory = minecraft.player.getInventory();
+        PlayerInventory inventory = client.player.getInventory();
         inventory.setStack(inventory.selectedSlot, light);
         Inventory.updateCreativeSlot(inventory.selectedSlot);
     }
