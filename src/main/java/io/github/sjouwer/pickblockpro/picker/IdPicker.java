@@ -7,9 +7,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.text.LiteralTextContent;
-import net.minecraft.text.TextContent;
-import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -20,7 +19,7 @@ public class IdPicker {
 
     public void pickId() {
         if (!config.idPickEntities() && !config.idPickBlocks()) {
-            Chat.sendError(new TranslatableTextContent("text.pick_block_pro.message.nothingToPick"));
+            Chat.sendError(Text.translatable("text.pick_block_pro.message.nothingToPick"));
             return;
         }
 
@@ -29,7 +28,7 @@ public class IdPicker {
             return;
         }
 
-        TextContent message = null;
+        MutableText message = null;
         if (hit.getType() == HitResult.Type.ENTITY) {
             message = getEntityId(hit);
         }
@@ -42,7 +41,7 @@ public class IdPicker {
         }
     }
 
-    private TextContent getBlockId(HitResult hit) {
+    private MutableText getBlockId(HitResult hit) {
         BlockHitResult blockHit = (BlockHitResult) hit;
         BlockState block = client.world.getBlockState(blockHit.getBlockPos());
         String fullId = block.toString();
@@ -63,17 +62,17 @@ public class IdPicker {
         }
 
         String finalId = namespace + id + properties;
-        TextContent message = new LiteralTextContent(finalId);
+        MutableText message = Text.literal(finalId);
 
         if (config.copyToClipboard()){
             client.keyboard.setClipboard(finalId);
-            message = new TranslatableTextContent("text.pick_block_pro.message.copied", finalId);
+            message = Text.translatable("text.pick_block_pro.message.copied", finalId);
         }
 
         return message;
     }
 
-    private TextContent getEntityId(HitResult hit) {
+    private MutableText getEntityId(HitResult hit) {
         EntityHitResult entityHit = (EntityHitResult) hit;
         Entity entity = entityHit.getEntity();
         String fullId = EntityType.getId(entity.getType()).toString();
@@ -86,11 +85,11 @@ public class IdPicker {
 
             String id = fullId.substring(fullId.indexOf(':') + 1);
             String finalId = namespace + id;
-            TextContent message = new LiteralTextContent(finalId);
+            MutableText message = Text.literal(finalId);
 
             if (config.copyToClipboard()){
                 client.keyboard.setClipboard(finalId);
-                message = new TranslatableTextContent("text.pick_block_pro.message.copied", finalId);
+                message = Text.translatable("text.pick_block_pro.message.copied", finalId);
             }
 
             return message;
