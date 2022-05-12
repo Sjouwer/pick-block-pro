@@ -44,19 +44,24 @@ public class IdPicker {
         BlockState block = client.world.getBlockState(blockHit.getBlockPos());
         String fullId = block.toString();
 
-        String namespace = "";
-        if (config.addNamespace() && fullId.indexOf('{') >= 0 && fullId.indexOf(':') >= 0) {
-            namespace = fullId.substring(fullId.indexOf('{') + 1, fullId.indexOf(':') + 1);
+        int namespaceStart = fullId.indexOf("{") + 1;
+        int namespaceEnd = fullId.indexOf(":") + 1;
+        int idEnd = fullId.indexOf("}");
+        int propertiesStart = fullId.indexOf("[");
+        if (namespaceStart <= 0 || namespaceEnd < namespaceStart || idEnd < namespaceEnd) {
+            return null;
         }
 
-        String id = "";
-        if (fullId.indexOf(':') >= 0 && fullId.indexOf('}') >= 0) {
-            id = fullId.substring(fullId.indexOf(':') + 1, fullId.indexOf('}'));
+        String id = fullId.substring(namespaceEnd, idEnd);
+
+        String namespace = "";
+        if (config.addNamespace()) {
+            namespace = fullId.substring(namespaceStart, namespaceEnd);
         }
 
         String properties = "";
-        if (config.addProperties() && fullId.indexOf('[') >= 0) {
-            properties = fullId.substring(fullId.indexOf('['));
+        if (config.addProperties() && propertiesStart > idEnd) {
+            properties = fullId.substring(propertiesStart);
         }
 
         String finalId = namespace + id + properties;
@@ -75,13 +80,14 @@ public class IdPicker {
         Entity entity = entityHit.getEntity();
         String fullId = EntityType.getId(entity.getType()).toString();
 
-        if (fullId.indexOf(':') >= 0) {
+        int colonIndex = fullId.indexOf(":") + 1;
+        if (colonIndex > 0) {
             String namespace = "";
             if (config.addNamespace()) {
-                namespace = fullId.substring(0, fullId.indexOf(':') + 1);
+                namespace = fullId.substring(0, colonIndex);
             }
 
-            String id = fullId.substring(fullId.indexOf(':') + 1);
+            String id = fullId.substring(colonIndex);
             String finalId = namespace + id;
             BaseText message = new LiteralText(finalId);
 
