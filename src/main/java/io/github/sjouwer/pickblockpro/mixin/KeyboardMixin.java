@@ -7,12 +7,15 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.StringJoiner;
 
 @Mixin(Keyboard.class)
 public class KeyboardMixin {
@@ -30,22 +33,44 @@ public class KeyboardMixin {
                 itemId = getItemId(key - GLFW.GLFW_KEY_1);
             }
 
-            ((ChatScreenAccessor) screen).getChatField().write(itemId);
-            info.cancel();
+            if (itemId != null) {
+                ((ChatScreenAccessor) screen).getChatField().write(itemId);
+                info.cancel();
+            }
         }
     }
 
     private String getItemId(int slot) {
-        ModConfig config = PickBlockPro.getConfig();
-        Item item = client.player.getInventory().getStack(slot).getItem();
-        String id = item.toString();
-        String key = item.getTranslationKey();
-        String namespace = "";
-
-        if (config.addNamespace() && key.indexOf('.') >= 0 && key.indexOf(".", key.indexOf(".") + 1) >= 0) {
-            namespace = key.substring(key.indexOf('.') + 1, key.indexOf(".", key.indexOf(".") + 1)) + ":";
+        if (client.player == null) {
+            return null;
         }
 
-        return namespace + id;
+        ModConfig config = PickBlockPro.getConfig();
+        ItemStack itemStack = client.player.getInventory().getStack(slot);
+        String id = itemStack.getItem().toString();
+
+        String namespace = "";
+        if (config.addNamespace()) {
+            String key = itemStack.getItem().getTranslationKey();
+            int namespaceStart = key.indexOf(".") + 1;
+            int namespaceEnd = key.indexOf(".", namespaceStart);
+            if (namespaceStart > 0 && namespaceEnd > namespaceStart) {
+                namespace = key.substring(namespaceStart, namespaceEnd) + ":";
+            }
+        }
+
+        String properties = "";
+        if (config.addProperties()) {
+            NbtCompound statesTag = itemStack.getSubNbt("BlockStateTag");
+            if(statesTag != null) {
+                StringJoiner stateJoiner = new StringJoiner(",");
+                for (String key : statesTag.getKeys()) {
+                    stateJoiner.add(key + "=" + statesTag.getString(key));
+                }
+                properties = "[" + stateJoiner + "]";
+            }
+        }
+
+        return namespace + id + properties;
     }
 }
