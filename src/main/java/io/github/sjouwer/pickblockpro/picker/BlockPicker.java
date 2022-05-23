@@ -10,6 +10,11 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.Saddleable;
+import net.minecraft.entity.decoration.ItemFrameEntity;
+import net.minecraft.entity.passive.HorseEntity;
+import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -19,6 +24,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -68,7 +74,18 @@ public class BlockPicker {
 
     private ItemStack getEntityItemStack(HitResult hit) {
         Entity entity = ((EntityHitResult) hit).getEntity();
-        return entity.getPickBlockStack();
+        ItemStack item = entity.getPickBlockStack();
+        if (item != null && client.player.getAbilities().creativeMode && Screen.hasControlDown()) {
+            if (entity instanceof ItemFrameEntity) {
+                ItemStack itemFrame = new ItemStack(Items.ITEM_FRAME);
+                itemFrame.setCustomName(new TranslatableText("text.pick_block_pro.name.framed", item.getName()));
+                item = itemFrame;
+            }
+
+            addEntityNbt(item, entity);
+        }
+
+        return item;
     }
 
     private ItemStack getBlockItemStack(HitResult hit) {
@@ -181,16 +198,53 @@ public class BlockPicker {
         Inventory.updateCreativeSlot(inventory.selectedSlot);
     }
 
+    private void addEntityNbt(ItemStack stack, Entity entity) {
+        NbtCompound entityCompound = entity.writeNbt(new NbtCompound());
+        entityCompound.remove("UUID");
+        entityCompound.remove("Pos");
+        entityCompound.remove("TileX");
+        entityCompound.remove("TileY");
+        entityCompound.remove("TileZ");
+        entityCompound.remove("Facing");
+        entityCompound.remove("facing");
+        entityCompound.remove("Rotation");
+        entityCompound.remove("Leash");
+
+        if (entity instanceof HorseEntity horseEntity && horseEntity.hasArmorInSlot()) {
+            NbtCompound armorCompound = new NbtCompound();
+            armorCompound.putString("id", horseEntity.getArmorType().getItem().toString());
+            armorCompound.putInt("Count", 1);
+            entityCompound.put("ArmorItem", armorCompound);
+        }
+
+        if (entity instanceof Saddleable saddleableEntity && saddleableEntity.isSaddled()) {
+            NbtCompound saddleCompound = new NbtCompound();
+            saddleCompound.putString("id", Items.SADDLE.toString());
+            saddleCompound.putInt("Count", 1);
+            entityCompound.put("SaddleItem", saddleCompound);
+        }
+
+        if (entity instanceof LlamaEntity llamaEntity && llamaEntity.getCarpetColor() != null) {
+            NbtCompound decorCompound = new NbtCompound();
+            decorCompound.putString("id", llamaEntity.getCarpetColor() + "_carpet");
+            decorCompound.putInt("Count", 1);
+            entityCompound.put("DecorItem", decorCompound);
+        }
+
+        Identifier identifier = EntityType.getId(entity.getType());
+        entityCompound.putString("id", identifier.toString());
+        stack.setSubNbt("EntityTag", entityCompound);
+        addNbtLore(stack, "\"(+Entity NBT)\"");
+    }
 
     private void addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
         NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData();
-        NbtCompound nbtCompound3;
         if (stack.getItem() instanceof SkullItem && nbtCompound.contains("SkullOwner")) {
-            nbtCompound3 = nbtCompound.getCompound("SkullOwner");
-            stack.getOrCreateNbt().put("SkullOwner", nbtCompound3);
+            NbtCompound skullCompound = nbtCompound.getCompound("SkullOwner");
+            stack.getOrCreateNbt().put("SkullOwner", skullCompound);
         } else {
             stack.setSubNbt("BlockEntityTag", nbtCompound);
-            addNbtTag(stack, "\"(+BlockEntity NBT)\"");
+            addNbtLore(stack, "\"(+BlockEntity NBT)\"");
         }
     }
 
@@ -201,11 +255,11 @@ public class BlockPicker {
                 nbtCompound.putString(property.getName(), state.get(property).toString());
             }
             stack.setSubNbt("BlockStateTag", nbtCompound);
-            addNbtTag(stack, "\"(+BlockState NBT)\"");
+            addNbtLore(stack, "\"(+BlockState NBT)\"");
         }
     }
 
-    private void addNbtTag(ItemStack stack, String tag) {
+    private void addNbtLore(ItemStack stack, String tag) {
         NbtCompound nbtCompound = stack.getOrCreateSubNbt("display");
         NbtList nbtList = nbtCompound.getList("Lore", NbtType.STRING);
         if (nbtList == null) {
