@@ -13,8 +13,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.decoration.ItemFrameEntity;
+import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -28,6 +30,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 
 public class BlockPicker {
     private static BlockPicker INSTANCE;
@@ -84,7 +87,17 @@ public class BlockPicker {
                 item = itemFrame;
             }
 
+            if (entity instanceof PaintingEntity paintingEntity) {
+                String key = "painting." + Registry.PAINTING_VARIANT.getId(paintingEntity.getVariant().value()).toString().replace(":", ".");
+                item.setCustomName(Text.translatable(key));
+            }
+
             addEntityNbt(item, entity);
+        }
+
+        if (entity instanceof PlayerEntity player) {
+            item = new ItemStack(Items.PLAYER_HEAD);
+            item.getOrCreateNbt().putString("SkullOwner", player.getEntityName());
         }
 
         return item;
@@ -211,23 +224,23 @@ public class BlockPicker {
         entityCompound.remove("Rotation");
         entityCompound.remove("Leash");
 
-        if (entity instanceof HorseEntity horseEntity && horseEntity.hasArmorInSlot()) {
+        if (entity instanceof HorseEntity horse && horse.hasArmorInSlot()) {
             NbtCompound armorCompound = new NbtCompound();
-            armorCompound.putString("id", horseEntity.getArmorType().getItem().toString());
+            armorCompound.putString("id", horse.getArmorType().getItem().toString());
             armorCompound.putInt("Count", 1);
             entityCompound.put("ArmorItem", armorCompound);
         }
 
-        if (entity instanceof Saddleable saddleableEntity && saddleableEntity.isSaddled()) {
+        if (entity instanceof Saddleable saddleable && saddleable.isSaddled()) {
             NbtCompound saddleCompound = new NbtCompound();
             saddleCompound.putString("id", Items.SADDLE.toString());
             saddleCompound.putInt("Count", 1);
             entityCompound.put("SaddleItem", saddleCompound);
         }
 
-        if (entity instanceof LlamaEntity llamaEntity && llamaEntity.getCarpetColor() != null) {
+        if (entity instanceof LlamaEntity llama && llama.getCarpetColor() != null) {
             NbtCompound decorCompound = new NbtCompound();
-            decorCompound.putString("id", llamaEntity.getCarpetColor() + "_carpet");
+            decorCompound.putString("id", llama.getCarpetColor() + "_carpet");
             decorCompound.putInt("Count", 1);
             entityCompound.put("DecorItem", decorCompound);
         }
