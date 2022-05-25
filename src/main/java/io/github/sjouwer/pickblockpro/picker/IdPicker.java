@@ -6,19 +6,29 @@ import io.github.sjouwer.pickblockpro.util.*;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.BaseText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.registry.Registry;
+
+import java.util.StringJoiner;
 
 public class IdPicker {
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final ModConfig config = PickBlockPro.getConfig();
 
-    public void pickId() {
+    private IdPicker() {
+    }
+
+    /**
+     * Provide to the player with the configured ID of the block or entity they are looking at
+     */
+    public static void pickId() {
         if (!config.idPickEntities() && !config.idPickBlocks()) {
             Chat.sendError(new TranslatableText("text.pick_block_pro.message.nothingToPick"));
             return;
@@ -26,79 +36,102 @@ public class IdPicker {
 
         HitResult hit = Raycast.getHit(config.idPickRange(), config.idFluidHandling(), !config.idPickEntities());
 
-        BaseText message = null;
-        if (hit.getType() == HitResult.Type.ENTITY) {
-            message = getEntityId(hit);
-        }
-        else if (config.idPickBlocks()) {
-            message = getBlockId(hit);
+        String id = "";
+        if (hit instanceof EntityHitResult entityHit) {
+            Entity entity = entityHit.getEntity();
+            id = getEntityId(entity);
         }
 
-        if (message != null) {
-            Chat.sendMessage(message);
+        if (hit instanceof BlockHitResult blockHit && config.idPickBlocks() && client.world != null) {
+            BlockState state = client.world.getBlockState(blockHit.getBlockPos());
+            id = getBlockId(state);
         }
+
+        if (id.isEmpty()) {
+            return;
+        }
+
+        BaseText message;
+        if (config.copyToClipboard()){
+            client.keyboard.setClipboard(id);
+            message = new TranslatableText("text.pick_block_pro.message.copied", id);
+        }
+        else {
+            message = new LiteralText(id);
+        }
+
+        Chat.sendMessage(message);
     }
 
-    private BaseText getBlockId(HitResult hit) {
-        BlockHitResult blockHit = (BlockHitResult) hit;
-        BlockState block = client.world.getBlockState(blockHit.getBlockPos());
-        String fullId = block.toString();
+    /**
+     * Method to get the configured ID of a block
+     * @param blockState Block to get the ID from
+     * @return ID as String
+     */
+    public static String getBlockId(BlockState blockState) {
+        StringBuilder fullId = new StringBuilder();
+        fullId.append(Registry.BLOCK.getId(blockState.getBlock()));
 
-        int namespaceStart = fullId.indexOf("{") + 1;
-        int namespaceEnd = fullId.indexOf(":") + 1;
-        int idEnd = fullId.indexOf("}");
-        int propertiesStart = fullId.indexOf("[");
-        if (namespaceStart <= 0 || namespaceEnd < namespaceStart || idEnd < namespaceEnd) {
+        if (!config.addNamespace()) {
+            fullId.delete(0, fullId.indexOf(":") + 1);
+        }
+
+        if (config.addProperties() && !blockState.getProperties().isEmpty()) {
+            String tmp = blockState.toString();
+            fullId.append(tmp.substring(tmp.indexOf("[")));
+        }
+
+        return fullId.toString();
+    }
+
+    /**
+     * Method to get the configured ID of an entity
+     * @param entity Entity to get the ID from
+     * @return ID as String
+     */
+    public static String getEntityId(Entity entity) {
+        String fullId = Registry.ENTITY_TYPE.getId(entity.getType()).toString();
+
+        if (!config.addNamespace() && fullId.contains(":")) {
+            fullId = fullId.substring(fullId.indexOf(":") + 1);
+        }
+
+        return fullId;
+    }
+
+    /**
+     * Method to get the configured ID of an item
+     * @param itemStack Item to get the ID from
+     * @return ID as String
+     */
+    public static String getItemId(ItemStack itemStack) {
+        if (client.player == null) {
             return null;
         }
 
-        String id = fullId.substring(namespaceEnd, idEnd);
+        ModConfig config = PickBlockPro.getConfig();
+        StringBuilder fullId = new StringBuilder();
 
-        String namespace = "";
         if (config.addNamespace()) {
-            namespace = fullId.substring(namespaceStart, namespaceEnd);
+            fullId.append(Registry.ITEM.getId(itemStack.getItem()).getNamespace());
+            fullId.append(":");
         }
 
-        String properties = "";
-        if (config.addProperties() && propertiesStart > idEnd) {
-            properties = fullId.substring(propertiesStart);
-        }
+        fullId.append(itemStack.getItem());
 
-        String finalId = namespace + id + properties;
-        BaseText message = new LiteralText(finalId);
-
-        if (config.copyToClipboard()){
-            client.keyboard.setClipboard(finalId);
-            message = new TranslatableText("text.pick_block_pro.message.copied", finalId);
-        }
-
-        return message;
-    }
-
-    private BaseText getEntityId(HitResult hit) {
-        EntityHitResult entityHit = (EntityHitResult) hit;
-        Entity entity = entityHit.getEntity();
-        String fullId = EntityType.getId(entity.getType()).toString();
-
-        int colonIndex = fullId.indexOf(":") + 1;
-        if (colonIndex > 0) {
-            String namespace = "";
-            if (config.addNamespace()) {
-                namespace = fullId.substring(0, colonIndex);
+        if (config.addProperties()) {
+            NbtCompound statesTag = itemStack.getSubNbt("BlockStateTag");
+            if (statesTag != null) {
+                StringJoiner stateJoiner = new StringJoiner(",");
+                for (String key : statesTag.getKeys()) {
+                    stateJoiner.add(key + "=" + statesTag.getString(key));
+                }
+                fullId.append("[");
+                fullId.append(stateJoiner);
+                fullId.append("]");
             }
-
-            String id = fullId.substring(colonIndex);
-            String finalId = namespace + id;
-            BaseText message = new LiteralText(finalId);
-
-            if (config.copyToClipboard()){
-                client.keyboard.setClipboard(finalId);
-                message = new TranslatableText("text.pick_block_pro.message.copied", finalId);
-            }
-
-            return message;
         }
 
-        return null;
+        return fullId.toString();
     }
 }
