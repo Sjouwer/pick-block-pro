@@ -30,10 +30,8 @@ public class KeyboardMixin {
             ItemStack itemStack = client.player.getInventory().getStack(key == GLFW.GLFW_KEY_0 ? PlayerInventory.OFF_HAND_SLOT : key - GLFW.GLFW_KEY_1);
             String itemId = IdPicker.getItemId(itemStack);
 
-            if (itemId != null) {
-                ((ChatScreenAccessor) screen).getChatField().write(itemId);
-                info.cancel();
-            }
+            ((ChatScreenAccessor) screen).getChatField().write(itemId);
+            info.cancel();
         }
     }
 }

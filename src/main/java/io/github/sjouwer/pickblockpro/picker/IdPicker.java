@@ -69,6 +69,10 @@ public class IdPicker {
      * @return ID as String
      */
     public static String getBlockId(BlockState blockState) {
+        if (blockState == null) {
+            return "";
+        }
+
         StringBuilder fullId = new StringBuilder();
         fullId.append(Registry.BLOCK.getId(blockState.getBlock()));
 
@@ -90,6 +94,10 @@ public class IdPicker {
      * @return ID as String
      */
     public static String getEntityId(Entity entity) {
+        if (entity == null) {
+            return "";
+        }
+
         String fullId = Registry.ENTITY_TYPE.getId(entity.getType()).toString();
 
         if (!config.addNamespace() && fullId.contains(":")) {
@@ -105,8 +113,8 @@ public class IdPicker {
      * @return ID as String
      */
     public static String getItemId(ItemStack itemStack) {
-        if (client.player == null) {
-            return null;
+        if (itemStack == null) {
+            return "";
         }
 
         ModConfig config = PickBlockPro.getConfig();
