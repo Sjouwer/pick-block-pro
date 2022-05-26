@@ -8,7 +8,6 @@ import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyBindings {
-    private final ToolPicker toolPicker = new ToolPicker();
     private static final String CATEGORY = "key.categories.pick_block_pro";
 
     public void setKeyBindings() {
@@ -33,7 +32,7 @@ public class KeyBindings {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (toolPickerKey.wasPressed()) {
-                toolPicker.pickTool();
+                ToolPicker.pickTool();
             }
         });
     }

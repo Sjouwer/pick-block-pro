@@ -6,30 +6,52 @@ import io.github.sjouwer.pickblockpro.util.*;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.*;
+import net.minecraft.item.AxeItem;
+import net.minecraft.item.BucketItem;
+import net.minecraft.item.HoeItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.PickaxeItem;
+import net.minecraft.item.ShearsItem;
+import net.minecraft.item.ShovelItem;
+import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolItem;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.RaycastContext;
+
+import java.util.Map;
 
 public class ToolPicker {
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final ModConfig config = PickBlockPro.getConfig();
 
-    public void pickTool() {
-        HitResult hit = Raycast.getHit(config.toolPickRange(), RaycastContext.FluidHandling.ANY, false);
+    private ToolPicker() {
+    }
 
+    /**
+     * Provide to the player with the best tool to break the block or kill the entity
+     */
+    public static void pickTool() {
+        if (client.world == null) {
+            return;
+        }
+
+        HitResult hit = Raycast.getHit(config.toolPickRange(), !config.toolPickFluids(), false);
         if (hit.getType() == HitResult.Type.ENTITY) {
             Entity entity = ((EntityHitResult) hit).getEntity();
-            if (entity.isLiving()) {
-                giveOrSwitchTool(Tools.SWORD, entity);
+            if (entity instanceof LivingEntity livingEntity) {
+                giveOrSwitchTool(Tools.SWORD, livingEntity.getGroup());
             }
         }
         else {
@@ -39,7 +61,7 @@ public class ToolPicker {
         }
     }
 
-    private void pickMostSuitableTool(BlockState state) {
+    private static void pickMostSuitableTool(BlockState state) {
         if (state.isIn(BlockTags.WOOL) || state.isOf(Blocks.COBWEB)) {
             giveOrSwitchTool(Tools.SHEARS);
             return;
@@ -69,28 +91,35 @@ public class ToolPicker {
         }
     }
 
-    private void giveOrSwitchTool(Tools tool) {
-        this.giveOrSwitchTool(tool, null);
+    private static void giveOrSwitchTool(Tools tool) {
+        giveOrSwitchTool(tool, null);
     }
 
-    private void giveOrSwitchTool(Tools tool, Entity entity) {
-        ItemStack bestTool;
-        if (client.player.getAbilities().creativeMode) {
-            bestTool = createBestTool(tool);
-        }
-        else {
-            bestTool = findBestTool(tool, entity);
+    private static void giveOrSwitchTool(Tools tool, EntityGroup eGroup) {
+        if (client.player == null) {
+            return;
         }
 
+        ItemStack bestTool = client.player.getAbilities().creativeMode ? createBestTool(tool, eGroup) : findBestTool(client.player, tool, eGroup);
         if (bestTool != null) {
             Inventory.placeItemInsideInventory(bestTool);
         }
     }
 
-    private ItemStack findBestTool(Tools tool, Entity entity) {
-        PlayerInventory inventory = client.player.getInventory();
-        if (tool == Tools.BUCKET) {
-            ItemStack bucket = new ItemStack(Items.BUCKET);
+    /**
+     * Find the best available tool inside the player's inventory of the provided tool type
+     * @param tool Tool type
+     * @param eGroup Should only be provided with a sword to find the best enchantment to kill the entity
+     * @return Player's best available tool as ItemStack or null if none are found
+     */
+    public static ItemStack findBestTool(PlayerEntity player, Tools tool, EntityGroup eGroup) {
+        if (player == null || tool == null) {
+            return null;
+        }
+
+        PlayerInventory inventory = player.getInventory();
+        if (tool.equals(Tools.BUCKET)) {
+            ItemStack bucket = Items.BUCKET.getDefaultStack();
             if (inventory.contains(bucket)) {
                 return bucket;
             }
@@ -104,13 +133,7 @@ public class ToolPicker {
                 continue;
             }
 
-            int score;
-            if (entity == null) {
-                score = calculateToolScore(itemStack);
-            }
-            else {
-                score = calculateSwordScore(itemStack, entity);
-            }
+            int score = tool.equals(Tools.SWORD) ? calculateSwordScore(itemStack, eGroup) : calculateToolScore(itemStack);
             if (score > bestToolScore || (bestTool != null && score == bestToolScore && itemStack.getDamage() < bestTool.getDamage())) {
                 bestTool = itemStack;
                 bestToolScore = score;
@@ -120,7 +143,7 @@ public class ToolPicker {
         return bestTool;
     }
 
-    private int calculateToolScore(ItemStack item) {
+    private static int calculateToolScore(ItemStack item) {
         int score = 0;
         if (item.getItem() instanceof ToolItem toolItem) {
             score += toolItem.getMaterial().getMiningLevel() * 10000;
@@ -148,78 +171,37 @@ public class ToolPicker {
         return score;
     }
 
-    private int calculateSwordScore(ItemStack item, Entity entity) {
+    private static int calculateSwordScore(ItemStack item, EntityGroup eGroup) {
         int score = 0;
-        if (item.getItem() instanceof SwordItem swordItem && entity instanceof LivingEntity livingEntity) {
+        if (item.getItem() instanceof SwordItem swordItem) {
             score += swordItem.getAttackDamage();
-            score += EnchantmentHelper.getAttackDamage(item, livingEntity.getGroup());
+            score += EnchantmentHelper.getAttackDamage(item, eGroup == null ? EntityGroup.DEFAULT : eGroup);
         }
 
         return score;
     }
 
-    private ItemStack createBestTool(Tools tool) {
-        switch (tool) {
-            case PICKAXE:
-                ItemStack pickaxe = new ItemStack(Items.NETHERITE_PICKAXE);
-                if (config.enchantTools()) {
-                    pickaxe.addEnchantment(Enchantments.MENDING, 1);
-                    pickaxe.addEnchantment(Enchantments.UNBREAKING, 3);
-                    pickaxe.addEnchantment(Enchantments.EFFICIENCY, 5);
-                    pickaxe.addEnchantment(Enchantments.SILK_TOUCH, 1);
-                }
-                return pickaxe;
-            case AXE:
-                ItemStack axe = new ItemStack(Items.NETHERITE_AXE);
-                if (config.enchantTools()) {
-                    axe.addEnchantment(Enchantments.MENDING, 1);
-                    axe.addEnchantment(Enchantments.UNBREAKING, 3);
-                    axe.addEnchantment(Enchantments.SHARPNESS, 5);
-                    axe.addEnchantment(Enchantments.EFFICIENCY, 5);
-                    axe.addEnchantment(Enchantments.SILK_TOUCH, 1);
-                }
-                return axe;
-            case SHOVEL:
-                ItemStack shovel = new ItemStack(Items.NETHERITE_SHOVEL);
-                if (config.enchantTools()) {
-                    shovel.addEnchantment(Enchantments.MENDING, 1);
-                    shovel.addEnchantment(Enchantments.UNBREAKING, 3);
-                    shovel.addEnchantment(Enchantments.EFFICIENCY, 5);
-                    shovel.addEnchantment(Enchantments.SILK_TOUCH, 1);
-                }
-                return shovel;
-            case HOE:
-                ItemStack hoe = new ItemStack(Items.NETHERITE_HOE);
-                if (config.enchantTools()) {
-                    hoe.addEnchantment(Enchantments.MENDING, 1);
-                    hoe.addEnchantment(Enchantments.UNBREAKING, 3);
-                    hoe.addEnchantment(Enchantments.EFFICIENCY, 5);
-                    hoe.addEnchantment(Enchantments.SILK_TOUCH, 1);
-                }
-                return hoe;
-            case SWORD:
-                ItemStack sword = new ItemStack(Items.NETHERITE_SWORD);
-                if (config.enchantTools()) {
-                    sword.addEnchantment(Enchantments.MENDING, 1);
-                    sword.addEnchantment(Enchantments.UNBREAKING, 3);
-                    sword.addEnchantment(Enchantments.SHARPNESS, 5);
-                    sword.addEnchantment(Enchantments.SWEEPING, 3);
-                    sword.addEnchantment(Enchantments.LOOTING, 3);
-                }
-                return sword;
-            case SHEARS:
-                ItemStack shears = new ItemStack(Items.SHEARS);
-                if (config.enchantTools()) {
-                    shears.addEnchantment(Enchantments.MENDING, 1);
-                    shears.addEnchantment(Enchantments.UNBREAKING, 3);
-                    shears.addEnchantment(Enchantments.EFFICIENCY, 5);
-                }
-                return shears;
-            case BUCKET:
-                return new ItemStack(Items.BUCKET);
-            default:
-                return null;
-        }
+    /**
+     * Get the best available tool with configured enchantments of the provided tool type
+     * @param tool Tool type
+     * @param eGroup Should only be provided with a sword to determine the best enchantment to kill the entity
+     * @return Best available tool as ItemStack
+     */
+    public static ItemStack createBestTool(Tools tool, EntityGroup eGroup) {
+        ItemStack bestTool = switch (tool) {
+            case PICKAXE -> Items.NETHERITE_PICKAXE.getDefaultStack();
+            case AXE -> Items.NETHERITE_AXE.getDefaultStack();
+            case SHOVEL -> Items.NETHERITE_SHOVEL.getDefaultStack();
+            case HOE -> Items.NETHERITE_HOE.getDefaultStack();
+            case SWORD -> Items.NETHERITE_SWORD.getDefaultStack();
+            case SHEARS -> Items.SHEARS.getDefaultStack();
+            case BUCKET -> Items.BUCKET.getDefaultStack();
+        };
+
+        Map<Enchantment, Integer> enchantments = config.getEnchantments(tool, eGroup);
+        EnchantmentHelper.set(enchantments, bestTool);
+
+        return bestTool;
     }
 
     public enum Tools {

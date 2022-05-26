@@ -52,7 +52,7 @@ public class BlockPicker {
             return;
         }
 
-        HitResult hit = Raycast.getHit(config.blockPickRange(), config.blockFluidHandling(), !config.blockPickEntities());
+        HitResult hit = Raycast.getHit(config.blockPickRange(), !config.blockPickFluids(), !config.blockPickEntities());
 
         ItemStack item = null;
         if (hit.getType() == HitResult.Type.ENTITY) {
@@ -64,7 +64,7 @@ public class BlockPicker {
         if (hit.getType() == HitResult.Type.MISS && config.blockPickLight()) {
             //Do another raycast with a longer reach to make sure there is nothing in the way of the sun or moon
             int distance = client.options.viewDistance * 32;
-            hit = Raycast.getHit(distance, config.blockFluidHandling(), false);
+            hit = Raycast.getHit(distance, !config.blockPickFluids(), false);
             if (hit.getType() == HitResult.Type.MISS) {
                 item = getLightFromSunOrMoon();
             }
@@ -176,6 +176,7 @@ public class BlockPicker {
         ItemStack mainHandStack = client.player.getMainHandStack();
         if (mainHandStack.isOf(Items.LIGHT)) {
             cycleLightLevel(mainHandStack);
+            return null;
         }
         else {
             ItemStack light = new ItemStack(Items.LIGHT);
@@ -184,8 +185,6 @@ public class BlockPicker {
             light.setSubNbt("BlockStateTag", blockStateTag);
             return light;
         }
-
-        return null;
     }
 
     private void cycleLightLevel(ItemStack light) {

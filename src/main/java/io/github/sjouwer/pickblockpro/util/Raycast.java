@@ -14,7 +14,8 @@ public final class Raycast {
     private Raycast() {
     }
 
-    public static HitResult getHit(int range, RaycastContext.FluidHandling fluidHandling, boolean ignoreEntities) {
+    public static HitResult getHit(int range, boolean ignoreFluids, boolean ignoreEntities) {
+        RaycastContext.FluidHandling fluidHandling = ignoreFluids ? RaycastContext.FluidHandling.NONE : RaycastContext.FluidHandling.ANY;
         Entity player = client.cameraEntity;
         Vec3d vector = player.getRotationVec(client.getTickDelta());
         Vec3d rayStart = player.getCameraPosVec(client.getTickDelta());
