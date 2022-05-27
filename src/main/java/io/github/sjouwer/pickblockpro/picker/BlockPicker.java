@@ -3,50 +3,40 @@ package io.github.sjouwer.pickblockpro.picker;
 import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
 import io.github.sjouwer.pickblockpro.util.*;
-import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
-import net.minecraft.entity.passive.HorseEntity;
-import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.SkullItem;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
-import net.minecraft.state.property.Property;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.BlockView;
 
 public class BlockPicker {
-    private static BlockPicker INSTANCE;
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final ModConfig config = PickBlockPro.getConfig();
 
-    public static BlockPicker getInstance() {
-        if(INSTANCE == null) {
-            INSTANCE = new BlockPicker();
-        }
-
-        return INSTANCE;
+    private BlockPicker() {
     }
 
-    public void pickBlock() {
+    /**
+     * Provide to the player with the item of the block or entity they are looking at
+     */
+    public static void pickBlock() {
+        if (client.player == null || client.world == null) {
+            PickBlockPro.LOGGER.error("Pick Block called outside of play; no world and/or player");
+            return;
+        }
+
         if (!config.blockPickEntities() && !config.blockPickBlocks()) {
             Chat.sendError(new TranslatableText("text.pick_block_pro.message.nothingToPick"));
             return;
@@ -71,11 +61,11 @@ public class BlockPicker {
         }
 
         if (item != null) {
-            Inventory.placeItemInsideInventory(item);
+            InventoryManager.placeItemInsideInventory(item);
         }
     }
 
-    private ItemStack getEntityItemStack(HitResult hit) {
+    private static ItemStack getEntityItemStack(HitResult hit) {
         Entity entity = ((EntityHitResult) hit).getEntity();
         ItemStack item = entity.getPickBlockStack();
         if (item != null && client.player.getAbilities().creativeMode && Screen.hasControlDown()) {
@@ -90,22 +80,21 @@ public class BlockPicker {
                 item.setCustomName(new TranslatableText(key));
             }
 
-            addEntityNbt(item, entity);
+            NbtUtil.addEntityNbt(item, entity);
         }
 
         if (entity instanceof PlayerEntity player) {
             item = new ItemStack(Items.PLAYER_HEAD);
-            item.getOrCreateNbt().putString("SkullOwner", player.getEntityName());
+            NbtUtil.setSkullOwner(item, player);
         }
 
         return item;
     }
 
-    private ItemStack getBlockItemStack(HitResult hit) {
+    private static ItemStack getBlockItemStack(HitResult hit) {
         BlockPos blockPos = ((BlockHitResult) hit).getBlockPos();
-        BlockView world = client.world;
-        BlockState state = world.getBlockState(blockPos);
-        ItemStack item = state.getBlock().getPickStack(world, blockPos, state);
+        BlockState state = client.world.getBlockState(blockPos);
+        ItemStack item = state.getBlock().getPickStack(client.world, blockPos, state);
 
         if (item.isEmpty()) {
             ItemStack extraItem = extraPickStackCheck(state);
@@ -117,18 +106,18 @@ public class BlockPicker {
 
         if (client.player.getAbilities().creativeMode) {
             if (Screen.hasControlDown() && state.hasBlockEntity()) {
-                BlockEntity blockEntity = world.getBlockEntity(blockPos);
-                addBlockEntityNbt(item, blockEntity);
+                BlockEntity blockEntity = client.world.getBlockEntity(blockPos);
+                NbtUtil.addBlockEntityNbt(item, blockEntity);
             }
             if (Screen.hasAltDown()) {
-                addBlockStateNbt(item, state);
+                NbtUtil.addBlockStateNbt(item, state);
             }
         }
 
         return item;
     }
 
-    private ItemStack extraPickStackCheck(BlockState state) {
+    private static ItemStack extraPickStackCheck(BlockState state) {
         if (state.isOf(Blocks.WATER)) {
             return new ItemStack(Items.WATER_BUCKET);
         }
@@ -145,14 +134,14 @@ public class BlockPicker {
         return null;
     }
 
-    private ItemStack getLightFromSunOrMoon() {
+    private static ItemStack getLightFromSunOrMoon() {
         double skyAngle = client.world.getSkyAngle(client.getTickDelta()) + .25;
         if (skyAngle > 1) {
             skyAngle --;
         }
         skyAngle *= 360;
 
-        Vec3d playerVector = client.cameraEntity.getRotationVec(client.getTickDelta());
+        Vec3d playerVector = client.player.getRotationVec(client.getTickDelta());
         double playerAngle = Math.atan2(playerVector.y,playerVector.x) * 180 / Math.PI;
         if (playerAngle < 0) {
             playerAngle += 360;
@@ -172,113 +161,19 @@ public class BlockPicker {
         return null;
     }
 
-    private ItemStack giveOrCycleLight(int lightLvl) {
+    private static ItemStack giveOrCycleLight(int lightLvl) {
         ItemStack mainHandStack = client.player.getMainHandStack();
         if (mainHandStack.isOf(Items.LIGHT)) {
-            cycleLightLevel(mainHandStack);
+            NbtUtil.cycleLightLevel(mainHandStack);
+            PlayerInventory inventory = client.player.getInventory();
+            inventory.setStack(inventory.selectedSlot, mainHandStack);
+            InventoryManager.updateCreativeSlot(inventory.selectedSlot);
             return null;
         }
         else {
             ItemStack light = new ItemStack(Items.LIGHT);
-            NbtCompound blockStateTag = new NbtCompound();
-            blockStateTag.putInt("level", lightLvl);
-            light.setSubNbt("BlockStateTag", blockStateTag);
+            NbtUtil.setLightLevel(light, lightLvl);
             return light;
         }
-    }
-
-    private void cycleLightLevel(ItemStack light) {
-        NbtCompound blockStateTag = light.getSubNbt("BlockStateTag");
-        int newLightLvl;
-
-        if (blockStateTag == null) {
-            blockStateTag = new NbtCompound();
-            newLightLvl = 0;
-        }
-        else {
-            newLightLvl = blockStateTag.getInt("level") + 1;
-        }
-        if (newLightLvl == 16) {
-            newLightLvl = 0;
-        }
-
-        blockStateTag.putInt("level", newLightLvl);
-        light.setSubNbt("BlockStateTag", blockStateTag);
-
-        PlayerInventory inventory = client.player.getInventory();
-        inventory.setStack(inventory.selectedSlot, light);
-        Inventory.updateCreativeSlot(inventory.selectedSlot);
-    }
-
-    private void addEntityNbt(ItemStack stack, Entity entity) {
-        NbtCompound entityCompound = entity.writeNbt(new NbtCompound());
-        entityCompound.remove("UUID");
-        entityCompound.remove("Pos");
-        entityCompound.remove("TileX");
-        entityCompound.remove("TileY");
-        entityCompound.remove("TileZ");
-        entityCompound.remove("Facing");
-        entityCompound.remove("facing");
-        entityCompound.remove("Rotation");
-        entityCompound.remove("Leash");
-
-        if (entity instanceof HorseEntity horse && horse.hasArmorInSlot()) {
-            NbtCompound armorCompound = new NbtCompound();
-            armorCompound.putString("id", horse.getArmorType().getItem().toString());
-            armorCompound.putInt("Count", 1);
-            entityCompound.put("ArmorItem", armorCompound);
-        }
-
-        if (entity instanceof Saddleable saddleable && saddleable.isSaddled()) {
-            NbtCompound saddleCompound = new NbtCompound();
-            saddleCompound.putString("id", Items.SADDLE.toString());
-            saddleCompound.putInt("Count", 1);
-            entityCompound.put("SaddleItem", saddleCompound);
-        }
-
-        if (entity instanceof LlamaEntity llama && llama.getCarpetColor() != null) {
-            NbtCompound decorCompound = new NbtCompound();
-            decorCompound.putString("id", llama.getCarpetColor() + "_carpet");
-            decorCompound.putInt("Count", 1);
-            entityCompound.put("DecorItem", decorCompound);
-        }
-
-        Identifier identifier = EntityType.getId(entity.getType());
-        entityCompound.putString("id", identifier.toString());
-        stack.setSubNbt("EntityTag", entityCompound);
-        addNbtLore(stack, "\"(+Entity NBT)\"");
-    }
-
-    private void addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
-        NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData();
-        if (stack.getItem() instanceof SkullItem && nbtCompound.contains("SkullOwner")) {
-            NbtCompound skullCompound = nbtCompound.getCompound("SkullOwner");
-            stack.getOrCreateNbt().put("SkullOwner", skullCompound);
-        } else {
-            stack.setSubNbt("BlockEntityTag", nbtCompound);
-            addNbtLore(stack, "\"(+BlockEntity NBT)\"");
-        }
-    }
-
-    private void addBlockStateNbt(ItemStack stack, BlockState state) {
-        NbtCompound nbtCompound = new NbtCompound();
-        if (!state.getProperties().isEmpty()) {
-            for (Property<?> property : state.getProperties()) {
-                nbtCompound.putString(property.getName(), state.get(property).toString());
-            }
-            stack.setSubNbt("BlockStateTag", nbtCompound);
-            addNbtLore(stack, "\"(+BlockState NBT)\"");
-        }
-    }
-
-    private void addNbtLore(ItemStack stack, String tag) {
-        NbtCompound nbtCompound = stack.getOrCreateSubNbt("display");
-        NbtList nbtList = nbtCompound.getList("Lore", NbtType.STRING);
-        if (nbtList == null) {
-            nbtList = new NbtList();
-        }
-        nbtList.add(NbtString.of(tag));
-        nbtCompound.put("Lore", nbtList);
-        stack.setSubNbt("display", nbtCompound);
     }
 }

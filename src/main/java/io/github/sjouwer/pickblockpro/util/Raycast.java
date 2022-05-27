@@ -1,5 +1,6 @@
 package io.github.sjouwer.pickblockpro.util;
 
+import io.github.sjouwer.pickblockpro.PickBlockPro;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -14,7 +15,19 @@ public final class Raycast {
     private Raycast() {
     }
 
+    /**
+     * Raycast from the camera (player's eyes) forward
+     * @param range How far to cast in blocks
+     * @param ignoreFluids Should the cast ignore fluids, making it pass through it
+     * @param ignoreEntities Should the cast ignore entities, making it pass through them
+     * @return Result of the raycast
+     */
     public static HitResult getHit(int range, boolean ignoreFluids, boolean ignoreEntities) {
+        if (client.cameraEntity == null || client.world == null) {
+            PickBlockPro.LOGGER.error("Tried to raycast outside of play; no world and/or camera");
+            return null;
+        }
+
         RaycastContext.FluidHandling fluidHandling = ignoreFluids ? RaycastContext.FluidHandling.NONE : RaycastContext.FluidHandling.ANY;
         Entity player = client.cameraEntity;
         Vec3d vector = player.getRotationVec(client.getTickDelta());

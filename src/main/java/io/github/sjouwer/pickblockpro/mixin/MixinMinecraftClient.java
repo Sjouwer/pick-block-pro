@@ -12,7 +12,7 @@ public class MixinMinecraftClient {
 
     @Inject(method = "doItemPick", at = @At("HEAD"), cancellable = true)
     private void doItemPick(CallbackInfo info) {
-        BlockPicker.getInstance().pickBlock();
+        BlockPicker.pickBlock();
         info.cancel();
     }
 }

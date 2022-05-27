@@ -29,6 +29,11 @@ public class IdPicker {
      * Provide to the player with the configured ID of the block or entity they are looking at
      */
     public static void pickId() {
+        if (client.player == null || client.world == null) {
+            PickBlockPro.LOGGER.error("Pick ID called outside of play; no world and/or player");
+            return;
+        }
+
         if (!config.idPickEntities() && !config.idPickBlocks()) {
             Chat.sendError(new TranslatableText("text.pick_block_pro.message.nothingToPick"));
             return;
@@ -42,7 +47,7 @@ public class IdPicker {
             id = getEntityId(entity);
         }
 
-        if (hit instanceof BlockHitResult blockHit && config.idPickBlocks() && client.world != null) {
+        if (hit instanceof BlockHitResult blockHit && config.idPickBlocks()) {
             BlockState state = client.world.getBlockState(blockHit.getBlockPos());
             id = getBlockId(state);
         }
@@ -69,10 +74,6 @@ public class IdPicker {
      * @return ID as String
      */
     public static String getBlockId(BlockState blockState) {
-        if (blockState == null) {
-            return "";
-        }
-
         StringBuilder fullId = new StringBuilder();
         fullId.append(Registry.BLOCK.getId(blockState.getBlock()));
 
@@ -94,10 +95,6 @@ public class IdPicker {
      * @return ID as String
      */
     public static String getEntityId(Entity entity) {
-        if (entity == null) {
-            return "";
-        }
-
         String fullId = Registry.ENTITY_TYPE.getId(entity.getType()).toString();
 
         if (!config.addNamespace() && fullId.contains(":")) {
@@ -113,10 +110,6 @@ public class IdPicker {
      * @return ID as String
      */
     public static String getItemId(ItemStack itemStack) {
-        if (itemStack == null) {
-            return "";
-        }
-
         ModConfig config = PickBlockPro.getConfig();
         StringBuilder fullId = new StringBuilder();
 

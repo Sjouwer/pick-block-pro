@@ -7,13 +7,23 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.TranslatableText;
 
-public final class Inventory {
+public final class InventoryManager {
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
-    private Inventory(){
+    private InventoryManager(){
     }
 
+    /**
+     * Places an item inside the player's inventory
+     * Makes sure to not use locked slots and to sync with the server
+     * @param item Item to give the player
+     */
     public static void placeItemInsideInventory(ItemStack item) {
+        if (client.interactionManager == null || client.player == null) {
+            PickBlockPro.LOGGER.error("Unable to place item inside inventory; no player and/or interaction manager");
+            return;
+        }
+
         boolean isCreative = client.player.getAbilities().creativeMode;
         PlayerInventory inventory = client.player.getInventory();
         int stackSlot = inventory.getSlotWithStack(item);
@@ -85,7 +95,16 @@ public final class Inventory {
         return selectedSlot;
     }
 
+    /**
+     * Update the (internal)Server about an inventory slot change
+     * @param slot Slot that has been changed
+     */
     public static void updateCreativeSlot(int slot) {
+        if (client.interactionManager == null || client.player == null) {
+            PickBlockPro.LOGGER.error("Unable to update inventory slot; no player and/or interaction manager");
+            return;
+        }
+
         if (slot < 0) {
             return;
         }

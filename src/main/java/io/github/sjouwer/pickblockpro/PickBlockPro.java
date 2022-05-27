@@ -5,8 +5,11 @@ import net.fabricmc.api.ClientModInitializer;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PickBlockPro implements ClientModInitializer {
+    public static final Logger LOGGER = LoggerFactory.getLogger("Pick Block Pro");
     private static ConfigHolder<ModConfig> configHolder;
 
     public static ModConfig getConfig() {

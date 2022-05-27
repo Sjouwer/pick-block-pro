@@ -40,10 +40,11 @@ public class ToolPicker {
     }
 
     /**
-     * Provide to the player with the best tool to break the block or kill the entity
+     * Provide to the player with the best tool to break the block or kill the entity they are looking at
      */
     public static void pickTool() {
-        if (client.world == null) {
+        if (client.player == null || client.world == null) {
+            PickBlockPro.LOGGER.error("Pick Tool called outside of play; no world and/or player");
             return;
         }
 
@@ -96,13 +97,9 @@ public class ToolPicker {
     }
 
     private static void giveOrSwitchTool(Tools tool, EntityGroup eGroup) {
-        if (client.player == null) {
-            return;
-        }
-
         ItemStack bestTool = client.player.getAbilities().creativeMode ? createBestTool(tool, eGroup) : findBestTool(client.player, tool, eGroup);
         if (bestTool != null) {
-            Inventory.placeItemInsideInventory(bestTool);
+            InventoryManager.placeItemInsideInventory(bestTool);
         }
     }
 
@@ -113,10 +110,6 @@ public class ToolPicker {
      * @return Player's best available tool as ItemStack or null if none are found
      */
     public static ItemStack findBestTool(PlayerEntity player, Tools tool, EntityGroup eGroup) {
-        if (player == null || tool == null) {
-            return null;
-        }
-
         PlayerInventory inventory = player.getInventory();
         if (tool.equals(Tools.BUCKET)) {
             ItemStack bucket = Items.BUCKET.getDefaultStack();
