@@ -8,9 +8,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.BaseText;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -35,7 +34,7 @@ public class IdPicker {
         }
 
         if (!config.idPickEntities() && !config.idPickBlocks()) {
-            Chat.sendError(new TranslatableText("text.pick_block_pro.message.nothingToPick"));
+            Chat.sendError(Text.translatable("text.pick_block_pro.message.nothingToPick"));
             return;
         }
 
@@ -56,13 +55,13 @@ public class IdPicker {
             return;
         }
 
-        BaseText message;
+        MutableText message;
         if (config.copyToClipboard()){
             client.keyboard.setClipboard(id);
-            message = new TranslatableText("text.pick_block_pro.message.copied", id);
+            message = Text.translatable("text.pick_block_pro.message.copied", id);
         }
         else {
-            message = new LiteralText(id);
+            message = Text.literal(id);
         }
 
         Chat.sendMessage(message);

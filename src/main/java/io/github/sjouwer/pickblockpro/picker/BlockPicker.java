@@ -15,7 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -38,7 +38,7 @@ public class BlockPicker {
         }
 
         if (!config.blockPickEntities() && !config.blockPickBlocks()) {
-            Chat.sendError(new TranslatableText("text.pick_block_pro.message.nothingToPick"));
+            Chat.sendError(Text.translatable("text.pick_block_pro.message.nothingToPick"));
             return;
         }
 
@@ -53,7 +53,7 @@ public class BlockPicker {
         }
         if (hit.getType() == HitResult.Type.MISS && config.blockPickLight()) {
             //Do another raycast with a longer reach to make sure there is nothing in the way of the sun or moon
-            int distance = client.options.viewDistance * 32;
+            int distance = client.options.getViewDistance().getValue() * 32;
             hit = Raycast.getHit(distance, !config.blockPickFluids(), false);
             if (hit.getType() == HitResult.Type.MISS) {
                 item = getLightFromSunOrMoon();
@@ -71,13 +71,13 @@ public class BlockPicker {
         if (item != null && client.player.getAbilities().creativeMode && Screen.hasControlDown()) {
             if (entity instanceof ItemFrameEntity) {
                 ItemStack itemFrame = new ItemStack(Items.ITEM_FRAME);
-                itemFrame.setCustomName(new TranslatableText("text.pick_block_pro.name.framed", item.getName()));
+                itemFrame.setCustomName(Text.translatable("text.pick_block_pro.name.framed", item.getName()));
                 item = itemFrame;
             }
 
             if (entity instanceof PaintingEntity paintingEntity) {
-                String key = "painting." + Registry.PAINTING_MOTIVE.getId(paintingEntity.motive).toString().replace(":", ".");
-                item.setCustomName(new TranslatableText(key));
+                String key = "painting." + Registry.PAINTING_VARIANT.getId(paintingEntity.getVariant().value()).toString().replace(":", ".");
+                item.setCustomName(Text.translatable(key));
             }
 
             NbtUtil.addEntityNbt(item, entity);

@@ -2,7 +2,7 @@ package io.github.sjouwer.pickblockpro.util;
 
 import io.github.sjouwer.pickblockpro.PickBlockPro;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.BaseText;
+import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 
 import static net.minecraft.text.Style.EMPTY;
@@ -13,17 +13,17 @@ public final class Chat {
     private Chat() {
     }
 
-    public static void sendMessage(BaseText message) {
+    public static void sendMessage(MutableText message) {
         message.setStyle(EMPTY.withColor(Formatting.GREEN));
         send(message);
     }
 
-    public static void sendError(BaseText errorMessage) {
+    public static void sendError(MutableText errorMessage) {
         errorMessage.setStyle(EMPTY.withColor(Formatting.DARK_RED));
         send(errorMessage);
     }
 
-    private static void send(BaseText message) {
+    private static void send(MutableText message) {
         if (client.player == null) {
             PickBlockPro.LOGGER.error("Unable to send chat message/error to player; no player");
             return;

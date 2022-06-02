@@ -26,12 +26,10 @@ Most things below are configurable in the config settings using the config file 
 - Creative inventory management (not just the hotbar) is now actually possible when picking blocks
 
 ## **Dependencies**
-
-**Included:**  
-[Cloth Config API Fabric](https://github.com/shedaniel/cloth-config) (Is required to make the config work)
  		
 **Required:**  
-[Fabric API](https://github.com/FabricMC/fabric)
+[Fabric API](https://github.com/FabricMC/fabric)  
+[Cloth Config API Fabric](https://github.com/shedaniel/cloth-config) (Is required to make the config work)
 
 **Optional:**  
 [Mod Menu](https://github.com/TerraformersMC/ModMenu) (This mod allows you to edit the configs in game)

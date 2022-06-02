@@ -5,7 +5,7 @@ import io.github.sjouwer.pickblockpro.config.ModConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public final class InventoryManager {
     private static final MinecraftClient client = MinecraftClient.getInstance();
@@ -71,7 +71,7 @@ public final class InventoryManager {
         if (tries == 9) {
             slot = findUnlockedSlot(inventory);
             if (slot > 8) {
-                Chat.sendError(new TranslatableText("text.pick_block_pro.message.allSlotsLocked"));
+                Chat.sendError(Text.translatable("text.pick_block_pro.message.allSlotsLocked"));
                 return false;
             }
         }
