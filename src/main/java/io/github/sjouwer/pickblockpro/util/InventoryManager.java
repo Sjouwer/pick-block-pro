@@ -4,11 +4,13 @@ import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 
 public final class InventoryManager {
     private static final MinecraftClient client = MinecraftClient.getInstance();
+    private static final ModConfig config = PickBlockPro.getConfig();
 
     private InventoryManager(){
     }
@@ -27,6 +29,11 @@ public final class InventoryManager {
         boolean isCreative = client.player.getAbilities().creativeMode;
         PlayerInventory inventory = client.player.getInventory();
         int stackSlot = inventory.getSlotWithStack(item);
+
+        //Item is not inside the inventory, if in survival search through item-containers to see if they contain the item
+        if (config.searchContainers() && stackSlot == -1 && !isCreative) {
+            stackSlot = searchThroughContainers(inventory, item.getItem());
+        }
 
         //Item is already in hotbar
         if (stackSlot > -1 && stackSlot < 9) {
@@ -55,6 +62,30 @@ public final class InventoryManager {
                 updateCreativeSlot(emptySlot);
             }
         }
+    }
+
+    /**
+     * Searches through item-containers like Shulkers
+     * @param inventory Player's inventory
+     * @param item Item to find inside the container
+     * @return Slot with the container that has most of the item stored or -1 if none were found
+     */
+    private static int searchThroughContainers(PlayerInventory inventory, Item item) {
+        int slot = -1;
+        int highestAmount = 0;
+
+        for (int i = 0; i < inventory.main.size(); ++i) {
+            ItemStack invStack = inventory.getStack(i);
+            if (!invStack.isEmpty()) {
+                int storedAmount = NbtUtil.getAmountStored(invStack, item);
+                if (storedAmount > highestAmount) {
+                    slot = i;
+                    highestAmount = storedAmount;
+                }
+            }
+        }
+
+        return slot;
     }
 
     private static boolean setOptimalSlot(PlayerInventory inventory) {

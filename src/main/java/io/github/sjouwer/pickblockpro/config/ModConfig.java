@@ -104,28 +104,25 @@ public class ModConfig implements ConfigData {
         private BaseEnchantments shearEnchantments = new BaseEnchantments();
         @CollapsibleObject
         private SwordEnchantments swordEnchantments = new SwordEnchantments();
+    }
 
+    static class LockedSlots {
+        private boolean slot1 = false;
+        private boolean slot2 = false;
+        private boolean slot3 = false;
+        private boolean slot4 = false;
+        private boolean slot5 = false;
+        private boolean slot6 = false;
+        private boolean slot7 = false;
+        private boolean slot8 = false;
+        private boolean slot9 = false;
     }
 
     static class Inventory {
         @Tooltip
-        private boolean lockSlot1 = false;
-        @Tooltip
-        private boolean lockSlot2 = false;
-        @Tooltip
-        private boolean lockSlot3 = false;
-        @Tooltip
-        private boolean lockSlot4 = false;
-        @Tooltip
-        private boolean lockSlot5 = false;
-        @Tooltip
-        private boolean lockSlot6 = false;
-        @Tooltip
-        private boolean lockSlot7 = false;
-        @Tooltip
-        private boolean lockSlot8 = false;
-        @Tooltip
-        private boolean lockSlot9 = false;
+        private boolean searchThroughContainers = true;
+        @CollapsibleObject @Tooltip
+        private LockedSlots lockedSlots = new LockedSlots();
     }
 
     @TransitiveObject @Category("block_picker_settings")
@@ -279,17 +276,21 @@ public class ModConfig implements ConfigData {
         }
     }
 
+    public boolean searchContainers() {
+        return inventory.searchThroughContainers;
+    }
+
     public boolean isSlotLocked(int slot) {
         return switch (slot) {
-            case 0 -> inventory.lockSlot1;
-            case 1 -> inventory.lockSlot2;
-            case 2 -> inventory.lockSlot3;
-            case 3 -> inventory.lockSlot4;
-            case 4 -> inventory.lockSlot5;
-            case 5 -> inventory.lockSlot6;
-            case 6 -> inventory.lockSlot7;
-            case 7 -> inventory.lockSlot8;
-            case 8 -> inventory.lockSlot9;
+            case 0 -> inventory.lockedSlots.slot1;
+            case 1 -> inventory.lockedSlots.slot2;
+            case 2 -> inventory.lockedSlots.slot3;
+            case 3 -> inventory.lockedSlots.slot4;
+            case 4 -> inventory.lockedSlots.slot5;
+            case 5 -> inventory.lockedSlots.slot6;
+            case 6 -> inventory.lockedSlots.slot7;
+            case 7 -> inventory.lockedSlots.slot8;
+            case 8 -> inventory.lockedSlots.slot9;
             default -> false;
         };
     }
