@@ -121,7 +121,7 @@ public class ModConfig implements ConfigData {
     static class Inventory {
         @Tooltip
         private boolean searchThroughContainers = true;
-        @CollapsibleObject @Tooltip
+        @CollapsibleObject(startExpanded=true) @Tooltip
         private LockedSlots lockedSlots = new LockedSlots();
     }
 

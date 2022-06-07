@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Pick Block Pro",
-  "description": "An advanced block, ID and tool picker",
+  "description": "An advanced client side Block, Entity, NBT, Tool and ID picker",
   "authors": [
     "Sjouwer"
   ],
