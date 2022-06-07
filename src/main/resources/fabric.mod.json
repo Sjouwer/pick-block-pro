@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Pick Block Pro",
-  "description": "An advanced block, ID and tool picker",
+  "description": "An advanced client side Block, Entity, NBT, Tool and ID picker",
   "authors": [
     "Sjouwer"
   ],
@@ -49,7 +49,7 @@
   },
 
   "depends": {
-    "minecraft": "1.18.x",
+    "minecraft": "~1.18.2",
     "fabricloader": ">=0.12.0",
     "fabric": ">=0.40.3",
     "cloth-config": ">=6.0.0"
