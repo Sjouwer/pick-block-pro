@@ -9,6 +9,7 @@ import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SkullItem;
@@ -18,6 +19,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public class NbtUtil {
     private static final String BLOCK_STATE_KEY = "BlockStateTag";
@@ -131,5 +133,34 @@ public class NbtUtil {
         NbtCompound skullOwner = new NbtCompound();
         NbtHelper.writeGameProfile(skullOwner, player.getGameProfile());
         skull.setSubNbt(SkullItem.SKULL_OWNER_KEY, skullOwner);
+    }
+
+    public static int getAmountStored(ItemStack storage, Item item) {
+        int amount = 0;
+
+        NbtCompound storageCompound = storage.getNbt();
+        if (storageCompound == null || storageCompound.isEmpty()) {
+            return amount;
+        }
+
+        //Shulkers use the BlockEntityTag while the bundle doesn't
+        NbtCompound blockEntityCompound = storageCompound.getCompound(BLOCK_ENTITY_KEY);
+        if (blockEntityCompound != null && !blockEntityCompound.isEmpty()) {
+            storageCompound = blockEntityCompound;
+        }
+
+        NbtList itemList = storageCompound.getList("Items", NbtType.COMPOUND);
+        if (itemList == null || itemList.isEmpty()) {
+            return amount;
+        }
+
+        for (int i = 0; i < itemList.size(); i++) {
+            NbtCompound itemCompound = itemList.getCompound(i);
+            if (itemCompound.getString(ID_KEY).equals(Registry.ITEM.getId(item).toString())) {
+                amount += itemCompound.getInt(COUNT_KEY);
+            }
+        }
+
+        return amount;
     }
 }
