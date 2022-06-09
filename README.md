@@ -10,16 +10,24 @@ This mod replaces the default Pick Block, however the ID and Tool picker use the
 
 ## **Features**
 Most things below are configurable in the config settings using the config file or Mod Menu
+- In survival the block picker will now also search through item-containers like shulkers inside your inventory  
+- Holding ALT while Block picking will add BlockState data as NBT to the block/item  
+(stacks with CTRL for BlockEntity data)
+- Holding CTRL while Entity picking will add Entity data as NBT to the item  
+    - Copies mob data and adds it to the spawn egg  
+    - Copies armor stands with their data  
+    - Copies item frames including the framed item  
+    - Copies painting variant  
+- Pick extra things:  
+    - Pick fire and get a flint & steel (1.16+)  
+    - Pick the sun or moon and get a light block (1.17+)  
+Cycle through the light levels by picking the sun or moon while holding the light block  
+    - Pick a player and get the head of that player  
+    - Pick mob spawners  
+    - Pick fluids and get a bucket of the fluid  
 - Extended Pick Block range, decide how far the picker should be able to reach
-- Pick block extra things:  
-  - Pick fluids and get a bucket of the fluid  
-  - Pick fire and get a flint & steel  
-  - Pick the sun or moon and get a light block  
-    Cycle through the light levels by picking the sun or moon while holding the light block  
-  - Pick block spawners
 - Lock inventory slots to prevent the picker from switching or replacing the item in that slot
-- Hold ALT while picking and add BlockState data to the block/item (stacks with CTRL for BlockEntity data)
-- Copy ID's of hotbar slot blocks/items directly into your chat, for easy WorldEdit command creation  
+- Copy ID's of hotbar blocks/items directly into your chat, for easy WorldEdit command creation  
 (Use CTRL + 0 through 9 while your chat is open, 0 is for the off hand slot)
 - Pick ID's of blocks in the world with the ID Picker and copy them directly to your clipboard
 - Use the Tool Picker and get the best available tool to break the block or kill the entity
