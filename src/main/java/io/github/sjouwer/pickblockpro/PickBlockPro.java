@@ -1,5 +1,7 @@
 package io.github.sjouwer.pickblockpro;
 
+import io.github.sjouwer.pickblockpro.config.FileHandler;
+import io.github.sjouwer.pickblockpro.config.PickBlockOverrides;
 import me.shedaniel.autoconfig.ConfigHolder;
 import net.fabricmc.api.ClientModInitializer;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -19,6 +21,9 @@ public class PickBlockPro implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         configHolder = AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
+        FileHandler fileHandler = new FileHandler();
+        fileHandler.addFilesToConfigFolder();
+        PickBlockOverrides.parseOverrideLists(fileHandler.getOverridesFile());
 
         KeyBindings keyBindings = new KeyBindings();
         keyBindings.setKeyBindings();

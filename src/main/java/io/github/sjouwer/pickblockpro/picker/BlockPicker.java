@@ -2,9 +2,9 @@ package io.github.sjouwer.pickblockpro.picker;
 
 import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
+import io.github.sjouwer.pickblockpro.config.PickBlockOverrides;
 import io.github.sjouwer.pickblockpro.util.*;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -67,7 +67,11 @@ public class BlockPicker {
 
     private static ItemStack getEntityItemStack(HitResult hit) {
         Entity entity = ((EntityHitResult) hit).getEntity();
-        ItemStack item = entity.getPickBlockStack();
+        ItemStack item = PickBlockOverrides.getEntityOverride(entity.getType());
+        if (item == null) {
+            item = entity.getPickBlockStack();
+        }
+
         if (item != null && client.player.getAbilities().creativeMode && Screen.hasControlDown()) {
             if (entity instanceof ItemFrameEntity) {
                 ItemStack itemFrame = new ItemStack(Items.ITEM_FRAME);
@@ -94,14 +98,13 @@ public class BlockPicker {
     private static ItemStack getBlockItemStack(HitResult hit) {
         BlockPos blockPos = ((BlockHitResult) hit).getBlockPos();
         BlockState state = client.world.getBlockState(blockPos);
-        ItemStack item = state.getBlock().getPickStack(client.world, blockPos, state);
+        ItemStack item = PickBlockOverrides.getBlockOverride(state.getBlock());
+        if (item == null) {
+            item = state.getBlock().getPickStack(client.world, blockPos, state);
+        }
 
         if (item.isEmpty()) {
-            ItemStack extraItem = extraPickStackCheck(state);
-            if (extraItem == null) {
-                return null;
-            }
-            item = extraItem;
+            return null;
         }
 
         if (client.player.getAbilities().creativeMode) {
@@ -115,23 +118,6 @@ public class BlockPicker {
         }
 
         return item;
-    }
-
-    private static ItemStack extraPickStackCheck(BlockState state) {
-        if (state.isOf(Blocks.WATER)) {
-            return new ItemStack(Items.WATER_BUCKET);
-        }
-        if (state.isOf(Blocks.LAVA)) {
-            return new ItemStack(Items.LAVA_BUCKET);
-        }
-        if ((state.isOf(Blocks.FIRE) || (state.isOf(Blocks.SOUL_FIRE))) && config.blockPickFire()) {
-            return new ItemStack(Items.FLINT_AND_STEEL);
-        }
-        if (state.isOf(Blocks.SPAWNER)) {
-            return new ItemStack(Items.SPAWNER);
-        }
-
-        return null;
     }
 
     private static ItemStack getLightFromSunOrMoon() {
