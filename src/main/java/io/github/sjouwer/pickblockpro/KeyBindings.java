@@ -10,12 +10,15 @@ import org.lwjgl.glfw.GLFW;
 public class KeyBindings {
     private static final String CATEGORY = "key.categories.pick_block_pro";
 
-    public void setKeyBindings() {
-        setKeyBindingPickId();
-        setKeyBindingPickTool();
+    private KeyBindings() {
     }
 
-    private void setKeyBindingPickId() {
+    public static void registerKeyBindings() {
+        registerPickIdKey();
+        registerPickToolKey();
+    }
+
+    private static void registerPickIdKey() {
         KeyBinding idPickerKey = new KeyBinding("key.pick_block_pro.id_picker", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, CATEGORY);
         KeyBindingHelper.registerKeyBinding(idPickerKey);
 
@@ -26,7 +29,7 @@ public class KeyBindings {
         });
     }
 
-    private void setKeyBindingPickTool() {
+    private static void registerPickToolKey() {
         KeyBinding toolPickerKey = new KeyBinding("key.pick_block_pro.tool_picker", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, CATEGORY);
         KeyBindingHelper.registerKeyBinding(toolPickerKey);
 

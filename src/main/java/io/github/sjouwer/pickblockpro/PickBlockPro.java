@@ -21,11 +21,9 @@ public class PickBlockPro implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         configHolder = AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
-        FileHandler fileHandler = new FileHandler();
-        fileHandler.addFilesToConfigFolder();
-        PickBlockOverrides.parseOverrideLists(fileHandler.getOverridesFile());
 
-        KeyBindings keyBindings = new KeyBindings();
-        keyBindings.setKeyBindings();
+        FileHandler.addFilesToConfigFolder();
+        PickBlockOverrides.parseOverrides();
+        KeyBindings.registerKeyBindings();
     }
 }

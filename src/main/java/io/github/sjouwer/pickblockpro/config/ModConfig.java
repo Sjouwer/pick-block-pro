@@ -28,8 +28,6 @@ public class ModConfig implements ConfigData {
         @Tooltip
         private boolean pickFluids = false;
         @Tooltip
-        private boolean pickFire = true;
-        @Tooltip
         private boolean pickLight = true;
     }
 
@@ -148,10 +146,6 @@ public class ModConfig implements ConfigData {
 
     public boolean blockPickFluids() {
         return blockPicker.pickFluids;
-    }
-
-    public boolean blockPickFire() {
-        return blockPicker.pickFire;
     }
 
     public boolean blockPickLight() {

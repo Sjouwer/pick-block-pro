@@ -36,28 +36,29 @@ public class PickBlockOverrides {
 
     public static ItemStack getBlockOverride(Block block) {
         if (blockOverrides.containsKey(block)) {
-            return blockOverrides.get(block);
+            return blockOverrides.get(block).copy();
         }
         return null;
     }
 
     public static ItemStack getEntityOverride(EntityType<?> entity) {
         if (entityOverrides.containsKey(entity)) {
-            return entityOverrides.get(entity);
+            return entityOverrides.get(entity).copy();
         }
         return null;
     }
 
-    public static void parseOverrideLists(File file) {
+    public static void parseOverrides() {
+        File file = FileHandler.getOverridesFile();
         if (!file.exists()) {
-            PickBlockPro.LOGGER.warn("Failed to load \"PickBlockOverrides.json\" because it doesn't exist (anymore)");
+            PickBlockPro.LOGGER.warn("Failed to load \"" + file.getName() + "\" because it doesn't exist (anymore)");
             return;
         }
 
         try (FileReader reader = new FileReader(file)) {
             JsonElement rootElement = JsonParser.parseReader(reader);
             if (!rootElement.isJsonObject()) {
-                PickBlockPro.LOGGER.warn("\"PickBlockOverrides.json\" doesn't appear to be an actual json and could not be loaded");
+                PickBlockPro.LOGGER.warn("\"" + file.getName() + "\" doesn't appear to be an actual json and could not be loaded");
                 return;
             }
 
@@ -67,17 +68,23 @@ public class PickBlockOverrides {
             if (blockOverridesElement != null) {
                 parseBlockOverrides(blockOverridesElement);
             }
+            else {
+                PickBlockPro.LOGGER.info("No Block Overrides found");
+            }
 
             JsonElement entityOverridesElement = objectMap.get("Entity to ItemStack");
             if (entityOverridesElement != null) {
                 parseEntityOverrides(entityOverridesElement);
             }
+            else {
+                PickBlockPro.LOGGER.info("No Entity Overrides found");
+            }
         }
         catch (JsonSyntaxException e) {
-            PickBlockPro.LOGGER.warn("\"PickBlockOverrides.json\" is not properly formatted and could not be loaded: " + e.getCause().getMessage());
+            PickBlockPro.LOGGER.warn("\"" + file.getName() + "\" is not properly formatted and could not be loaded: " + e.getCause().getMessage());
         }
         catch (IOException e) {
-            PickBlockPro.LOGGER.error("Failed to load \"PickBlockOverrides.json\"");
+            PickBlockPro.LOGGER.error("Failed to load \"" + file.getName() + "\"");
             e.printStackTrace();
         }
     }
@@ -93,7 +100,8 @@ public class PickBlockOverrides {
             }
         }
 
-        PickBlockPro.LOGGER.info("Loaded " + blockOverrides.size() + " block overrides and encountered " + errors + (errors == 1 ? " error" : " errors"));
+        int count = blockOverrides.size();
+        PickBlockPro.LOGGER.info("Loaded " + count + " block override" + (count == 1 ? "" : "s") + " and encountered " + errors + " error" + (errors == 1 ? "" : "s"));
     }
 
     private static void parseEntityOverrides(JsonElement entityOverridesElement) {
@@ -107,7 +115,8 @@ public class PickBlockOverrides {
             }
         }
 
-        PickBlockPro.LOGGER.info("Loaded " + entityOverrides.size() + " entity overrides and encountered " + errors + (errors == 1 ? " error" : " errors"));
+        int count = entityOverrides.size();
+        PickBlockPro.LOGGER.info("Loaded " + count + " entity override" + (count == 1 ? "" : "s") + " and encountered " + errors + " error" + (errors == 1 ? "" : "s"));
     }
 
     private static Block idToBlock(String id) {
@@ -150,7 +159,7 @@ public class PickBlockOverrides {
         }
 
         ItemStack stack = new ItemStack(item);
-        if (!itemNbt.equals("")) {
+        if (!itemNbt.isEmpty()) {
             try {
                 stack.setNbt(StringNbtReader.parse(itemNbt));
             }

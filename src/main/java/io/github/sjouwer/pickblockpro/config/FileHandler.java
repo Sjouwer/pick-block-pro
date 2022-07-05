@@ -9,21 +9,25 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 public class FileHandler {
-    private final File listsFolder;
-    private File overrides;
+    private static File configFolder;
+    private static File overrides;
 
-    public FileHandler() {
-        listsFolder = new File(FabricLoader.getInstance().getConfigDir().toFile(), "pickblockpro");
-        listsFolder.mkdirs();
+    private FileHandler() {
     }
 
-    public void addFilesToConfigFolder() {
-        overrides = new File(listsFolder, "PickBlockOverrides.json");
+    private static void loadOrCreateConfigFolder() {
+        configFolder = new File(FabricLoader.getInstance().getConfigDir().toFile(), "pickblockpro");
+        configFolder.mkdirs();
+    }
+
+    public static void addFilesToConfigFolder() {
+        loadOrCreateConfigFolder();
+        overrides = new File(configFolder, "PickBlockOverrides.json");
         if (overrides.exists()) {
             return;
         }
 
-        try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("assets/pickblockpro/PickBlockOverrides.json")) {
+        try (InputStream is = PickBlockPro.class.getClassLoader().getResourceAsStream("assets/pickblockpro/PickBlockOverrides.json")) {
             if (is != null) {
                 Files.copy(is, overrides.toPath());
             }
@@ -34,7 +38,7 @@ public class FileHandler {
         }
     }
 
-    public File getOverridesFile() {
+    public static File getOverridesFile() {
         return overrides;
     }
 }

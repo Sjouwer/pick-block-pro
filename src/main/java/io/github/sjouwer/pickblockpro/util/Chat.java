@@ -3,9 +3,8 @@ package io.github.sjouwer.pickblockpro.util;
 import io.github.sjouwer.pickblockpro.PickBlockPro;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
-
-import static net.minecraft.text.Style.EMPTY;
 
 public final class Chat {
     private static final MinecraftClient client = MinecraftClient.getInstance();
@@ -14,12 +13,12 @@ public final class Chat {
     }
 
     public static void sendMessage(MutableText message) {
-        message.setStyle(EMPTY.withColor(Formatting.GREEN));
+        message.setStyle(Style.EMPTY.withColor(Formatting.GREEN));
         send(message);
     }
 
     public static void sendError(MutableText errorMessage) {
-        errorMessage.setStyle(EMPTY.withColor(Formatting.DARK_RED));
+        errorMessage.setStyle(Style.EMPTY.withColor(Formatting.DARK_RED));
         send(errorMessage);
     }
 

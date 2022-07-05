@@ -7,6 +7,7 @@
         "minecraft:spawner": "minecraft:spawner"
     },
     "Entity to ItemStack": {
-
+        "minecraft:wither": "minecraft:wither_skeleton_spawn_egg{EntityTag:{id:wither,CustomName:''},display:{Name:'{\"text\":\"Wither Spawn Egg\",\"color\":\"light_purple\",\"italic\":\"false\"}'}}",
+        "minecraft:ender_dragon": "minecraft:enderman_spawn_egg{EntityTag:{id:ender_dragon,CustomName:''},display:{Name:'{\"text\":\"Ender Dragon Spawn Egg\",\"color\":\"light_purple\",\"italic\":\"false\"}'}}"
     }
 }
