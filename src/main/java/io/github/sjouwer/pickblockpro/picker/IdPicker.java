@@ -34,7 +34,7 @@ public class IdPicker {
         }
 
         if (!config.idPickEntities() && !config.idPickBlocks()) {
-            Chat.sendError(Text.translatable("text.pick_block_pro.message.nothingToPick"));
+            InfoProvider.sendError(Text.translatable("text.pick_block_pro.message.nothingToPick"));
             return;
         }
 
@@ -64,7 +64,7 @@ public class IdPicker {
             message = Text.literal(id);
         }
 
-        Chat.sendMessage(message);
+        InfoProvider.sendMessage(message);
     }
 
     /**

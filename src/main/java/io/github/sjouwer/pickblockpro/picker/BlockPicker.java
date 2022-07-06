@@ -38,7 +38,7 @@ public class BlockPicker {
         }
 
         if (!config.blockPickEntities() && !config.blockPickBlocks()) {
-            Chat.sendError(Text.translatable("text.pick_block_pro.message.nothingToPick"));
+            InfoProvider.sendError(Text.translatable("text.pick_block_pro.message.nothingToPick"));
             return;
         }
 

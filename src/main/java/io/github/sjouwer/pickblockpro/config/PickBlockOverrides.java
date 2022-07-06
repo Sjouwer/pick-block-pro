@@ -7,6 +7,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.sjouwer.pickblockpro.PickBlockPro;
+import io.github.sjouwer.pickblockpro.util.InfoProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
@@ -14,6 +15,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -48,18 +50,18 @@ public class PickBlockOverrides {
         return null;
     }
 
-    public static void parseOverrides() {
+    public static boolean parseOverrides() {
         File file = FileHandler.getOverridesFile();
         if (!file.exists()) {
             PickBlockPro.LOGGER.warn("Failed to load \"" + file.getName() + "\" because it doesn't exist (anymore)");
-            return;
+            return false;
         }
 
         try (FileReader reader = new FileReader(file)) {
             JsonElement rootElement = JsonParser.parseReader(reader);
             if (!rootElement.isJsonObject()) {
                 PickBlockPro.LOGGER.warn("\"" + file.getName() + "\" doesn't appear to be an actual json and could not be loaded");
-                return;
+                return false;
             }
 
             Map<String, JsonElement> objectMap = new HashMap<>();
@@ -69,7 +71,7 @@ public class PickBlockOverrides {
                 parseBlockOverrides(blockOverridesElement);
             }
             else {
-                PickBlockPro.LOGGER.info("No Block Overrides found");
+                InfoProvider.sendMessage(Text.literal("No Block Overrides found"));
             }
 
             JsonElement entityOverridesElement = objectMap.get("Entity to ItemStack");
@@ -77,8 +79,10 @@ public class PickBlockOverrides {
                 parseEntityOverrides(entityOverridesElement);
             }
             else {
-                PickBlockPro.LOGGER.info("No Entity Overrides found");
+                InfoProvider.sendMessage(Text.literal("No Entity Overrides found"));
             }
+
+            return true;
         }
         catch (JsonSyntaxException e) {
             PickBlockPro.LOGGER.warn("\"" + file.getName() + "\" is not properly formatted and could not be loaded: " + e.getCause().getMessage());
@@ -87,6 +91,8 @@ public class PickBlockOverrides {
             PickBlockPro.LOGGER.error("Failed to load \"" + file.getName() + "\"");
             e.printStackTrace();
         }
+
+        return false;
     }
 
     private static void parseBlockOverrides(JsonElement blockOverridesElement) {
@@ -102,7 +108,8 @@ public class PickBlockOverrides {
         }
 
         int count = blockOverrides.size();
-        PickBlockPro.LOGGER.info("Loaded " + count + " block override" + (count == 1 ? "" : "s") + " and encountered " + errors + " error" + (errors == 1 ? "" : "s"));
+        String message = "Loaded " + count + " block override" + (count == 1 ? "" : "s") + " and encountered " + errors + " error" + (errors == 1 ? "" : "s");
+        InfoProvider.sendMessage(Text.literal(message));
     }
 
     private static void parseEntityOverrides(JsonElement entityOverridesElement) {
@@ -118,14 +125,15 @@ public class PickBlockOverrides {
         }
 
         int count = entityOverrides.size();
-        PickBlockPro.LOGGER.info("Loaded " + count + " entity override" + (count == 1 ? "" : "s") + " and encountered " + errors + " error" + (errors == 1 ? "" : "s"));
+        String message = "Loaded " + count + " entity override" + (count == 1 ? "" : "s") + " and encountered " + errors + " error" + (errors == 1 ? "" : "s");
+        InfoProvider.sendMessage(Text.literal(message));
     }
 
     private static Block idToBlock(String id) {
         Identifier identifier = stringToId(id);
         Block block = Registry.BLOCK.get(identifier);
         if (block.equals(Blocks.AIR)) {
-            PickBlockPro.LOGGER.warn("Failed to parse Block ID: " + id);
+            InfoProvider.sendWarning(Text.literal("Failed to parse Block ID: " + id));
             errors++;
             return null;
         }
@@ -138,7 +146,7 @@ public class PickBlockOverrides {
             return entity.get();
         }
         else {
-            PickBlockPro.LOGGER.warn("Failed to parse Entity ID: " + id);
+            InfoProvider.sendWarning(Text.literal("Failed to parse Entity ID: " + id));
             errors++;
             return null;
         }
@@ -155,7 +163,7 @@ public class PickBlockOverrides {
         Identifier identifier = stringToId(itemId);
         Item item = Registry.ITEM.get(identifier);
         if (item.equals(Items.AIR)) {
-            PickBlockPro.LOGGER.warn("Failed to parse Item ID: " + itemId);
+            InfoProvider.sendWarning(Text.literal("Failed to parse Item ID: " + itemId));
             errors++;
             return null;
         }
@@ -166,7 +174,7 @@ public class PickBlockOverrides {
                 stack.setNbt(StringNbtReader.parse(itemNbt));
             }
             catch (CommandSyntaxException e) {
-                PickBlockPro.LOGGER.warn("Failed to parse NBT data: " + itemNbt);
+                InfoProvider.sendWarning(Text.literal("Failed to parse NBT data: " + itemNbt));
                 errors++;
             }
         }

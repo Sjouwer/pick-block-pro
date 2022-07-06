@@ -102,7 +102,7 @@ public final class InventoryManager {
         if (tries == 9) {
             slot = findUnlockedSlot(inventory);
             if (slot > 8) {
-                Chat.sendError(Text.translatable("text.pick_block_pro.message.allSlotsLocked"));
+                InfoProvider.sendError(Text.translatable("text.pick_block_pro.message.allSlotsLocked"));
                 return false;
             }
         }
