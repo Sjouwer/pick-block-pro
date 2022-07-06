@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("FieldMayBeFinal")
-@Config(name = "pick_block_pro")
+@Config(name = "pickblockpro/config")
 public class ModConfig implements ConfigData {
     static class BlockPicker {
         @Tooltip

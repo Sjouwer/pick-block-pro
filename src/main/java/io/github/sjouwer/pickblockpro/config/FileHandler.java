@@ -22,12 +22,12 @@ public class FileHandler {
 
     public static void addFilesToConfigFolder() {
         loadOrCreateConfigFolder();
-        overrides = new File(configFolder, "PickBlockOverrides.json");
+        overrides = new File(configFolder, "overrides.json");
         if (overrides.exists()) {
             return;
         }
 
-        try (InputStream is = PickBlockPro.class.getClassLoader().getResourceAsStream("assets/pickblockpro/PickBlockOverrides.json")) {
+        try (InputStream is = PickBlockPro.class.getClassLoader().getResourceAsStream("assets/pickblockpro/overrides.json")) {
             if (is != null) {
                 Files.copy(is, overrides.toPath());
             }
