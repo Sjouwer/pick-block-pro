@@ -90,6 +90,7 @@ public class PickBlockOverrides {
     }
 
     private static void parseBlockOverrides(JsonElement blockOverridesElement) {
+        blockOverrides.clear();
         errors = 0;
         LinkedHashMap<String, String> overrideMap = gson.fromJson(blockOverridesElement, new TypeToken<LinkedHashMap<String, String>>(){}.getType());
         for (Map.Entry<String, String> entry : overrideMap.entrySet()) {
@@ -105,6 +106,7 @@ public class PickBlockOverrides {
     }
 
     private static void parseEntityOverrides(JsonElement entityOverridesElement) {
+        entityOverrides.clear();
         errors = 0;
         LinkedHashMap<String, String> overrideMap = gson.fromJson(entityOverridesElement, new TypeToken<LinkedHashMap<String, String>>(){}.getType());
         for (Map.Entry<String, String> entry : overrideMap.entrySet()) {

@@ -25,5 +25,6 @@ public class PickBlockPro implements ClientModInitializer {
         FileHandler.addFilesToConfigFolder();
         PickBlockOverrides.parseOverrides();
         KeyBindings.registerKeyBindings();
+        Commands.registerCommands();
     }
 }
