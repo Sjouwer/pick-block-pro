@@ -48,9 +48,9 @@
     "text.autoconfig.pickblockpro/config.option.toolPicker.enchantTools.@Tooltip": "在创意中选择工具时附魔工具（并非所有服务器都支持）",
 
     "text.autoconfig.pickblockpro/config.category.inventory_settings": "库存",
-    "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot1": "锁定第一个插槽",
-    "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot2": "锁定第二个插槽",
-    "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot3": "锁定第三个插槽",
+    "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot1": "锁定第 1 个插槽",
+    "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot2": "锁定第 2 个插槽",
+    "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot3": "锁定第 3 个插槽",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot4": "锁定第 4 个插槽",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot5": "锁定第 5 个插槽",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot6": "锁定第 6 个插槽",
