@@ -41,7 +41,7 @@ public final class Raycast {
 
         Box box = player.getBoundingBox().stretch(vector.multiply(range));
         int range2 = range * range;
-        EntityHitResult entityHit = ProjectileUtil.raycast(player, rayStart, rayEnd, box, entityX -> !entityX.isSpectator() && entityX.collides(), range2);
+        EntityHitResult entityHit = ProjectileUtil.raycast(player, rayStart, rayEnd, box, entityX -> !entityX.isSpectator() && entityX.canHit(), range2);
 
         if (entityHit == null) {
             return blockHit;

@@ -3,11 +3,10 @@
         "minecraft:water": "minecraft:water_bucket",
         "minecraft:lava": "minecraft:lava_bucket",
         "minecraft:fire": "minecraft:flint_and_steel",
-        "minecraft:soul_fire": "minecraft:flint_and_steel",
-        "minecraft:spawner": "minecraft:spawner"
+        "minecraft:soul_fire": "minecraft:flint_and_steel"
     },
     "Entity to ItemStack": {
-        "minecraft:wither": "minecraft:wither_skeleton_spawn_egg{EntityTag:{id:wither,CustomName:''},display:{Name:'{\"text\":\"Wither Spawn Egg\",\"color\":\"light_purple\",\"italic\":\"false\"}'}}",
-        "minecraft:ender_dragon": "minecraft:enderman_spawn_egg{EntityTag:{id:ender_dragon,CustomName:''},display:{Name:'{\"text\":\"Ender Dragon Spawn Egg\",\"color\":\"light_purple\",\"italic\":\"false\"}'}}"
+        "minecraft:wither": "minecraft:wither_spawn_egg",
+        "minecraft:ender_dragon": "minecraft:ender_dragon_spawn_egg"
     }
 }

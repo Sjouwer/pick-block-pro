@@ -6,6 +6,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Saddleable;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,9 +18,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class NbtUtil {
     private static final String BLOCK_STATE_KEY = "BlockStateTag";
@@ -156,7 +157,7 @@ public class NbtUtil {
 
         for (int i = 0; i < itemList.size(); i++) {
             NbtCompound itemCompound = itemList.getCompound(i);
-            if (itemCompound.getString(ID_KEY).equals(Registry.ITEM.getId(item).toString())) {
+            if (itemCompound.getString(ID_KEY).equals(Registries.ITEM.getId(item).toString())) {
                 amount += itemCompound.getInt(COUNT_KEY);
             }
         }

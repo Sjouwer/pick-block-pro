@@ -15,9 +15,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.io.File;
 import java.io.FileReader;
@@ -131,7 +131,7 @@ public class PickBlockOverrides {
 
     private static Block idToBlock(String id) {
         Identifier identifier = stringToId(id);
-        Block block = Registry.BLOCK.get(identifier);
+        Block block = Registries.BLOCK.get(identifier);
         if (block.equals(Blocks.AIR)) {
             InfoProvider.sendWarning(Text.literal("Failed to parse Block ID: " + id));
             errors++;
@@ -161,7 +161,7 @@ public class PickBlockOverrides {
         }
 
         Identifier identifier = stringToId(itemId);
-        Item item = Registry.ITEM.get(identifier);
+        Item item = Registries.ITEM.get(identifier);
         if (item.equals(Items.AIR)) {
             InfoProvider.sendWarning(Text.literal("Failed to parse Item ID: " + itemId));
             errors++;

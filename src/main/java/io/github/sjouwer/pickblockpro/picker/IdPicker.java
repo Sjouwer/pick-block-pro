@@ -8,12 +8,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.registry.Registry;
 
 import java.util.StringJoiner;
 
@@ -74,7 +74,7 @@ public class IdPicker {
      */
     public static String getBlockId(BlockState blockState) {
         StringBuilder fullId = new StringBuilder();
-        fullId.append(Registry.BLOCK.getId(blockState.getBlock()));
+        fullId.append(Registries.BLOCK.getId(blockState.getBlock()));
 
         if (!config.addNamespace()) {
             fullId.delete(0, fullId.indexOf(":") + 1);
@@ -94,7 +94,7 @@ public class IdPicker {
      * @return ID as String
      */
     public static String getEntityId(Entity entity) {
-        String fullId = Registry.ENTITY_TYPE.getId(entity.getType()).toString();
+        String fullId = Registries.ENTITY_TYPE.getId(entity.getType()).toString();
 
         if (!config.addNamespace() && fullId.contains(":")) {
             fullId = fullId.substring(fullId.indexOf(":") + 1);
@@ -113,7 +113,7 @@ public class IdPicker {
         StringBuilder fullId = new StringBuilder();
 
         if (config.addNamespace()) {
-            fullId.append(Registry.ITEM.getId(itemStack.getItem()).getNamespace());
+            fullId.append(Registries.ITEM.getId(itemStack.getItem()).getNamespace());
             fullId.append(":");
         }
 

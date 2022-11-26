@@ -15,11 +15,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 
 public class BlockPicker {
     private static final MinecraftClient client = MinecraftClient.getInstance();
@@ -80,7 +80,7 @@ public class BlockPicker {
             }
 
             if (entity instanceof PaintingEntity paintingEntity) {
-                String key = "painting." + Registry.PAINTING_VARIANT.getId(paintingEntity.getVariant().value()).toString().replace(":", ".");
+                String key = "painting." + Registries.PAINTING_VARIANT.getId(paintingEntity.getVariant().value()).toString().replace(":", ".");
                 item.setCustomName(Text.translatable(key));
             }
 
