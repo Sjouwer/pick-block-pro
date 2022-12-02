@@ -34,6 +34,8 @@
     "text.autoconfig.pickblockpro/config.option.idPicker.addProperties.@Tooltip": "Add the properties of what has been ID picked",
     "text.autoconfig.pickblockpro/config.option.idPicker.copyToClipboard": "Easy ID copy",
     "text.autoconfig.pickblockpro/config.option.idPicker.copyToClipboard.@Tooltip": "Copy the picked ID directly to the clipboard",
+    "text.autoconfig.pickblockpro/config.option.idPicker.enableHotbarPicker": "Enable hotbar picker",
+    "text.autoconfig.pickblockpro/config.option.idPicker.enableHotbarPicker.@Tooltip": "When chat is open use: \nCTRL + <hotbar slot number>",
 
     "text.autoconfig.pickblockpro/config.category.tool_picker_settings": "Tool Picker",
     "text.autoconfig.pickblockpro/config.option.toolPicker.range": "Tool picker range",

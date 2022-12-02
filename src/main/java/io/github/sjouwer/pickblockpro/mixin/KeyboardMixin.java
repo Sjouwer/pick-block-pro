@@ -1,5 +1,6 @@
 package io.github.sjouwer.pickblockpro.mixin;
 
+import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.picker.IdPicker;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;
@@ -20,8 +21,11 @@ public class KeyboardMixin {
     @Inject(method = "onKey", at = @At("HEAD"), cancellable = true)
     public void getHotbarItemId(long window, int key, int scancode, int action, int modifiers, final CallbackInfo info) {
         Screen screen = client.currentScreen;
-        if (screen instanceof ChatScreen &&
+        if (PickBlockPro.getConfig().hotbarPickerEnabled() &&
+                screen instanceof ChatScreen &&
                 Screen.hasControlDown() &&
+                !Screen.hasAltDown() &&
+                !Screen.hasShiftDown() &&
                 action == GLFW.GLFW_PRESS &&
                 key >= GLFW.GLFW_KEY_0 &&
                 key <= GLFW.GLFW_KEY_9 &&

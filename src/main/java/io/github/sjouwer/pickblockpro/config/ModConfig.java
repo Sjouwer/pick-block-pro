@@ -46,6 +46,8 @@ public class ModConfig implements ConfigData {
         private boolean addProperties = true;
         @Tooltip
         private boolean copyToClipboard = true;
+        @Tooltip
+        private boolean enableHotbarPicker = true;
     }
 
     static class BaseEnchantments {
@@ -178,6 +180,10 @@ public class ModConfig implements ConfigData {
 
     public boolean copyToClipboard() {
         return idPicker.copyToClipboard;
+    }
+
+    public boolean hotbarPickerEnabled() {
+        return idPicker.enableHotbarPicker;
     }
 
     public int toolPickRange() {
