@@ -25,7 +25,7 @@ public class IdPicker {
     }
 
     /**
-     * Provide to the player with the configured ID of the block or entity they are looking at
+     * Provide the player with the configured ID of the block or entity they are looking at
      */
     public static void pickId() {
         if (client.player == null || client.world == null) {

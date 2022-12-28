@@ -40,7 +40,7 @@ public class ToolPicker {
     }
 
     /**
-     * Provide to the player with the best tool to break the block or kill the entity they are looking at
+     * Provide the player with the best tool to break the block or kill the entity they are looking at
      */
     public static void pickTool() {
         if (client.player == null || client.world == null) {

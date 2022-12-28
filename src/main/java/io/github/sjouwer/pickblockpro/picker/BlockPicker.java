@@ -29,7 +29,7 @@ public class BlockPicker {
     }
 
     /**
-     * Provide to the player with the item of the block or entity they are looking at
+     * Provide the player with the item of the block or entity they are looking at
      */
     public static void pickBlock() {
         if (client.player == null || client.world == null) {
