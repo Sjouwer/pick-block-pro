@@ -2,7 +2,6 @@ package io.github.sjouwer.pickblockpro.util;
 
 import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
-import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
@@ -16,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SkullItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
@@ -115,7 +115,7 @@ public class NbtUtil {
 
     public static void addLore(ItemStack stack, String tag) {
         NbtCompound loreCompound = stack.getOrCreateSubNbt(ItemStack.DISPLAY_KEY);
-        NbtList loreList = loreCompound.getList(ItemStack.LORE_KEY, NbtType.STRING);
+        NbtList loreList = loreCompound.getList(ItemStack.LORE_KEY, NbtElement.STRING_TYPE);
         if (loreList == null) {
             loreList = new NbtList();
         }
@@ -169,7 +169,7 @@ public class NbtUtil {
             storageCompound = blockEntityCompound;
         }
 
-        NbtList itemList = storageCompound.getList("Items", NbtType.COMPOUND);
+        NbtList itemList = storageCompound.getList("Items", NbtElement.COMPOUND_TYPE);
         if (itemList == null || itemList.isEmpty()) {
             return amount;
         }
