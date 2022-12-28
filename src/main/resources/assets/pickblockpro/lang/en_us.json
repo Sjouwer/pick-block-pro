@@ -18,6 +18,12 @@
     "text.autoconfig.pickblockpro/config.option.blockPicker.pickFire.@Tooltip": "Get a flint & steel when picking fire",
     "text.autoconfig.pickblockpro/config.option.blockPicker.pickLight": "Pick light",
     "text.autoconfig.pickblockpro/config.option.blockPicker.pickLight.@Tooltip": "Get a light block when picking the sun or moon",
+    "text.autoconfig.pickblockpro/config.option.blockPicker.blockStateTagBlacklist": "BlockState Tag Blacklist",
+    "text.autoconfig.pickblockpro/config.option.blockPicker.blockStateTagBlacklist.@Tooltip": "BlockState tags that should not be copied \nwhen using ALT + Pick Block \nSeparate each tag by a comma \nTags are case sensitive",
+    "text.autoconfig.pickblockpro/config.option.blockPicker.blockEntityTagBlacklist": "BlockEntity Tag Blacklist",
+    "text.autoconfig.pickblockpro/config.option.blockPicker.blockEntityTagBlacklist.@Tooltip": "BlockEntity tags that should not be copied \nwhen using CTRL + Pick Block \nSeparate each tag by a comma \nTags are case sensitive",
+    "text.autoconfig.pickblockpro/config.option.blockPicker.entityTagBlacklist": "Entity Tag Blacklist",
+    "text.autoconfig.pickblockpro/config.option.blockPicker.entityTagBlacklist.@Tooltip": "Entity tags that should not be copied \nwhen using CTRL + Pick Entity \nSeparate each tag by a comma \nTags are case sensitive",
 
     "text.autoconfig.pickblockpro/config.category.id_picker_settings": "ID Picker",
     "text.autoconfig.pickblockpro/config.option.idPicker.range": "ID picker range",

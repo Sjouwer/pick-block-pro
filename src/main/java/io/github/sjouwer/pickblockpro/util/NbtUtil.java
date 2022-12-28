@@ -1,12 +1,13 @@
 package io.github.sjouwer.pickblockpro.util;
 
+import io.github.sjouwer.pickblockpro.PickBlockPro;
+import io.github.sjouwer.pickblockpro.config.ModConfig;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Saddleable;
-import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,6 +24,8 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 
 public class NbtUtil {
+    private static final ModConfig config = PickBlockPro.getConfig();
+
     private static final String BLOCK_STATE_KEY = "BlockStateTag";
     private static final String BLOCK_ENTITY_KEY = "BlockEntityTag";
     private static final String ENTITY_KEY = "EntityTag";
@@ -35,15 +38,11 @@ public class NbtUtil {
 
     public static void addEntityNbt(ItemStack stack, Entity entity) {
         NbtCompound entityCompound = entity.writeNbt(new NbtCompound());
-        entityCompound.remove("UUID");
-        entityCompound.remove("Pos");
-        entityCompound.remove("TileX");
-        entityCompound.remove("TileY");
-        entityCompound.remove("TileZ");
-        entityCompound.remove("Facing");
-        entityCompound.remove("facing");
-        entityCompound.remove("Rotation");
-        entityCompound.remove("Leash");
+        config.entityTagBlacklist().forEach(entityCompound::remove);
+
+        if (entityCompound.isEmpty()) {
+            return;
+        }
 
         if (entity instanceof HorseEntity horse && horse.hasArmorInSlot()) {
             NbtCompound armorCompound = new NbtCompound();
@@ -73,25 +72,45 @@ public class NbtUtil {
     }
 
     public static void addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
-        NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData();
-        if (stack.getItem() instanceof SkullItem && nbtCompound.contains(SkullItem.SKULL_OWNER_KEY)) {
-            NbtCompound skullCompound = nbtCompound.getCompound(SkullItem.SKULL_OWNER_KEY);
-            stack.getOrCreateNbt().put(SkullItem.SKULL_OWNER_KEY, skullCompound);
-        } else {
-            stack.setSubNbt(BLOCK_ENTITY_KEY, nbtCompound);
-            addLore(stack, "\"(+BlockEntity NBT)\"");
+        NbtCompound blockEntityCompound = blockEntity.createNbtWithIdentifyingData();
+        config.blockEntityTagBlacklist().forEach(blockEntityCompound::remove);
+
+        if (blockEntityCompound.isEmpty()) {
+            return;
         }
+
+        if (stack.getItem() instanceof SkullItem && blockEntityCompound.contains(SkullItem.SKULL_OWNER_KEY)) {
+            NbtCompound skullCompound = blockEntityCompound.getCompound(SkullItem.SKULL_OWNER_KEY);
+            stack.getOrCreateNbt().put(SkullItem.SKULL_OWNER_KEY, skullCompound);
+            return;
+        }
+
+        stack.setSubNbt(BLOCK_ENTITY_KEY, blockEntityCompound);
+        addLore(stack, "\"(+BlockEntity NBT)\"");
     }
 
     public static void addBlockStateNbt(ItemStack stack, BlockState state) {
-        NbtCompound nbtCompound = new NbtCompound();
-        if (!state.getProperties().isEmpty()) {
-            for (Property<?> property : state.getProperties()) {
-                nbtCompound.putString(property.getName(), state.get(property).toString());
-            }
-            stack.setSubNbt(BLOCK_STATE_KEY, nbtCompound);
-            addLore(stack, "\"(+BlockState NBT)\"");
+        if (state.getProperties().isEmpty()) {
+            return;
         }
+
+        NbtCompound blockStateCompound = new NbtCompound();
+        for (Property<?> property : state.getProperties()) {
+            String key = property.getName();
+            if (config.blockStateTagBlacklist().contains(key)) {
+                continue;
+            }
+
+            String value = state.get(property).toString().toLowerCase();
+            blockStateCompound.putString(key, value);
+        }
+
+        if (blockStateCompound.isEmpty()) {
+            return;
+        }
+
+        stack.setSubNbt(BLOCK_STATE_KEY, blockStateCompound);
+        addLore(stack, "\"(+BlockState NBT)\"");
     }
 
     public static void addLore(ItemStack stack, String tag) {

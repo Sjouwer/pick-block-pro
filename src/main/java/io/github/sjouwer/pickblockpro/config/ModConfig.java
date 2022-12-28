@@ -11,9 +11,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityGroup;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("FieldMayBeFinal")
 @Config(name = "pickblockpro/config")
@@ -29,6 +27,12 @@ public class ModConfig implements ConfigData {
         private boolean pickFluids = false;
         @Tooltip
         private boolean pickLight = true;
+        @Tooltip
+        private String blockStateTagBlacklist = "waterlogged";
+        @Tooltip
+        private String blockEntityTagBlacklist = "";
+        @Tooltip
+        private String entityTagBlacklist = "UUID, Pos, TileX, TileY, TileZ, Facing, facing, Rotation, Leash";
     }
 
     static class IdPicker {
@@ -152,6 +156,18 @@ public class ModConfig implements ConfigData {
 
     public boolean blockPickLight() {
         return blockPicker.pickLight;
+    }
+
+    public List<String> blockStateTagBlacklist() {
+        return Arrays.asList(blockPicker.blockStateTagBlacklist.split("\\s*,\\s*"));
+    }
+
+    public List<String> blockEntityTagBlacklist() {
+        return Arrays.asList(blockPicker.blockEntityTagBlacklist.split("\\s*,\\s*"));
+    }
+
+    public List<String> entityTagBlacklist() {
+        return Arrays.asList(blockPicker.entityTagBlacklist.split("\\s*,\\s*"));
     }
 
     public int idPickRange() {
