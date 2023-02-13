@@ -62,7 +62,7 @@
     "text.autoconfig.pickblockpro/config.option.toolPicker.pickaxeEnchantments.base.efficiency": "Эффективность",
     "text.autoconfig.pickblockpro/config.option.toolPicker.pickaxeEnchantments.base.mending": "Починка",
     "text.autoconfig.pickblockpro/config.option.toolPicker.pickaxeEnchantments.silkTouch": "Шёлковое касание",
-    "text.autoconfig.pickblockpro/config.option.toolPicker.pickaxeEnchantments.silkTouch.@Tooltip": "\"Приоритет«шёлковому касанию»\" отвечает за чары при\nуказании «шёлкового касания» и «удачи» одновременно",
+    "text.autoconfig.pickblockpro/config.option.toolPicker.pickaxeEnchantments.silkTouch.@Tooltip": "\"Приоритет «шёлковому касанию»\" отвечает за чары при\nуказании «шёлкового касания» и «удачи» одновременно",
     "text.autoconfig.pickblockpro/config.option.toolPicker.pickaxeEnchantments.fortune": "Удача",
     "text.autoconfig.pickblockpro/config.option.toolPicker.pickaxeEnchantments.fortune.@Tooltip": "\"Приоритет «шёлковому касанию»\" отвечает за чары при\nуказании «шёлкового касания» и «удачи» одновременно",
     "text.autoconfig.pickblockpro/config.option.toolPicker.axeEnchantments": "Чары топора в творческом режиме",
