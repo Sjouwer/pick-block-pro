@@ -3,7 +3,6 @@ package io.github.sjouwer.pickblockpro.util;
 import io.github.sjouwer.pickblockpro.PickBlockPro;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 
 public final class InfoProvider {
@@ -18,7 +17,7 @@ public final class InfoProvider {
             return;
         }
 
-        message.setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+        message.formatted(Formatting.GREEN);
         client.player.sendMessage(message, false);
     }
 
@@ -28,7 +27,7 @@ public final class InfoProvider {
             return;
         }
 
-        warningMessage.setStyle(Style.EMPTY.withColor(Formatting.GOLD));
+        warningMessage.formatted(Formatting.GOLD);
         client.player.sendMessage(warningMessage, false);
     }
 
@@ -38,7 +37,7 @@ public final class InfoProvider {
             return;
         }
 
-        errorMessage.setStyle(Style.EMPTY.withColor(Formatting.DARK_RED));
+        errorMessage.formatted(Formatting.DARK_RED);
         client.player.sendMessage(errorMessage, false);
     }
 }

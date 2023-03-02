@@ -11,15 +11,21 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
+import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+
+import java.util.Optional;
 
 public class BlockPicker {
     private static final MinecraftClient client = MinecraftClient.getInstance();
@@ -75,13 +81,20 @@ public class BlockPicker {
         if (item != null && client.player.getAbilities().creativeMode && Screen.hasControlDown()) {
             if (entity instanceof ItemFrameEntity) {
                 ItemStack itemFrame = new ItemStack(Items.ITEM_FRAME);
-                itemFrame.setCustomName(Text.translatable("text.pick_block_pro.name.framed", item.getName()));
+                MutableText name = Text.translatable("text.pick_block_pro.name.framed", item.getName());
+                name.setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.YELLOW));
+                itemFrame.setCustomName(name);
                 item = itemFrame;
             }
 
             if (entity instanceof PaintingEntity paintingEntity) {
-                String key = "painting." + Registries.PAINTING_VARIANT.getId(paintingEntity.getVariant().value()).toString().replace(":", ".");
-                item.setCustomName(Text.translatable(key));
+                Optional<RegistryKey<PaintingVariant>> key = paintingEntity.getVariant().getKey();
+                if (key.isPresent()) {
+                    String translationKey = key.get().getValue().toTranslationKey("painting", "title");
+                    MutableText name = Text.translatable(translationKey);
+                    name.setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.YELLOW));
+                    item.setCustomName(name);
+                }
             }
 
             NbtUtil.addEntityNbt(item, entity);

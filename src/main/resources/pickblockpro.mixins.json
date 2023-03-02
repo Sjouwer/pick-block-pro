@@ -4,9 +4,10 @@
   "package": "io.github.sjouwer.pickblockpro.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "MixinMinecraftClient",
+    "ChatScreenAccessor",
     "KeyboardMixin",
-    "ChatScreenAccessor"
+    "MixinMinecraftClient",
+    "DecorationItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1
