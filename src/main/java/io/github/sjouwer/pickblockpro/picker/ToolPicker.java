@@ -71,7 +71,7 @@ public class ToolPicker {
             giveOrSwitchTool(Tools.SWORD);
             return;
         }
-        if (state.getMaterial().isLiquid() || state.isOf(Blocks.POWDER_SNOW)) {
+        if (state.isLiquid() || state.isOf(Blocks.POWDER_SNOW)) {
             giveOrSwitchTool(Tools.BUCKET);
             return;
         }
