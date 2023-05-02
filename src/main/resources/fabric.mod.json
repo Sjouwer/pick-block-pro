@@ -15,7 +15,7 @@
   ],
 
   "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/pick-block-pro",
+    "homepage": "https://modrinth.com/mod/pick-block-pro",
     "sources": "https://github.com/Sjouwer/pick-block-pro",
     "issues": "https://github.com/Sjouwer/pick-block-pro/issues"
   },
@@ -35,19 +35,6 @@
   "mixins": [
     "pickblockpro.mixins.json"
   ],
-
-  "custom": {
-    "modmanager": {
-      "modrinth": "6kI7U1sT"
-    },
-    "modmenu": {
-      "updates": {
-        "provider": "modrinth",
-        "projectId": "6kI7U1sT",
-        "channel": "release"
-      }
-    }
-  },
 
   "depends": {
     "minecraft": ">=1.20-alpha",
