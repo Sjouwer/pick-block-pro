@@ -36,7 +36,7 @@ public class NbtUtil {
     private NbtUtil() {
     }
 
-    public static void addEntityNbt(ItemStack stack, Entity entity) {
+    public static void addEntityNbt(ItemStack stack, Entity entity, boolean addLore) {
         NbtCompound entityCompound = entity.writeNbt(new NbtCompound());
         config.entityTagBlacklist().forEach(entityCompound::remove);
 
@@ -68,7 +68,10 @@ public class NbtUtil {
         Identifier identifier = EntityType.getId(entity.getType());
         entityCompound.putString(ID_KEY, identifier.toString());
         stack.setSubNbt(ENTITY_KEY, entityCompound);
-        addLore(stack, "\"(+Entity NBT)\"");
+
+        if (addLore) {
+            addLore(stack, "\"(+Entity NBT)\"");
+        }
     }
 
     public static void addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
