@@ -9,6 +9,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.decoration.GlowItemFrameEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
@@ -79,25 +80,15 @@ public class BlockPicker {
         }
 
         if (item != null && client.player.getAbilities().creativeMode && Screen.hasControlDown()) {
-            if (entity instanceof ItemFrameEntity) {
-                ItemStack itemFrame = new ItemStack(Items.ITEM_FRAME);
-                MutableText name = Text.translatable("text.pick_block_pro.name.framed", item.getName());
-                name.setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.YELLOW));
-                itemFrame.setCustomName(name);
-                item = itemFrame;
+            if (entity instanceof ItemFrameEntity itemFrame) {
+                item = createFramedItemStack(itemFrame);
             }
-
-            if (entity instanceof PaintingEntity paintingEntity) {
-                Optional<RegistryKey<PaintingVariant>> key = paintingEntity.getVariant().getKey();
-                if (key.isPresent()) {
-                    String translationKey = key.get().getValue().toTranslationKey("painting", "title");
-                    MutableText name = Text.translatable(translationKey);
-                    name.setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.YELLOW));
-                    item.setCustomName(name);
-                }
+            else if (entity instanceof PaintingEntity paintingEntity) {
+                item = createPaintingVariantStack(paintingEntity);
             }
-
-            NbtUtil.addEntityNbt(item, entity);
+            else {
+                NbtUtil.addEntityNbt(item, entity, true);
+            }
         }
 
         if (entity instanceof PlayerEntity player) {
@@ -106,6 +97,35 @@ public class BlockPicker {
         }
 
         return item;
+    }
+
+    private static ItemStack createFramedItemStack(ItemFrameEntity itemFrame) {
+        ItemStack itemFrameStack = new ItemStack(itemFrame instanceof GlowItemFrameEntity ? Items.GLOW_ITEM_FRAME : Items.ITEM_FRAME);
+        ItemStack framedItem = itemFrame.getHeldItemStack();
+        if (framedItem.isOf(Items.AIR)) {
+            return itemFrameStack;
+        }
+
+        MutableText name = Text.translatable("text.pick_block_pro.name.framed", framedItem.getName());
+        name.setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.YELLOW));
+        itemFrameStack.setCustomName(name);
+
+        NbtUtil.addEntityNbt(itemFrameStack, itemFrame, false);
+        return itemFrameStack;
+    }
+
+    private static ItemStack createPaintingVariantStack(PaintingEntity painting) {
+        ItemStack paintingStack = new ItemStack(Items.PAINTING);
+        Optional<RegistryKey<PaintingVariant>> key = painting.getVariant().getKey();
+        if (key.isPresent()) {
+            String translationKey = key.get().getValue().toTranslationKey("painting", "title");
+            MutableText name = Text.translatable(translationKey);
+            name.setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.YELLOW));
+            paintingStack.setCustomName(name);
+        }
+
+        NbtUtil.addEntityNbt(paintingStack, painting, false);
+        return paintingStack;
     }
 
     private static ItemStack getBlockItemStack(HitResult hit) {
