@@ -106,7 +106,7 @@
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot7": "锁定第 7 个插槽",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot8": "锁定第 8 个插槽",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot9": "锁定第 9 个插槽",
-    "text.pick_block_pro.message.copied": "复制到剪贴板：%s",
+    "text.pick_block_pro.message.copied": "复制到剪贴板：",
     "text.pick_block_pro.message.allSlotsLocked": "无法选择方块，所有插槽都已锁定！在模组的配置设置中解锁至少 1 个插槽",
     "text.pick_block_pro.message.nothingToPick": "没有什么可挑选的！在模组的配置设置中启用方块、实体或两者的挑选",
     "text.pick_block_pro.name.framed": "帧 %s"

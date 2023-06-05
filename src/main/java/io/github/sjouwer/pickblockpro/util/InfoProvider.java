@@ -3,6 +3,7 @@ package io.github.sjouwer.pickblockpro.util;
 import io.github.sjouwer.pickblockpro.PickBlockPro;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public final class InfoProvider {
@@ -11,13 +12,12 @@ public final class InfoProvider {
     private InfoProvider() {
     }
 
-    public static void sendMessage(MutableText message) {
+    public static void sendMessage(Text message) {
         if (client.player == null) {
             PickBlockPro.LOGGER.info(message.getString());
             return;
         }
 
-        message.formatted(Formatting.GREEN);
         client.player.sendMessage(message, false);
     }
 

@@ -143,10 +143,10 @@ public class BlockPicker {
         if (client.player.getAbilities().creativeMode) {
             if (Screen.hasControlDown() && state.hasBlockEntity()) {
                 BlockEntity blockEntity = client.world.getBlockEntity(blockPos);
-                NbtUtil.addBlockEntityNbt(item, blockEntity);
+                NbtUtil.addBlockEntityNbt(item, blockEntity, true);
             }
             if (Screen.hasAltDown()) {
-                NbtUtil.addBlockStateNbt(item, state);
+                NbtUtil.addBlockStateNbt(item, state, true);
             }
         }
 

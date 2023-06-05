@@ -106,7 +106,7 @@
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot7": "鎖定第 7 個插槽",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot8": "鎖定第 8 個插槽",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot9": "鎖定第 9 個插槽",
-    "text.pick_block_pro.message.copied": "複製到剪貼板：%s",
+    "text.pick_block_pro.message.copied": "複製到剪貼板：",
     "text.pick_block_pro.message.allSlotsLocked": "無法選擇方塊，所有插槽都已鎖定！在模組的配置設置中解鎖至少 1 個插槽",
     "text.pick_block_pro.message.nothingToPick": "沒有什麼可挑選的！在模組的配置設置中啟用方塊、實體或兩者的挑選",
     "text.pick_block_pro.name.framed": "幀 %s"
