@@ -37,12 +37,21 @@ public class NbtUtil {
     }
 
     public static void addEntityNbt(ItemStack stack, Entity entity, boolean addLore) {
-        NbtCompound entityCompound = entity.writeNbt(new NbtCompound());
+        NbtCompound entityCompound = getEntityNbt(entity);
         config.entityTagBlacklist().forEach(entityCompound::remove);
-
         if (entityCompound.isEmpty()) {
             return;
         }
+
+        stack.setSubNbt(ENTITY_KEY, entityCompound);
+
+        if (addLore) {
+            addLore(stack, "\"(+Entity NBT)\"");
+        }
+    }
+
+    public static NbtCompound getEntityNbt(Entity entity) {
+        NbtCompound entityCompound = entity.writeNbt(new NbtCompound());
 
         if (entity instanceof HorseEntity horse && horse.hasArmorInSlot()) {
             NbtCompound armorCompound = new NbtCompound();
@@ -67,17 +76,13 @@ public class NbtUtil {
 
         Identifier identifier = EntityType.getId(entity.getType());
         entityCompound.putString(ID_KEY, identifier.toString());
-        stack.setSubNbt(ENTITY_KEY, entityCompound);
 
-        if (addLore) {
-            addLore(stack, "\"(+Entity NBT)\"");
-        }
+        return entityCompound;
     }
 
-    public static void addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
+    public static void addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity, boolean addLore) {
         NbtCompound blockEntityCompound = blockEntity.createNbtWithIdentifyingData();
         config.blockEntityTagBlacklist().forEach(blockEntityCompound::remove);
-
         if (blockEntityCompound.isEmpty()) {
             return;
         }
@@ -89,31 +94,35 @@ public class NbtUtil {
         }
 
         stack.setSubNbt(BLOCK_ENTITY_KEY, blockEntityCompound);
-        addLore(stack, "\"(+BlockEntity NBT)\"");
+
+        if (addLore) {
+            addLore(stack, "\"(+BlockEntity NBT)\"");
+        }
     }
 
-    public static void addBlockStateNbt(ItemStack stack, BlockState state) {
-        if (state.getProperties().isEmpty()) {
-            return;
-        }
-
-        NbtCompound blockStateCompound = new NbtCompound();
-        for (Property<?> property : state.getProperties()) {
-            String key = property.getName();
-            if (config.blockStateTagBlacklist().contains(key)) {
-                continue;
-            }
-
-            String value = state.get(property).toString().toLowerCase();
-            blockStateCompound.putString(key, value);
-        }
-
+    public static void addBlockStateNbt(ItemStack stack, BlockState state, boolean addLore) {
+        NbtCompound blockStateCompound = getBlockStateNbt(state);
+        config.blockStateTagBlacklist().forEach(blockStateCompound::remove);
         if (blockStateCompound.isEmpty()) {
             return;
         }
 
         stack.setSubNbt(BLOCK_STATE_KEY, blockStateCompound);
-        addLore(stack, "\"(+BlockState NBT)\"");
+
+        if (addLore) {
+            addLore(stack, "\"(+BlockState NBT)\"");
+        }
+    }
+
+    public static NbtCompound getBlockStateNbt(BlockState state) {
+        NbtCompound blockStateCompound = new NbtCompound();
+        for (Property<?> property : state.getProperties()) {
+            String key = property.getName();
+            String value = state.get(property).toString().toLowerCase();
+            blockStateCompound.putString(key, value);
+        }
+
+        return blockStateCompound;
     }
 
     public static void addLore(ItemStack stack, String tag) {

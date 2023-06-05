@@ -121,7 +121,7 @@
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot8": "Заблокировать восьмой слот",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot9": "Заблокировать девятый слот",
 
-    "text.pick_block_pro.message.copied": "Данные скопированы в буфер обмена: %s",
+    "text.pick_block_pro.message.copied": "Данные скопированы в буфер обмена: ",
     "text.pick_block_pro.message.allSlotsLocked": "Невозможно взять блок, все слоты заблокированы! Разблокируйте хотя бы один слот в настройках мода.",
     "text.pick_block_pro.message.nothingToPick": "Выбирать нечего! Активируйте выбор блоков и/или сущностей в настройках мода.",
 

@@ -4,16 +4,20 @@ import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
 import io.github.sjouwer.pickblockpro.util.*;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.Registries;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.StringJoiner;
 
@@ -40,67 +44,106 @@ public class IdPicker {
 
         HitResult hit = Raycast.getHit(config.idPickRange(), !config.idPickFluids(), !config.idPickEntities());
 
-        String id = "";
+        Text id = Text.empty();
         if (hit instanceof EntityHitResult entityHit) {
-            Entity entity = entityHit.getEntity();
-            id = getEntityId(entity);
+            id = getEntityDataAsText(entityHit.getEntity());
         }
 
         if (hit instanceof BlockHitResult blockHit && config.idPickBlocks()) {
-            BlockState state = client.world.getBlockState(blockHit.getBlockPos());
-            id = getBlockId(state);
+            id = getBlockDataAsText(blockHit.getBlockPos());
         }
 
-        if (id.isEmpty()) {
+        if (id.getString().isEmpty()) {
             return;
         }
 
-        MutableText message;
         if (config.copyToClipboard()){
-            client.keyboard.setClipboard(id);
-            message = Text.translatable("text.pick_block_pro.message.copied", id);
-        }
-        else {
-            message = Text.literal(id);
+            client.keyboard.setClipboard(id.getString());
+            InfoProvider.sendMessage(Text.translatable("text.pick_block_pro.message.copied").formatted(Formatting.DARK_GREEN));
         }
 
-        InfoProvider.sendMessage(message);
+        InfoProvider.sendMessage(id);
+    }
+
+    private static Text getEntityDataAsText(Entity entity) {
+        return (Screen.hasControlDown() && config.tagPickerEnabled()) ? getEntityTag(entity) : getEntityId(entity);
+    }
+
+    private static Text getBlockDataAsText(BlockPos blockPos) {
+        BlockState blockState = client.world.getBlockState(blockPos);
+        if (Screen.hasControlDown() && config.tagPickerEnabled() && blockState.hasBlockEntity()) {
+            BlockEntity blockEntity = client.world.getBlockEntity(blockPos);
+            return getBlockEntityTag(blockEntity);
+        }
+
+        return getBlockId(blockState);
     }
 
     /**
      * Method to get the configured ID of a block
      * @param blockState Block to get the ID from
-     * @return ID as String
+     * @return ID as Text
      */
-    public static String getBlockId(BlockState blockState) {
-        StringBuilder fullId = new StringBuilder();
-        fullId.append(Registries.BLOCK.getId(blockState.getBlock()));
+    public static Text getBlockId(BlockState blockState) {
+        String fullId = Registries.BLOCK.getId(blockState.getBlock()).toString();
 
         if (!config.addNamespace()) {
-            fullId.delete(0, fullId.indexOf(":") + 1);
+            fullId = fullId.substring(fullId.indexOf(":") + 1);
         }
 
         if (config.addProperties() && !blockState.getProperties().isEmpty()) {
-            String tmp = blockState.toString();
-            fullId.append(tmp.substring(tmp.indexOf("[")));
+            return Text.literal(fullId).append(getBlockStateTag(blockState));
         }
 
-        return fullId.toString();
+        return Text.literal(fullId);
+    }
+
+    /**
+     * Method to get the configured tag of a BlockState
+     * @param blockState BlockState to get the tag from
+     * @return Tag as Text
+     */
+    public static Text getBlockStateTag(BlockState blockState) {
+        NbtCompound stateTag = NbtUtil.getBlockStateNbt(blockState);
+        config.blockStateTagIdBlacklist().forEach(stateTag::remove);
+        return Text.literal(convertBlockStateTag(stateTag));
+    }
+
+    /**
+     * Method to get the configured tag of a BlockEntity
+     * @param blockEntity BlockEntity to get the tag from
+     * @return Tag as Text
+     */
+    public static Text getBlockEntityTag(BlockEntity blockEntity) {
+        NbtCompound tag = blockEntity.createNbt();
+        config.blockEntityTagIdBlacklist().forEach(tag::remove);
+
+        return config.prettyTagEnabled() ? NbtHelper.toPrettyPrintedText(tag) : Text.literal(tag.toString());
     }
 
     /**
      * Method to get the configured ID of an entity
      * @param entity Entity to get the ID from
-     * @return ID as String
+     * @return ID as Text
      */
-    public static String getEntityId(Entity entity) {
+    public static Text getEntityId(Entity entity) {
         String fullId = Registries.ENTITY_TYPE.getId(entity.getType()).toString();
-
         if (!config.addNamespace() && fullId.contains(":")) {
             fullId = fullId.substring(fullId.indexOf(":") + 1);
         }
 
-        return fullId;
+        return Text.literal(fullId);
+    }
+
+    /**
+     * Method to get the configured tag of an entity
+     * @param entity Entity to get the tag from
+     * @return Tag as Text
+     */
+    public static Text getEntityTag(Entity entity) {
+        NbtCompound entityTag = NbtUtil.getEntityNbt(entity);
+        config.entityTagIdBlacklist().forEach(entityTag::remove);
+        return config.prettyTagEnabled() ? NbtHelper.toPrettyPrintedText(entityTag) : Text.literal(entityTag.toString());
     }
 
     /**
@@ -120,18 +163,25 @@ public class IdPicker {
         fullId.append(itemStack.getItem());
 
         if (config.addProperties()) {
-            NbtCompound statesTag = itemStack.getSubNbt("BlockStateTag");
-            if (statesTag != null) {
-                StringJoiner stateJoiner = new StringJoiner(",");
-                for (String key : statesTag.getKeys()) {
-                    stateJoiner.add(key + "=" + statesTag.getString(key));
-                }
-                fullId.append("[");
-                fullId.append(stateJoiner);
-                fullId.append("]");
+            NbtCompound stateTag = itemStack.getSubNbt("BlockStateTag");
+            if (stateTag != null) {
+                fullId.append(convertBlockStateTag(stateTag));
             }
         }
 
         return fullId.toString();
+    }
+
+    private static String convertBlockStateTag(NbtCompound stateTag) {
+        StringBuilder properties = new StringBuilder();
+        StringJoiner stateJoiner = new StringJoiner(",");
+        for (String key : stateTag.getKeys()) {
+            stateJoiner.add(key + "=" + stateTag.getString(key));
+        }
+        properties.append("[");
+        properties.append(stateJoiner);
+        properties.append("]");
+
+        return properties.toString();
     }
 }

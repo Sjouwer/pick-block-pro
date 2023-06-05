@@ -52,6 +52,16 @@ public class ModConfig implements ConfigData {
         private boolean copyToClipboard = true;
         @Tooltip
         private boolean enableHotbarPicker = true;
+        @Tooltip
+        private boolean enableTagPicker = true;
+        @Tooltip
+        private boolean enablePrettyTags = true;
+        @Tooltip
+        private String blockStateTagBlacklist = "";
+        @Tooltip
+        private String blockEntityTagBlacklist = "";
+        @Tooltip
+        private String entityTagBlacklist = "";
     }
 
     static class BaseEnchantments {
@@ -200,6 +210,26 @@ public class ModConfig implements ConfigData {
 
     public boolean hotbarPickerEnabled() {
         return idPicker.enableHotbarPicker;
+    }
+
+    public boolean tagPickerEnabled() {
+        return idPicker.enableTagPicker;
+    }
+
+    public boolean prettyTagEnabled() {
+        return idPicker.enablePrettyTags;
+    }
+
+    public List<String> blockStateTagIdBlacklist() {
+        return Arrays.asList(idPicker.blockStateTagBlacklist.split("\\s*,\\s*"));
+    }
+
+    public List<String> blockEntityTagIdBlacklist() {
+        return Arrays.asList(idPicker.blockEntityTagBlacklist.split("\\s*,\\s*"));
+    }
+
+    public List<String> entityTagIdBlacklist() {
+        return Arrays.asList(idPicker.entityTagBlacklist.split("\\s*,\\s*"));
     }
 
     public int toolPickRange() {
