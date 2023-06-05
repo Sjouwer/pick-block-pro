@@ -16,7 +16,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.registry.Registries;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.io.File;
@@ -107,9 +109,7 @@ public class PickBlockOverrides {
             }
         }
 
-        int count = blockOverrides.size();
-        String message = "Loaded " + count + " block override" + (count == 1 ? "" : "s") + " and encountered " + errors + " error" + (errors == 1 ? "" : "s");
-        InfoProvider.sendMessage(Text.literal(message));
+        sendResultMessage("block", blockOverrides.size(), errors);
     }
 
     private static void parseEntityOverrides(JsonElement entityOverridesElement) {
@@ -124,9 +124,16 @@ public class PickBlockOverrides {
             }
         }
 
-        int count = entityOverrides.size();
-        String message = "Loaded " + count + " entity override" + (count == 1 ? "" : "s") + " and encountered " + errors + " error" + (errors == 1 ? "" : "s");
-        InfoProvider.sendMessage(Text.literal(message));
+        sendResultMessage("entity", entityOverrides.size(), errors);
+    }
+
+    private static void sendResultMessage(String type, int overrides, int errors) {
+        MutableText message = Text.literal("Loaded ").formatted(Formatting.DARK_GREEN);
+        message.append(Text.literal(String.valueOf(overrides)).formatted(Formatting.WHITE));
+        message.append(Text.literal(" " + type + (overrides == 1 ? " override" : " overrides") + " and encountered ").formatted(Formatting.DARK_GREEN));
+        message.append(Text.literal(String.valueOf(errors)).formatted(Formatting.WHITE));
+        message.append(Text.literal(" error" + (errors == 1 ? "" : "s")).formatted(Formatting.DARK_GREEN));
+        InfoProvider.sendMessage(message);
     }
 
     private static Block idToBlock(String id) {
