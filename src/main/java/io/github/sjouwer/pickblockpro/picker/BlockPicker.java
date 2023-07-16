@@ -4,6 +4,8 @@ import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
 import io.github.sjouwer.pickblockpro.config.PickBlockOverrides;
 import io.github.sjouwer.pickblockpro.util.*;
+import net.fabricmc.fabric.api.event.client.player.ClientPickBlockApplyCallback;
+import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -50,15 +52,20 @@ public class BlockPicker {
         }
 
         HitResult hit = Raycast.getHit(config.blockPickRange(), !config.blockPickFluids(), !config.blockPickEntities());
+        if (hit == null) {
+            return;
+        }
 
-        ItemStack item = null;
+        ItemStack item = ClientPickBlockGatherCallback.EVENT.invoker().pick(client.player, hit);
         if (hit.getType() == HitResult.Type.ENTITY) {
-            item = getEntityItemStack(hit);
+            item = getEntityItemStack(hit, item);
         }
+
         if (hit.getType() == HitResult.Type.BLOCK && config.blockPickBlocks()) {
-            item = getBlockItemStack(hit);
+            item = getBlockItemStack(hit, item);
         }
-        if (hit.getType() == HitResult.Type.MISS && config.blockPickLight()) {
+
+        if (item.isEmpty() && hit.getType() == HitResult.Type.MISS && config.blockPickLight()) {
             //Do another raycast with a longer reach to make sure there is nothing in the way of the sun or moon
             int distance = client.options.getViewDistance().getValue() * 32;
             hit = Raycast.getHit(distance, !config.blockPickFluids(), false);
@@ -67,15 +74,26 @@ public class BlockPicker {
             }
         }
 
-        if (item != null) {
-            InventoryManager.placeItemInsideInventory(item);
+        if (!item.isEmpty()) {
+            item = ClientPickBlockApplyCallback.EVENT.invoker().pick(client.player, hit, item);
         }
+
+        if (item.isEmpty()) {
+            return;
+        }
+
+        InventoryManager.placeItemInsideInventory(item);
     }
 
-    private static ItemStack getEntityItemStack(HitResult hit) {
+    private static ItemStack getEntityItemStack(HitResult hit, ItemStack item) {
         Entity entity = ((EntityHitResult) hit).getEntity();
-        ItemStack item = PickBlockOverrides.getEntityOverride(entity.getType());
-        if (item == null) {
+
+        ItemStack override = PickBlockOverrides.getEntityOverride(entity.getType());
+        if (override != null) {
+            item = override;
+        }
+
+        if (item.isEmpty()) {
             item = entity.getPickBlockStack();
         }
 
@@ -96,7 +114,7 @@ public class BlockPicker {
             NbtUtil.setSkullOwner(item, player);
         }
 
-        return item;
+        return item == null ? ItemStack.EMPTY : item;
     }
 
     private static ItemStack createFramedItemStack(ItemFrameEntity itemFrame) {
@@ -128,16 +146,21 @@ public class BlockPicker {
         return paintingStack;
     }
 
-    private static ItemStack getBlockItemStack(HitResult hit) {
+    private static ItemStack getBlockItemStack(HitResult hit, ItemStack item) {
         BlockPos blockPos = ((BlockHitResult) hit).getBlockPos();
         BlockState state = client.world.getBlockState(blockPos);
-        ItemStack item = PickBlockOverrides.getBlockOverride(state.getBlock());
-        if (item == null) {
+
+        ItemStack override = PickBlockOverrides.getBlockOverride(state.getBlock());
+        if (override != null) {
+            item = override;
+        }
+
+        if (item.isEmpty()) {
             item = state.getBlock().getPickStack(client.world, blockPos, state);
         }
 
         if (item.isEmpty()) {
-            return null;
+            return item;
         }
 
         if (client.player.getAbilities().creativeMode) {
@@ -177,7 +200,7 @@ public class BlockPicker {
             return giveOrCycleLight(7);
         }
 
-        return null;
+        return ItemStack.EMPTY;
     }
 
     private static ItemStack giveOrCycleLight(int lightLvl) {
