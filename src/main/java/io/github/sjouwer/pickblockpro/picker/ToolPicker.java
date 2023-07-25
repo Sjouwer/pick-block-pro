@@ -99,7 +99,7 @@ public class ToolPicker {
     private static void giveOrSwitchTool(Tools tool, EntityGroup eGroup) {
         ItemStack bestTool = client.player.getAbilities().creativeMode ? createBestTool(tool, eGroup) : findBestTool(client.player, tool, eGroup);
         if (bestTool != null) {
-            InventoryManager.placeItemInsideInventory(bestTool);
+            InventoryManager.pickOrPlaceItemInInventory(bestTool);
         }
     }
 

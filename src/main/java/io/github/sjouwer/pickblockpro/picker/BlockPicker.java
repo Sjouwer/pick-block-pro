@@ -82,7 +82,7 @@ public class BlockPicker {
             return;
         }
 
-        InventoryManager.placeItemInsideInventory(item);
+        InventoryManager.pickOrPlaceItemInInventory(item);
     }
 
     private static ItemStack getEntityItemStack(HitResult hit, ItemStack item) {
