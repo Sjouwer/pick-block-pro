@@ -6,6 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 
 import static net.minecraft.entity.player.PlayerInventory.MAIN_SIZE;
@@ -24,13 +25,27 @@ public final class InventoryManager {
      * @param item Item to give the player
      */
     public static void pickOrPlaceItemInInventory(ItemStack item) {
-        if (client.interactionManager == null || client.player == null) {
-            PickBlockPro.LOGGER.error("Unable to place item inside inventory; no player and/or interaction manager");
+        if (client.player == null) {
+            PickBlockPro.LOGGER.error("Unable to place item inside inventory; no player found");
             return;
         }
 
-        boolean isCreative = client.player.getAbilities().creativeMode;
         PlayerInventory inventory = client.player.getInventory();
+        int selectedSlot = inventory.selectedSlot;
+        pickOrPlaceItemInInventory(item, inventory);
+        int newSelectedSlot = inventory.selectedSlot;
+
+        if (config.stayInSameSlot() &&
+                selectedSlot != newSelectedSlot &&
+                !isHotbarSlotLocked(selectedSlot) &&
+                !isHotbarSlotLocked(newSelectedSlot)) {
+            swapSlot(selectedSlot, newSelectedSlot);
+            inventory.selectedSlot = selectedSlot;
+        }
+    }
+
+    private static void pickOrPlaceItemInInventory(ItemStack item, PlayerInventory inventory) {
+        boolean isCreative = client.player.getAbilities().creativeMode;
         int stackSlot = inventory.getSlotWithStack(item);
 
         //Item is not inside the inventory, if in survival search through item-containers to see if they contain the item
@@ -51,7 +66,7 @@ public final class InventoryManager {
 
         //Item is already inside the inventory, need to swap it to the hotbar
         if (stackSlot >= HOTBAR_SIZE) {
-            client.interactionManager.pickFromInventory(stackSlot);
+            swapSlot(inventory.selectedSlot, stackSlot);
             return;
         }
 
@@ -65,6 +80,20 @@ public final class InventoryManager {
                 updateCreativeSlot(emptySlot);
             }
         }
+    }
+
+    private static void swapSlot(int firstSlot, int secondSlot) {
+        if (client.interactionManager == null || client.player == null) {
+            PickBlockPro.LOGGER.error("Unable to swap inventory slot; no player and/or interaction manager");
+            return;
+        }
+
+        client.interactionManager.clickSlot(
+                client.player.playerScreenHandler.syncId,
+                MAIN_SIZE + firstSlot,
+                secondSlot,
+                SlotActionType.SWAP,
+                client.player);
     }
 
     /**
@@ -100,9 +129,7 @@ public final class InventoryManager {
             return false;
         }
 
-        //tick to update new selected slot
         inventory.selectedSlot = slot;
-        client.interactionManager.tick();
         return true;
     }
 

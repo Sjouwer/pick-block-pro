@@ -119,6 +119,8 @@
     "text.autoconfig.pickblockpro/config.category.inventory_settings": "Inventory",
     "text.autoconfig.pickblockpro/config.option.inventory.searchThroughContainers": "Search through item-containers",
     "text.autoconfig.pickblockpro/config.option.inventory.searchThroughContainers.@Tooltip": "Also search through item-containers \nlike shulkers and bundles to find \nthe picked item (survival only)",
+    "text.autoconfig.pickblockpro/config.option.inventory.stayInSameSlot": "Stay in same hotbar slot",
+    "text.autoconfig.pickblockpro/config.option.inventory.stayInSameSlot.@Tooltip": "Tries to keep the selected hotbar slot \nthe same when using pick block. \nThis won't work with locked slots",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots": "Locked hotbar slots",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.@Tooltip": "Items in a locked slot will not be \nswitched out or replaced, instead \nthe next available slot will be used",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot1": "Lock 1st slot",

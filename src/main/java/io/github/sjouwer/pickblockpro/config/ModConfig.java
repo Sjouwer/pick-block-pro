@@ -135,6 +135,8 @@ public class ModConfig implements ConfigData {
     static class Inventory {
         @Tooltip
         private boolean searchThroughContainers = true;
+        @Tooltip
+        private boolean stayInSameSlot = false;
         @CollapsibleObject(startExpanded=true) @Tooltip
         private LockedSlots lockedSlots = new LockedSlots();
     }
@@ -324,6 +326,10 @@ public class ModConfig implements ConfigData {
 
     public boolean searchContainers() {
         return inventory.searchThroughContainers;
+    }
+
+    public boolean stayInSameSlot() {
+        return inventory.stayInSameSlot;
     }
 
     public boolean isSlotLocked(int slot) {
