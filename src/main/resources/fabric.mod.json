@@ -41,5 +41,9 @@
     "fabricloader": ">=0.14.0",
     "fabric-api": ">=0.83.0",
     "cloth-config": ">=11.0.0"
+  },
+
+  "suggests": {
+    "inventory_control_tweaks": ">=1.3.27"
   }
 }
