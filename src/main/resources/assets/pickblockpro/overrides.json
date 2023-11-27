@@ -6,7 +6,11 @@
         "minecraft:soul_fire": "minecraft:flint_and_steel"
     },
     "Entity to ItemStack": {
+        "minecraft:tnt": "minecraft:tnt",
+        "minecraft:fireball": "minecraft:fire_charge",
         "minecraft:wither": "minecraft:wither_spawn_egg",
-        "minecraft:ender_dragon": "minecraft:ender_dragon_spawn_egg"
+        "minecraft:ender_dragon": "minecraft:ender_dragon_spawn_egg",
+        "minecraft:giant": "minecraft:zombie_spawn_egg{EntityTag:{id:giant,CustomName:''},display:{Name:'{\"text\":\"Giant Spawn Egg\",\"color\":\"light_purple\",\"italic\":\"false\"}'}}",
+        "minecraft:illusioner": "minecraft:evoker_spawn_egg{EntityTag:{id:illusioner,CustomName:''},display:{Name:'{\"text\":\"Illusioner Spawn Egg\",\"color\":\"light_purple\",\"italic\":\"false\"}'}}"
     }
 }
