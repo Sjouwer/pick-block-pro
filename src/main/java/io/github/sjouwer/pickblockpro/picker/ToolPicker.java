@@ -62,6 +62,7 @@ public class ToolPicker {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private static void pickMostSuitableTool(BlockState state) {
         if (state.isIn(BlockTags.WOOL) || state.isOf(Blocks.COBWEB)) {
             giveOrSwitchTool(Tools.SHEARS);

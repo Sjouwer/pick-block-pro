@@ -13,7 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.SkullItem;
+import net.minecraft.item.PlayerHeadItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
@@ -87,9 +87,9 @@ public class NbtUtil {
             return;
         }
 
-        if (stack.getItem() instanceof SkullItem && blockEntityCompound.contains(SkullItem.SKULL_OWNER_KEY)) {
-            NbtCompound skullCompound = blockEntityCompound.getCompound(SkullItem.SKULL_OWNER_KEY);
-            stack.getOrCreateNbt().put(SkullItem.SKULL_OWNER_KEY, skullCompound);
+        if (stack.getItem() instanceof PlayerHeadItem && blockEntityCompound.contains(PlayerHeadItem.SKULL_OWNER_KEY)) {
+            NbtCompound skullCompound = blockEntityCompound.getCompound(PlayerHeadItem.SKULL_OWNER_KEY);
+            stack.getOrCreateNbt().put(PlayerHeadItem.SKULL_OWNER_KEY, skullCompound);
             return;
         }
 
@@ -164,7 +164,7 @@ public class NbtUtil {
     public static void setSkullOwner(ItemStack skull, PlayerEntity player) {
         NbtCompound skullOwner = new NbtCompound();
         NbtHelper.writeGameProfile(skullOwner, player.getGameProfile());
-        skull.setSubNbt(SkullItem.SKULL_OWNER_KEY, skullOwner);
+        skull.setSubNbt(PlayerHeadItem.SKULL_OWNER_KEY, skullOwner);
     }
 
     public static int getAmountStored(ItemStack storage, Item item) {
