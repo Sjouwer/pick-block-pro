@@ -11,6 +11,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.decoration.GlowItemFrameEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
@@ -114,6 +115,10 @@ public class BlockPicker {
             NbtUtil.setSkullOwner(item, player);
         }
 
+        if (entity instanceof FallingBlockEntity fallingBlock) {
+            item = getFallingBlockItemStack(fallingBlock);
+        }
+
         return item == null ? ItemStack.EMPTY : item;
     }
 
@@ -144,6 +149,15 @@ public class BlockPicker {
 
         NbtUtil.addEntityNbt(paintingStack, painting, false);
         return paintingStack;
+    }
+
+    private static ItemStack getFallingBlockItemStack(FallingBlockEntity fallingBlock) {
+        ItemStack item = new ItemStack(fallingBlock.getBlockState().getBlock());
+        if (client.player.getAbilities().creativeMode && Screen.hasAltDown()) {
+            NbtUtil.addBlockStateNbt(item, fallingBlock.getBlockState(), true);
+        }
+
+        return item;
     }
 
     private static ItemStack getBlockItemStack(HitResult hit, ItemStack item) {
