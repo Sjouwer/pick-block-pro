@@ -53,6 +53,8 @@ public class ModConfig implements ConfigData {
         @Tooltip
         private boolean enableHotbarPicker = true;
         @Tooltip
+        private boolean convertItemToBlock = true;
+        @Tooltip
         private boolean enableTagPicker = true;
         @Tooltip
         private boolean enablePrettyTags = true;
@@ -210,16 +212,20 @@ public class ModConfig implements ConfigData {
         return idPicker.copyToClipboard;
     }
 
-    public boolean hotbarPickerEnabled() {
-        return idPicker.enableHotbarPicker;
-    }
-
     public boolean tagPickerEnabled() {
         return idPicker.enableTagPicker;
     }
 
     public boolean prettyTagEnabled() {
         return idPicker.enablePrettyTags;
+    }
+
+    public boolean hotbarPickerEnabled() {
+        return idPicker.enableHotbarPicker;
+    }
+
+    public boolean convertItemToBlock() {
+        return idPicker.convertItemToBlock;
     }
 
     public List<String> blockStateTagIdBlacklist() {

@@ -42,6 +42,8 @@
     "text.autoconfig.pickblockpro/config.option.idPicker.copyToClipboard.@Tooltip": "Copy the picked ID directly to the clipboard",
     "text.autoconfig.pickblockpro/config.option.idPicker.enableHotbarPicker": "Enable hotbar picker",
     "text.autoconfig.pickblockpro/config.option.idPicker.enableHotbarPicker.@Tooltip": "When chat is open use: \nCTRL + <hotbar slot number>",
+    "text.autoconfig.pickblockpro/config.option.idPicker.convertItemToBlock": "Convert item to block",
+    "text.autoconfig.pickblockpro/config.option.idPicker.convertItemToBlock.@Tooltip": "When using the hotbar picker, when possible \nitems names will be converted to block names \nfor better compatibility with WorldEdit commands. \nExample: redstone -> redstone_wire",
     "text.autoconfig.pickblockpro/config.option.idPicker.enableTagPicker": "Enable tag picker",
     "text.autoconfig.pickblockpro/config.option.idPicker.enableTagPicker.@Tooltip": "Copy all (Block)Entity tags when \nholding CTRL while using the ID picker",
     "text.autoconfig.pickblockpro/config.option.idPicker.enablePrettyTags": "Enable pretty tags",

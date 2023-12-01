@@ -5,9 +5,11 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "ChatScreenAccessor",
+    "DecorationItemMixin",
     "KeyboardMixin",
     "MixinMinecraftClient",
-    "DecorationItemMixin"
+    "BucketItemAccessor",
+    "VerticallyAttachableBlockItemAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

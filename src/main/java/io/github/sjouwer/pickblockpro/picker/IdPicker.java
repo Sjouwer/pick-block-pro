@@ -2,13 +2,22 @@ package io.github.sjouwer.pickblockpro.picker;
 
 import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
+import io.github.sjouwer.pickblockpro.mixin.BucketItemAccessor;
+import io.github.sjouwer.pickblockpro.mixin.VerticallyAttachableBlockItemAccessor;
 import io.github.sjouwer.pickblockpro.util.*;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.item.BucketItem;
+import net.minecraft.item.EntityBucketItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.VerticallyAttachableBlockItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.Registries;
@@ -152,24 +161,26 @@ public class IdPicker {
      * @return ID as String
      */
     public static String getItemId(ItemStack itemStack) {
-        ModConfig config = PickBlockPro.getConfig();
-        StringBuilder fullId = new StringBuilder();
+        NbtCompound stateTag = itemStack.getSubNbt("BlockStateTag");
 
-        if (config.addNamespace()) {
-            fullId.append(Registries.ITEM.getId(itemStack.getItem()).getNamespace());
-            fullId.append(":");
+        String fullId = "";
+        if (config.convertItemToBlock()) {
+            fullId = convertToBlockId(itemStack, stateTag);
         }
 
-        fullId.append(itemStack.getItem());
-
-        if (config.addProperties()) {
-            NbtCompound stateTag = itemStack.getSubNbt("BlockStateTag");
-            if (stateTag != null) {
-                fullId.append(convertBlockStateTag(stateTag));
-            }
+        if (fullId.isEmpty()) {
+            fullId = Registries.ITEM.getId(itemStack.getItem()).toString();
         }
 
-        return fullId.toString();
+        if (!config.addNamespace()) {
+            fullId = fullId.substring(fullId.indexOf(":") + 1);
+        }
+
+        if (config.addProperties() && stateTag != null) {
+            fullId = fullId + convertBlockStateTag(stateTag);
+        }
+
+        return fullId;
     }
 
     private static String convertBlockStateTag(NbtCompound stateTag) {
@@ -183,5 +194,30 @@ public class IdPicker {
         properties.append("]");
 
         return properties.toString();
+    }
+
+    private static String convertToBlockId(ItemStack itemStack, NbtCompound stateTag) {
+        String id = "";
+
+        Item item = itemStack.getItem();
+        if (item instanceof BucketItem && !(item instanceof EntityBucketItem)) {
+            Fluid fluid = ((BucketItemAccessor) item).getFluid();
+            id = Registries.FLUID.getId(fluid).toString();
+        }
+        else {
+            Block block;
+            if (stateTag != null && stateTag.contains("facing") && item instanceof VerticallyAttachableBlockItem) {
+                block = ((VerticallyAttachableBlockItemAccessor) item).getWallBlock();
+            }
+            else {
+                block = Block.getBlockFromItem(item);
+            }
+
+            if (block != Blocks.AIR) {
+                id = Registries.BLOCK.getId(block).toString();
+            }
+        }
+
+        return id;
     }
 }
