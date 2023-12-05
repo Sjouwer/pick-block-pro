@@ -6,7 +6,9 @@ import io.github.sjouwer.pickblockpro.config.PickBlockOverrides;
 import io.github.sjouwer.pickblockpro.util.*;
 import net.fabricmc.fabric.api.event.client.player.ClientPickBlockApplyCallback;
 import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -67,23 +69,16 @@ public class BlockPicker {
         }
 
         if (item.isEmpty() && hit.getType() == HitResult.Type.MISS && config.blockPickLight()) {
-            //Do another raycast with a longer reach to make sure there is nothing in the way of the sun or moon
-            int distance = client.options.getViewDistance().getValue() * 32;
-            hit = Raycast.getHit(distance, !config.blockPickFluids(), false);
-            if (hit.getType() == HitResult.Type.MISS) {
-                item = getLightFromSunOrMoon();
-            }
+            item = getLightFromSunOrMoon();
         }
 
         if (!item.isEmpty()) {
             item = ClientPickBlockApplyCallback.EVENT.invoker().pick(client.player, hit, item);
         }
 
-        if (item.isEmpty()) {
-            return;
+        if (!item.isEmpty()) {
+            InventoryManager.pickOrPlaceItemInInventory(item);
         }
-
-        InventoryManager.pickOrPlaceItemInInventory(item);
     }
 
     private static ItemStack getEntityItemStack(HitResult hit, ItemStack item) {
@@ -163,21 +158,22 @@ public class BlockPicker {
     private static ItemStack getBlockItemStack(HitResult hit, ItemStack item) {
         BlockPos blockPos = ((BlockHitResult) hit).getBlockPos();
         BlockState state = client.world.getBlockState(blockPos);
+        Block block = state.getBlock();
 
-        ItemStack override = PickBlockOverrides.getBlockOverride(state.getBlock());
+        ItemStack override = PickBlockOverrides.getBlockOverride(block);
         if (override != null) {
             item = override;
         }
 
-        if (item.isEmpty()) {
-            item = state.getBlock().getPickStack(client.world, blockPos, state);
+        if (item.isEmpty() && block instanceof FluidBlock) {
+            item = state.getFluidState().getFluid().getBucketItem().getDefaultStack();
         }
 
         if (item.isEmpty()) {
-            return item;
+            item = block.getPickStack(client.world, blockPos, state);
         }
 
-        if (client.player.getAbilities().creativeMode) {
+        if (!item.isEmpty() && client.player.getAbilities().creativeMode) {
             if (Screen.hasControlDown() && state.hasBlockEntity()) {
                 BlockEntity blockEntity = client.world.getBlockEntity(blockPos);
                 NbtUtil.addBlockEntityNbt(item, blockEntity, true);
@@ -191,6 +187,13 @@ public class BlockPicker {
     }
 
     private static ItemStack getLightFromSunOrMoon() {
+        //Do another raycast with a longer reach to make sure there is nothing in the way of the sun or moon
+        int distance = client.options.getViewDistance().getValue() * 32;
+        HitResult hit = Raycast.getHit(distance, false, false);
+        if (hit == null || hit.getType() != HitResult.Type.MISS) {
+            return ItemStack.EMPTY;
+        }
+
         double skyAngle = client.world.getSkyAngle(client.getTickDelta()) + .25;
         if (skyAngle > 1) {
             skyAngle --;

@@ -1,9 +1,8 @@
 {
     "Block to ItemStack": {
-        "minecraft:water": "minecraft:water_bucket",
-        "minecraft:lava": "minecraft:lava_bucket",
         "minecraft:fire": "minecraft:flint_and_steel",
-        "minecraft:soul_fire": "minecraft:flint_and_steel"
+        "minecraft:soul_fire": "minecraft:flint_and_steel",
+        "minecraft:frosted_ice": "minecraft:ice"
     },
     "Entity to ItemStack": {
         "minecraft:tnt": "minecraft:tnt",
