@@ -82,16 +82,20 @@ public final class InventoryManager {
         }
     }
 
-    private static void swapSlot(int firstSlot, int secondSlot) {
+    private static void swapSlot(int hotbarSlot, int inventorySlot) {
         if (client.interactionManager == null || client.player == null) {
             PickBlockPro.LOGGER.error("Unable to swap inventory slot; no player and/or interaction manager");
             return;
         }
 
+        if (inventorySlot < 9) {
+            inventorySlot += MAIN_SIZE;
+        }
+
         client.interactionManager.clickSlot(
                 client.player.playerScreenHandler.syncId,
-                MAIN_SIZE + firstSlot,
-                secondSlot,
+                inventorySlot,
+                hotbarSlot,
                 SlotActionType.SWAP,
                 client.player);
     }
