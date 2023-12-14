@@ -70,6 +70,7 @@ public class BlockPicker {
 
         if (item.isEmpty() && hit.getType() == HitResult.Type.MISS && config.blockPickLight()) {
             item = getLightFromSunOrMoon();
+            if (item == null) return;
         }
 
         if (!item.isEmpty()) {
