@@ -19,7 +19,6 @@ import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKey;
@@ -30,6 +29,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 import java.util.Optional;
 
@@ -70,7 +70,6 @@ public class BlockPicker {
 
         if (item.isEmpty() && hit.getType() == HitResult.Type.MISS && config.blockPickLight()) {
             item = getLightFromSunOrMoon();
-            if (item == null) return;
         }
 
         if (!item.isEmpty()) {
@@ -188,6 +187,11 @@ public class BlockPicker {
     }
 
     private static ItemStack getLightFromSunOrMoon() {
+        //Make sure we're in the overworld
+        if (client.world.getRegistryKey() != World.OVERWORLD) {
+            return ItemStack.EMPTY;
+        }
+
         //Do another raycast with a longer reach to make sure there is nothing in the way of the sun or moon
         int distance = client.options.getViewDistance().getValue() * 32;
         HitResult hit = Raycast.getHit(distance, false, false);
@@ -202,13 +206,14 @@ public class BlockPicker {
         skyAngle *= 360;
 
         Vec3d playerVector = client.player.getRotationVec(client.getTickDelta());
-        double playerAngle = Math.atan2(playerVector.y,playerVector.x) * 180 / Math.PI;
+        double playerAngle = Math.atan2(playerVector.y, playerVector.x) * 180 / Math.PI;
         if (playerAngle < 0) {
             playerAngle += 360;
         }
 
-        //Sun
         double angleDifference = skyAngle - playerAngle;
+
+        //Sun
         if (Math.abs(playerVector.z) < 0.076 && Math.abs(angleDifference) < 4.3) {
             return giveOrCycleLight(15);
         }
@@ -222,18 +227,16 @@ public class BlockPicker {
     }
 
     private static ItemStack giveOrCycleLight(int lightLvl) {
-        ItemStack mainHandStack = client.player.getMainHandStack();
-        if (mainHandStack.isOf(Items.LIGHT)) {
+        PlayerEntity player = client.player;
+        ItemStack mainHandStack = player.getMainHandStack();
+        if (mainHandStack.isOf(Items.LIGHT) && player.getAbilities().creativeMode) {
             NbtUtil.cycleLightLevel(mainHandStack);
-            PlayerInventory inventory = client.player.getInventory();
-            inventory.setStack(inventory.selectedSlot, mainHandStack);
-            InventoryManager.updateCreativeSlot(inventory.selectedSlot);
-            return null;
+            InventoryManager.updateCreativeSlot(player.getInventory().selectedSlot);
+            return ItemStack.EMPTY;
         }
-        else {
-            ItemStack light = new ItemStack(Items.LIGHT);
-            NbtUtil.setLightLevel(light, lightLvl);
-            return light;
-        }
+
+        ItemStack light = new ItemStack(Items.LIGHT);
+        NbtUtil.setLightLevel(light, lightLvl);
+        return light;
     }
 }
