@@ -9,9 +9,10 @@
     "Sjouwer"
   ],
   "contributors": [
-    "ru-ru: Felix14-v2",
-    "ru-ru: FurnyGo",
-    "zh-cn: buiawpkgew1"
+    "ru-ru: Felix14-v2 & FurnyGo",
+    "zh-cn: buiawpkgew1",
+    "zh-tw: buiawpkgew1",
+    "fr-fr: Myuui"
   ],
 
   "contact": {
@@ -38,7 +39,7 @@
 
   "depends": {
     "minecraft": ">=1.20.4",
-    "fabricloader": ">=0.14.0",
+    "fabricloader": ">=0.15.0",
     "fabric-api": ">=0.91.1",
     "cloth-config": ">=13.0.0"
   },
