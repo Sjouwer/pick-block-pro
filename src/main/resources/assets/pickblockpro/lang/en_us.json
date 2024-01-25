@@ -18,6 +18,8 @@
     "text.autoconfig.pickblockpro/config.option.blockPicker.pickFire.@Tooltip": "Get a flint & steel when picking fire",
     "text.autoconfig.pickblockpro/config.option.blockPicker.pickLight": "Pick light",
     "text.autoconfig.pickblockpro/config.option.blockPicker.pickLight.@Tooltip": "Get a light block when picking the sun or moon",
+    "text.autoconfig.pickblockpro/config.option.blockPicker.overrideLitematica": "Override Litematica Pick Block",
+    "text.autoconfig.pickblockpro/config.option.blockPicker.overrideLitematica.@Tooltip": "When enabled Litematica will use the \nrange, nbt logic and inventory management \nfrom Pick Block Pro instead of its own",
     "text.autoconfig.pickblockpro/config.option.blockPicker.blockStateTagBlacklist": "BlockState Tag Blacklist",
     "text.autoconfig.pickblockpro/config.option.blockPicker.blockStateTagBlacklist.@Tooltip": "BlockState tags that should not be copied \nwhen using ALT + Pick Block. \nSeparate each tag by a comma. \nTags are case sensitive",
     "text.autoconfig.pickblockpro/config.option.blockPicker.blockEntityTagBlacklist": "BlockEntity Tag Blacklist",

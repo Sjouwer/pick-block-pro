@@ -28,6 +28,8 @@ public class ModConfig implements ConfigData {
         @Tooltip
         private boolean pickLight = true;
         @Tooltip
+        private boolean overrideLitematica = true;
+        @Tooltip
         private String blockStateTagBlacklist = "waterlogged";
         @Tooltip
         private String blockEntityTagBlacklist = "";
@@ -170,6 +172,10 @@ public class ModConfig implements ConfigData {
 
     public boolean blockPickLight() {
         return blockPicker.pickLight;
+    }
+
+    public boolean overrideLitematica() {
+        return blockPicker.overrideLitematica;
     }
 
     public List<String> blockStateTagBlacklist() {

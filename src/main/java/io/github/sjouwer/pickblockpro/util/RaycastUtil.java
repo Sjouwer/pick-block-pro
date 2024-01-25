@@ -9,10 +9,10 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 
-public final class Raycast {
+public final class RaycastUtil {
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
-    private Raycast() {
+    private RaycastUtil() {
     }
 
     /**

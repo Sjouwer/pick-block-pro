@@ -19,6 +19,10 @@ repositories {
         name = 'ModMenu'
         url = 'https://maven.terraformersmc.com/releases/'
     }
+    maven {
+        name = 'CurseForge'
+        url = "https://cursemaven.com"
+    }
 }
 
 dependencies {
@@ -34,6 +38,10 @@ dependencies {
 
     //Cloth Config
     modImplementation "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}"
+
+    //Litematica
+    modImplementation "curse.maven:litematica-308892:${project.litematica_version}"
+    modRuntimeOnly "curse.maven:malilib-303119:${project.malilib_version}"
 }
 
 processResources {
