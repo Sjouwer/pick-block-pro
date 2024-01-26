@@ -22,7 +22,7 @@ public final class RaycastUtil {
      * @param ignoreEntities Should the cast ignore entities, making it pass through them
      * @return Result of the raycast
      */
-    public static HitResult getHit(int range, boolean ignoreFluids, boolean ignoreEntities) {
+    public static HitResult getHit(double range, boolean ignoreFluids, boolean ignoreEntities) {
         if (client.cameraEntity == null || client.world == null) {
             PickBlockPro.LOGGER.error("Tried to raycast outside of play; no world and/or camera");
             return null;
@@ -40,7 +40,7 @@ public final class RaycastUtil {
         }
 
         Box box = player.getBoundingBox().stretch(vector.multiply(range));
-        int range2 = range * range;
+        double range2 = range * range;
         EntityHitResult entityHit = ProjectileUtil.raycast(player, rayStart, rayEnd, box, entityX -> !entityX.isSpectator() && entityX.canHit(), range2);
 
         if (entityHit == null) {

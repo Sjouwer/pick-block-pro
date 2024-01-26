@@ -27,12 +27,13 @@ public class WorldUtilsMixin {
     {
         ModConfig config = PickBlockPro.getConfig();
         if(config.overrideLitematica()) {
+            Boolean isCreative = mc.player.getAbilities().creativeMode;
             BlockPos pos;
             if (closest) {
-                pos = RayTraceUtils.getSchematicWorldTraceIfClosest(mc.world, mc.player, config.blockPickRange());
+                pos = RayTraceUtils.getSchematicWorldTraceIfClosest(mc.world, mc.player, config.blockPickRange(isCreative));
             }
             else {
-                pos = RayTraceUtils.getFurthestSchematicWorldBlockBeforeVanilla(mc.world, mc.player, config.blockPickRange(), true);
+                pos = RayTraceUtils.getFurthestSchematicWorldBlockBeforeVanilla(mc.world, mc.player, config.blockPickRange(isCreative), true);
             }
 
             if (pos != null) {
@@ -41,7 +42,7 @@ public class WorldUtilsMixin {
                 ItemStack stack = MaterialCache.getInstance().getRequiredBuildItemForState(state, world, pos);
 
                 if (!stack.isEmpty()) {
-                    if (mc.player.getAbilities().creativeMode) {
+                    if (isCreative) {
                         if (Screen.hasControlDown() && state.hasBlockEntity()) {
                             BlockEntity blockEntity = world.getBlockEntity(pos);
                             NbtUtil.addBlockEntityNbt(stack, blockEntity, true);
