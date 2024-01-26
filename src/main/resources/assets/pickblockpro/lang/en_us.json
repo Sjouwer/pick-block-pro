@@ -7,7 +7,9 @@
 
     "text.autoconfig.pickblockpro/config.category.block_picker_settings": "Block Picker",
     "text.autoconfig.pickblockpro/config.option.blockPicker.range": "Block picker range",
-    "text.autoconfig.pickblockpro/config.option.blockPicker.range.@Tooltip": "Range in blocks of the block picker",
+    "text.autoconfig.pickblockpro/config.option.blockPicker.range.@Tooltip": "Range in blocks of the block picker \nwhen NOT in creative mode. \nMinecraft default: 4.5",
+    "text.autoconfig.pickblockpro/config.option.blockPicker.creativeRange": "Creative block picker range",
+    "text.autoconfig.pickblockpro/config.option.blockPicker.creativeRange.@Tooltip": "Range in blocks of the block picker \nwhen in creative mode. \nMinecraft default: 5.2",
     "text.autoconfig.pickblockpro/config.option.blockPicker.pickBlocks": "Pick blocks",
     "text.autoconfig.pickblockpro/config.option.blockPicker.pickBlocks.@Tooltip": "Should the block picker pick blocks?",
     "text.autoconfig.pickblockpro/config.option.blockPicker.pickEntities": "Pick entities",

@@ -44,7 +44,8 @@ public class BlockPicker {
      * Provide the player with the item of the block or entity they are looking at
      */
     public static void pickBlock() {
-        if (client.player == null || client.world == null) {
+        PlayerEntity player = client.player;
+        if (player == null || client.world == null) {
             PickBlockPro.LOGGER.error("Pick Block called outside of play; no world and/or player");
             return;
         }
@@ -54,12 +55,12 @@ public class BlockPicker {
             return;
         }
 
-        HitResult hit = RaycastUtil.getHit(config.blockPickRange(), !config.blockPickFluids(), !config.blockPickEntities());
+        HitResult hit = RaycastUtil.getHit(config.blockPickRange(player.getAbilities().creativeMode), !config.blockPickFluids(), !config.blockPickEntities());
         if (hit == null) {
             return;
         }
 
-        ItemStack item = ClientPickBlockGatherCallback.EVENT.invoker().pick(client.player, hit);
+        ItemStack item = ClientPickBlockGatherCallback.EVENT.invoker().pick(player, hit);
         if (hit.getType() == HitResult.Type.ENTITY) {
             item = getEntityItemStack(hit, item);
         }
@@ -73,7 +74,7 @@ public class BlockPicker {
         }
 
         if (!item.isEmpty()) {
-            item = ClientPickBlockApplyCallback.EVENT.invoker().pick(client.player, hit, item);
+            item = ClientPickBlockApplyCallback.EVENT.invoker().pick(player, hit, item);
         }
 
         if (!item.isEmpty()) {

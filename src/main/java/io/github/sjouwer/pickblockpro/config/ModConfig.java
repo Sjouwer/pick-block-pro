@@ -18,7 +18,9 @@ import java.util.*;
 public class ModConfig implements ConfigData {
     static class BlockPicker {
         @Tooltip
-        private int range = 100;
+        private double range = 100;
+        @Tooltip
+        private double creativeRange = 100;
         @Tooltip
         private boolean pickBlocks = true;
         @Tooltip
@@ -39,7 +41,7 @@ public class ModConfig implements ConfigData {
 
     static class IdPicker {
         @Tooltip
-        private int range = 100;
+        private double range = 100;
         @Tooltip
         private boolean pickBlocks = true;
         @Tooltip
@@ -99,7 +101,7 @@ public class ModConfig implements ConfigData {
 
     static class ToolPicker {
         @Tooltip
-        private int range = 100;
+        private double range = 100;
         @Tooltip
         private boolean pickFluids = false;
         @Tooltip
@@ -154,8 +156,8 @@ public class ModConfig implements ConfigData {
     @TransitiveObject @Category("inventory_settings")
     private Inventory inventory = new Inventory();
 
-    public int blockPickRange() {
-        return blockPicker.range;
+    public double blockPickRange(boolean isCreative) {
+        return isCreative ? blockPicker.creativeRange : blockPicker.range;
     }
 
     public boolean blockPickBlocks() {
@@ -190,7 +192,7 @@ public class ModConfig implements ConfigData {
         return Arrays.asList(blockPicker.entityTagBlacklist.split("\\s*,\\s*"));
     }
 
-    public int idPickRange() {
+    public double idPickRange() {
         return idPicker.range;
     }
 
@@ -246,7 +248,7 @@ public class ModConfig implements ConfigData {
         return Arrays.asList(idPicker.entityTagBlacklist.split("\\s*,\\s*"));
     }
 
-    public int toolPickRange() {
+    public double toolPickRange() {
         return toolPicker.range;
     }
 
