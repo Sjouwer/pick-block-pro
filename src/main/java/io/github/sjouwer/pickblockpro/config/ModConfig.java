@@ -111,6 +111,8 @@ public class ModConfig implements ConfigData {
         @Tooltip
         private boolean useInteractionRange = false;
         @Tooltip
+        private int durabilityThreshold = 20;
+        @Tooltip
         private boolean pickFluids = false;
         @Tooltip
         private boolean preferSilkTouch = true;
@@ -270,6 +272,10 @@ public class ModConfig implements ConfigData {
 
     public boolean useInteractionToolPickRange() {
         return toolPicker.useInteractionRange;
+    }
+
+    public int durabilityThreshold() {
+        return toolPicker.durabilityThreshold;
     }
 
     public boolean toolPickFluids() {
