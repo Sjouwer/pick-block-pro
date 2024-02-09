@@ -25,6 +25,7 @@ import net.minecraft.item.ShovelItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolItem;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -128,10 +129,16 @@ public class ToolPicker {
         }
 
         ItemStack bestTool = null;
+        boolean foundTool = false;
         int bestToolScore = -1;
         for (int i = 0; i < 36; i++) {
             ItemStack itemStack = inventory.getStack(i);
             if (!tool.getClassType().isInstance(itemStack.getItem())) {
+                continue;
+            }
+
+            foundTool = true;
+            if (itemStack.getMaxDamage() - itemStack.getDamage() <= config.durabilityThreshold()) {
                 continue;
             }
 
@@ -140,6 +147,10 @@ public class ToolPicker {
                 bestTool = itemStack;
                 bestToolScore = score;
             }
+        }
+
+        if (foundTool && bestTool == null) {
+            InfoProvider.sendWarning(Text.translatable("text.pick_block_pro.message.allToolsBelowThreshold"));
         }
 
         return bestTool;
