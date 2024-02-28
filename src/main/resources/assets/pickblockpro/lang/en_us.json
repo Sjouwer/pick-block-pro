@@ -152,7 +152,7 @@
     "text.pick_block_pro.message.copied": "Copied to clipboard: ",
     "text.pick_block_pro.message.allSlotsLocked": "Can't pick block, all slots have been locked! Unlock at least 1 slot in the config settings of the mod",
     "text.pick_block_pro.message.nothingToPick": "There is nothing to pick! Enable picking for blocks, entities or both in the config settings of the mod",
-    "text.pick_block_pro.message.allToolsBelowThreshold": "All tools are below the durability threshold!",
+    "text.pick_block_pro.message.allToolsBelowThreshold": "All suitable tools are below the durability threshold!",
 
     "text.pick_block_pro.name.framed": "Framed %s",
 
