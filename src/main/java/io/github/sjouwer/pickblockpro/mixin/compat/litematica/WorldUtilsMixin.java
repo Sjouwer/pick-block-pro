@@ -27,7 +27,7 @@ public class WorldUtilsMixin {
     {
         ModConfig config = PickBlockPro.getConfig();
         if(config.overrideLitematica()) {
-            Boolean isCreative = mc.player.getAbilities().creativeMode;
+            boolean isCreative = mc.player.getAbilities().creativeMode;
             BlockPos pos;
             if (closest) {
                 pos = RayTraceUtils.getSchematicWorldTraceIfClosest(mc.world, mc.player, config.blockPickRange(isCreative));

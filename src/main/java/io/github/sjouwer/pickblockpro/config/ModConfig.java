@@ -20,7 +20,11 @@ public class ModConfig implements ConfigData {
         @Tooltip
         private double range = 100;
         @Tooltip
+        private boolean useInteractionRange = false;
+        @Tooltip
         private double creativeRange = 100;
+        @Tooltip
+        private boolean useCreativeInteractionRange = false;
         @Tooltip
         private boolean pickBlocks = true;
         @Tooltip
@@ -42,6 +46,8 @@ public class ModConfig implements ConfigData {
     static class IdPicker {
         @Tooltip
         private double range = 100;
+        @Tooltip
+        private boolean useInteractionRange = false;
         @Tooltip
         private boolean pickBlocks = true;
         @Tooltip
@@ -103,6 +109,8 @@ public class ModConfig implements ConfigData {
         @Tooltip
         private double range = 100;
         @Tooltip
+        private boolean useInteractionRange = false;
+        @Tooltip
         private boolean pickFluids = false;
         @Tooltip
         private boolean preferSilkTouch = true;
@@ -160,6 +168,10 @@ public class ModConfig implements ConfigData {
         return isCreative ? blockPicker.creativeRange : blockPicker.range;
     }
 
+    public boolean useInteractionBlockPickRange(boolean isCreative) {
+        return isCreative ? blockPicker.useCreativeInteractionRange : blockPicker.useInteractionRange;
+    }
+
     public boolean blockPickBlocks() {
         return blockPicker.pickBlocks;
     }
@@ -194,6 +206,10 @@ public class ModConfig implements ConfigData {
 
     public double idPickRange() {
         return idPicker.range;
+    }
+
+    public boolean useInteractionIdPickRange() {
+        return idPicker.useInteractionRange;
     }
 
     public boolean idPickBlocks() {
@@ -250,6 +266,10 @@ public class ModConfig implements ConfigData {
 
     public double toolPickRange() {
         return toolPicker.range;
+    }
+
+    public boolean useInteractionToolPickRange() {
+        return toolPicker.useInteractionRange;
     }
 
     public boolean toolPickFluids() {

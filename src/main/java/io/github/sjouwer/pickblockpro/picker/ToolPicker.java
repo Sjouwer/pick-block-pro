@@ -43,12 +43,20 @@ public class ToolPicker {
      * Provide the player with the best tool to break the block or kill the entity they are looking at
      */
     public static void pickTool() {
-        if (client.player == null || client.world == null) {
+        if (client.player == null || client.world == null || client.interactionManager == null) {
             PickBlockPro.LOGGER.error("Pick Tool called outside of play; no world and/or player");
             return;
         }
 
-        HitResult hit = RaycastUtil.getHit(config.toolPickRange(), !config.toolPickFluids(), false);
+        double range = config.useInteractionToolPickRange() ?
+                client.interactionManager.getReachDistance() :
+                config.toolPickRange();
+
+        HitResult hit = RaycastUtil.getHit(range, !config.toolPickFluids(), false);
+        if (hit == null) {
+            return;
+        }
+
         if (hit.getType() == HitResult.Type.ENTITY) {
             Entity entity = ((EntityHitResult) hit).getEntity();
             if (entity instanceof LivingEntity livingEntity) {
