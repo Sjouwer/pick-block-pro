@@ -54,7 +54,7 @@ public class BlockPicker {
             return;
         }
 
-        HitResult hit = Raycast.getHit(config.blockPickRange(), !config.blockPickFluids(), !config.blockPickEntities());
+        HitResult hit = RaycastUtil.getHit(config.blockPickRange(), !config.blockPickFluids(), !config.blockPickEntities());
         if (hit == null) {
             return;
         }
@@ -194,7 +194,7 @@ public class BlockPicker {
 
         //Do another raycast with a longer reach to make sure there is nothing in the way of the sun or moon
         int distance = client.options.getViewDistance().getValue() * 32;
-        HitResult hit = Raycast.getHit(distance, false, false);
+        HitResult hit = RaycastUtil.getHit(distance, false, false);
         if (hit == null || hit.getType() != HitResult.Type.MISS) {
             return ItemStack.EMPTY;
         }

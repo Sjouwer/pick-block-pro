@@ -51,7 +51,7 @@ public class IdPicker {
             return;
         }
 
-        HitResult hit = Raycast.getHit(config.idPickRange(), !config.idPickFluids(), !config.idPickEntities());
+        HitResult hit = RaycastUtil.getHit(config.idPickRange(), !config.idPickFluids(), !config.idPickEntities());
 
         Text id = Text.empty();
         if (hit instanceof EntityHitResult entityHit) {

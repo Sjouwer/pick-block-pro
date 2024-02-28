@@ -48,7 +48,7 @@ public class ToolPicker {
             return;
         }
 
-        HitResult hit = Raycast.getHit(config.toolPickRange(), !config.toolPickFluids(), false);
+        HitResult hit = RaycastUtil.getHit(config.toolPickRange(), !config.toolPickFluids(), false);
         if (hit.getType() == HitResult.Type.ENTITY) {
             Entity entity = ((EntityHitResult) hit).getEntity();
             if (entity instanceof LivingEntity livingEntity) {
