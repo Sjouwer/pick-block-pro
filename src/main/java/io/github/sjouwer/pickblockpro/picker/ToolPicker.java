@@ -46,15 +46,7 @@ public class ToolPicker {
             return;
         }
 
-        double blockRange = config.useInteractionToolPickRange() ?
-                client.player.getBlockInteractionRange() :
-                config.toolPickRange();
-
-        double entityRange = config.useInteractionToolPickRange() ?
-                client.player.getEntityInteractionRange() :
-                config.toolPickRange();
-
-        HitResult hit = RaycastUtil.getHit(blockRange, entityRange, !config.toolPickFluids(), false);
+        HitResult hit = RaycastUtil.getHit(config.blockToolPickRange(client.player), config.entityToolPickRange(client.player), !config.toolPickFluids(), false);
         if (hit == null) {
             return;
         }

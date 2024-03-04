@@ -55,7 +55,7 @@ public class BlockPicker {
             return;
         }
 
-        HitResult hit = RaycastUtil.getHit(getBlockPickRange(player), !config.blockPickFluids(), !config.blockPickEntities());
+        HitResult hit = RaycastUtil.getHit(config.blockBlockPickRange(player), config.entityBlockPickRange(player), !config.blockPickFluids(), !config.blockPickEntities());
         if (hit == null) {
             return;
         }
@@ -80,17 +80,6 @@ public class BlockPicker {
         if (!item.isEmpty()) {
             InventoryManager.pickOrPlaceItemInInventory(item);
         }
-    }
-
-    /**
-     * Get the configured range of the block picker
-     */
-    public static double getBlockPickRange(PlayerEntity player) {
-        boolean isCreative = player.getAbilities().creativeMode;
-        if (config.useInteractionBlockPickRange(isCreative)) {
-            return PlayerEntity.getReachDistance(isCreative);
-        }
-        return config.blockPickRange(isCreative);
     }
 
     private static ItemStack getEntityItemStack(HitResult hit, ItemStack item) {

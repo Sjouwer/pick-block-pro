@@ -8,12 +8,13 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.Tooltip;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.CollapsibleObject;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.TransitiveObject;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.tag.EntityTypeTags;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 @SuppressWarnings("FieldMayBeFinal")
 @Config(name = "pickblockpro/config")
@@ -168,12 +169,20 @@ public class ModConfig implements ConfigData {
     @TransitiveObject @Category("inventory_settings")
     private Inventory inventory = new Inventory();
 
-    public double blockPickRange(boolean isCreative) {
+    public double blockBlockPickRange(PlayerEntity player) {
+        boolean isCreative = player.getAbilities().creativeMode;
+        if (!isCreative && blockPicker.useInteractionRange || isCreative && blockPicker.useCreativeInteractionRange) {
+            return player.getBlockInteractionRange();
+        }
         return isCreative ? blockPicker.creativeRange : blockPicker.range;
     }
 
-    public boolean useInteractionBlockPickRange(boolean isCreative) {
-        return isCreative ? blockPicker.useCreativeInteractionRange : blockPicker.useInteractionRange;
+    public double entityBlockPickRange(PlayerEntity player) {
+        boolean isCreative = player.getAbilities().creativeMode;
+        if (!isCreative && blockPicker.useInteractionRange || isCreative && blockPicker.useCreativeInteractionRange) {
+            return player.getEntityInteractionRange();
+        }
+        return isCreative ? blockPicker.creativeRange : blockPicker.range;
     }
 
     public boolean blockPickBlocks() {
@@ -208,12 +217,18 @@ public class ModConfig implements ConfigData {
         return Arrays.asList(blockPicker.entityTagBlacklist.split("\\s*,\\s*"));
     }
 
-    public double idPickRange() {
+    public double blockIdPickRange(PlayerEntity player) {
+        if (idPicker.useInteractionRange) {
+            return player.getBlockInteractionRange();
+        }
         return idPicker.range;
     }
 
-    public boolean useInteractionIdPickRange() {
-        return idPicker.useInteractionRange;
+    public double entityIdPickRange(PlayerEntity player) {
+        if (idPicker.useInteractionRange) {
+            return player.getEntityInteractionRange();
+        }
+        return idPicker.range;
     }
 
     public boolean idPickBlocks() {
@@ -268,12 +283,18 @@ public class ModConfig implements ConfigData {
         return Arrays.asList(idPicker.entityTagBlacklist.split("\\s*,\\s*"));
     }
 
-    public double toolPickRange() {
+    public double blockToolPickRange(PlayerEntity player) {
+        if (toolPicker.useInteractionRange) {
+            return player.getBlockInteractionRange();
+        }
         return toolPicker.range;
     }
 
-    public boolean useInteractionToolPickRange() {
-        return toolPicker.useInteractionRange;
+    public double entityToolPickRange(PlayerEntity player) {
+        if (toolPicker.useInteractionRange) {
+            return player.getEntityInteractionRange();
+        }
+        return toolPicker.range;
     }
 
     public int durabilityThreshold() {

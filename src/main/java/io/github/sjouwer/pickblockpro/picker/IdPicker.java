@@ -12,7 +12,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.EntityBucketItem;
@@ -52,11 +51,7 @@ public class IdPicker {
             return;
         }
 
-        double range = config.useInteractionIdPickRange() ?
-                PlayerEntity.getReachDistance(client.player.getAbilities().creativeMode) :
-                config.idPickRange();
-
-        HitResult hit = RaycastUtil.getHit(range, !config.idPickFluids(), !config.idPickEntities());
+        HitResult hit = RaycastUtil.getHit(config.blockIdPickRange(client.player), config.entityIdPickRange(client.player), !config.idPickFluids(), !config.idPickEntities());
         if (hit == null) {
             return;
         }
