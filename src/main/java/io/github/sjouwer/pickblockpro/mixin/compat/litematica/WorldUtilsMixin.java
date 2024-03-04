@@ -7,7 +7,7 @@ import fi.dy.masa.litematica.world.SchematicWorldHandler;
 import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
 import io.github.sjouwer.pickblockpro.util.InventoryManager;
-import io.github.sjouwer.pickblockpro.util.NbtUtil;
+import io.github.sjouwer.pickblockpro.util.DataComponentUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -30,10 +30,10 @@ public class WorldUtilsMixin {
             boolean isCreative = mc.player.getAbilities().creativeMode;
             BlockPos pos;
             if (closest) {
-                pos = RayTraceUtils.getSchematicWorldTraceIfClosest(mc.world, mc.player, config.blockPickRange(isCreative));
+                pos = RayTraceUtils.getSchematicWorldTraceIfClosest(mc.world, mc.player, config.blockBlockPickRange(mc.player));
             }
             else {
-                pos = RayTraceUtils.getFurthestSchematicWorldBlockBeforeVanilla(mc.world, mc.player, config.blockPickRange(isCreative), true);
+                pos = RayTraceUtils.getFurthestSchematicWorldBlockBeforeVanilla(mc.world, mc.player, config.blockBlockPickRange(mc.player), true);
             }
 
             if (pos != null) {
@@ -45,10 +45,10 @@ public class WorldUtilsMixin {
                     if (isCreative) {
                         if (Screen.hasControlDown() && state.hasBlockEntity()) {
                             BlockEntity blockEntity = world.getBlockEntity(pos);
-                            NbtUtil.addBlockEntityNbt(stack, blockEntity, true);
+                            DataComponentUtil.setBlockEntityData(stack, blockEntity, mc.world.getRegistryManager(), true);
                         }
                         if (Screen.hasAltDown()) {
-                            NbtUtil.addBlockStateNbt(stack, state, true);
+                            DataComponentUtil.setBlockStateData(stack, state, true);
                         }
                     }
 

@@ -10,6 +10,8 @@ import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.util.InfoProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -178,7 +180,7 @@ public class PickBlockOverrides {
         ItemStack stack = new ItemStack(item);
         if (!itemNbt.isEmpty()) {
             try {
-                stack.setNbt(StringNbtReader.parse(itemNbt));
+                stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(StringNbtReader.parse(itemNbt)));
             }
             catch (CommandSyntaxException e) {
                 InfoProvider.sendWarning(Text.literal("Failed to parse NBT data: " + itemNbt));

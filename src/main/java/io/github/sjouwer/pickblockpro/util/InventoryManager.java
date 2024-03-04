@@ -114,7 +114,7 @@ public final class InventoryManager {
             ItemStack invStack = inventory.getStack(i);
             if (invStack.isEmpty()) continue;
 
-            int storedAmount = NbtUtil.getAmountStored(invStack, item);
+            int storedAmount = DataComponentUtil.getAmountStored(invStack, item);
             if (storedAmount > highestAmount) {
                 slot = i;
                 highestAmount = storedAmount;

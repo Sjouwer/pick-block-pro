@@ -11,6 +11,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BlockStateComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.BucketItem;
@@ -21,6 +23,7 @@ import net.minecraft.item.VerticallyAttachableBlockItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.Registries;
+import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.hit.BlockHitResult;
@@ -28,6 +31,8 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringJoiner;
 
 public class IdPicker {
@@ -116,9 +121,16 @@ public class IdPicker {
      * @return Tag as Text
      */
     public static Text getBlockStateTag(BlockState blockState) {
-        NbtCompound stateTag = NbtUtil.getBlockStateNbt(blockState);
-        config.blockStateTagIdBlacklist().forEach(stateTag::remove);
-        return Text.literal(convertBlockStateTag(stateTag));
+        Map<String, String> properties = new HashMap<>();
+        for (Property<?> property : blockState.getProperties()) {
+            String key = property.getName();
+            if (!config.blockStateTagIdBlacklist().contains(key)) {
+                String value = blockState.get(property).toString();
+                properties.put(key, value);
+            }
+        }
+
+        return Text.literal(convertBlockState(new BlockStateComponent(properties)));
     }
 
     /**
@@ -127,7 +139,7 @@ public class IdPicker {
      * @return Tag as Text
      */
     public static Text getBlockEntityTag(BlockEntity blockEntity) {
-        NbtCompound tag = blockEntity.createNbt();
+        NbtCompound tag = blockEntity.createNbt(client.world.getRegistryManager());
         config.blockEntityTagIdBlacklist().forEach(tag::remove);
 
         return config.prettyTagEnabled() ? NbtHelper.toPrettyPrintedText(tag) : Text.literal(tag.toString());
@@ -153,7 +165,7 @@ public class IdPicker {
      * @return Tag as Text
      */
     public static Text getEntityTag(Entity entity) {
-        NbtCompound entityTag = NbtUtil.getEntityNbt(entity);
+        NbtCompound entityTag = DataComponentUtil.getEntityNbt(entity);
         config.entityTagIdBlacklist().forEach(entityTag::remove);
         return config.prettyTagEnabled() ? NbtHelper.toPrettyPrintedText(entityTag) : Text.literal(entityTag.toString());
     }
@@ -164,11 +176,11 @@ public class IdPicker {
      * @return ID as String
      */
     public static String getItemId(ItemStack itemStack) {
-        NbtCompound stateTag = itemStack.getSubNbt("BlockStateTag");
+        BlockStateComponent blockState = itemStack.getComponents().get(DataComponentTypes.BLOCK_STATE);
 
         String fullId = "";
         if (config.convertItemToBlock()) {
-            fullId = convertToBlockId(itemStack, stateTag);
+            fullId = convertToBlockId(itemStack, blockState);
         }
 
         if (fullId.isEmpty()) {
@@ -179,19 +191,19 @@ public class IdPicker {
             fullId = fullId.substring(fullId.indexOf(":") + 1);
         }
 
-        if (config.addProperties() && stateTag != null) {
-            fullId = fullId + convertBlockStateTag(stateTag);
+        if (config.addProperties() && blockState != null) {
+            fullId = fullId + convertBlockState(blockState);
         }
 
         return fullId;
     }
 
-    private static String convertBlockStateTag(NbtCompound stateTag) {
+    private static String convertBlockState(BlockStateComponent blockState) {
         StringBuilder properties = new StringBuilder();
         StringJoiner stateJoiner = new StringJoiner(",");
-        for (String key : stateTag.getKeys()) {
-            stateJoiner.add(key + "=" + stateTag.getString(key));
-        }
+
+        blockState.properties().forEach((key, value) -> stateJoiner.add(key + "=" + value));
+
         properties.append("[");
         properties.append(stateJoiner);
         properties.append("]");
@@ -199,7 +211,7 @@ public class IdPicker {
         return properties.toString();
     }
 
-    private static String convertToBlockId(ItemStack itemStack, NbtCompound stateTag) {
+    private static String convertToBlockId(ItemStack itemStack, BlockStateComponent blockState) {
         String id = "";
 
         Item item = itemStack.getItem();
@@ -209,7 +221,7 @@ public class IdPicker {
         }
         else {
             Block block;
-            if (stateTag != null && stateTag.contains("facing") && item instanceof VerticallyAttachableBlockItem) {
+            if (blockState != null && blockState.properties().containsKey("facing") && item instanceof VerticallyAttachableBlockItem) {
                 block = ((VerticallyAttachableBlockItemAccessor) item).getWallBlock();
             }
             else {

@@ -12,6 +12,7 @@ import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.decoration.GlowItemFrameEntity;
@@ -102,13 +103,13 @@ public class BlockPicker {
                 item = createPaintingVariantStack(paintingEntity);
             }
             else {
-                NbtUtil.addEntityNbt(item, entity, true);
+                DataComponentUtil.setEntityData(item, entity, true);
             }
         }
 
         if (entity instanceof PlayerEntity player) {
             item = new ItemStack(Items.PLAYER_HEAD);
-            NbtUtil.setSkullOwner(item, player);
+            DataComponentUtil.setSkullOwner(item, player);
         }
 
         if (entity instanceof FallingBlockEntity fallingBlock) {
@@ -127,9 +128,9 @@ public class BlockPicker {
 
         MutableText name = Text.translatable("text.pick_block_pro.name.framed", framedItem.getName());
         name.setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.YELLOW));
-        itemFrameStack.setCustomName(name);
+        itemFrameStack.set(DataComponentTypes.CUSTOM_NAME, name);
 
-        NbtUtil.addEntityNbt(itemFrameStack, itemFrame, false);
+        DataComponentUtil.setEntityData(itemFrameStack, itemFrame, false);
         return itemFrameStack;
     }
 
@@ -140,17 +141,17 @@ public class BlockPicker {
             String translationKey = key.get().getValue().toTranslationKey("painting", "title");
             MutableText name = Text.translatable(translationKey);
             name.setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.YELLOW));
-            paintingStack.setCustomName(name);
+            paintingStack.set(DataComponentTypes.CUSTOM_NAME, name);
         }
 
-        NbtUtil.addEntityNbt(paintingStack, painting, false);
+        DataComponentUtil.setEntityData(paintingStack, painting, false);
         return paintingStack;
     }
 
     private static ItemStack getFallingBlockItemStack(FallingBlockEntity fallingBlock) {
         ItemStack item = new ItemStack(fallingBlock.getBlockState().getBlock());
         if (client.player.getAbilities().creativeMode && Screen.hasAltDown()) {
-            NbtUtil.addBlockStateNbt(item, fallingBlock.getBlockState(), true);
+            DataComponentUtil.setBlockStateData(item, fallingBlock.getBlockState(), true);
         }
 
         return item;
@@ -177,10 +178,10 @@ public class BlockPicker {
         if (!item.isEmpty() && client.player.getAbilities().creativeMode) {
             if (Screen.hasControlDown() && state.hasBlockEntity()) {
                 BlockEntity blockEntity = client.world.getBlockEntity(blockPos);
-                NbtUtil.addBlockEntityNbt(item, blockEntity, true);
+                DataComponentUtil.setBlockEntityData(item, blockEntity, client.world.getRegistryManager(), true);
             }
             if (Screen.hasAltDown()) {
-                NbtUtil.addBlockStateNbt(item, state, true);
+                DataComponentUtil.setBlockStateData(item, state, true);
             }
         }
 
@@ -195,7 +196,7 @@ public class BlockPicker {
 
         //Do another raycast with a longer reach to make sure there is nothing in the way of the sun or moon
         int distance = client.options.getViewDistance().getValue() * 32;
-        HitResult hit = RaycastUtil.getHit(distance, false, false);
+        HitResult hit = RaycastUtil.getHit(distance, distance, false, false);
         if (hit == null || hit.getType() != HitResult.Type.MISS) {
             return ItemStack.EMPTY;
         }
@@ -231,13 +232,13 @@ public class BlockPicker {
         PlayerEntity player = client.player;
         ItemStack mainHandStack = player.getMainHandStack();
         if (mainHandStack.isOf(Items.LIGHT) && player.getAbilities().creativeMode) {
-            NbtUtil.cycleLightLevel(mainHandStack);
+            DataComponentUtil.cycleLightLevel(mainHandStack);
             InventoryManager.updateCreativeSlot(player.getInventory().selectedSlot);
             return ItemStack.EMPTY;
         }
 
         ItemStack light = new ItemStack(Items.LIGHT);
-        NbtUtil.setLightLevel(light, lightLvl);
+        DataComponentUtil.setLightLevel(light, lightLvl);
         return light;
     }
 }
