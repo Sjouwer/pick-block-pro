@@ -6,11 +6,10 @@ import io.github.sjouwer.pickblockpro.util.*;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.enchantment.Enchantment;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -31,8 +30,6 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.Map;
-
 public class ToolPicker {
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final ModConfig config = PickBlockPro.getConfig();
@@ -49,11 +46,15 @@ public class ToolPicker {
             return;
         }
 
-        double range = config.useInteractionToolPickRange() ?
-                PlayerEntity.getReachDistance(client.player.getAbilities().creativeMode) :
+        double blockRange = config.useInteractionToolPickRange() ?
+                client.player.getBlockInteractionRange() :
                 config.toolPickRange();
 
-        HitResult hit = RaycastUtil.getHit(range, !config.toolPickFluids(), false);
+        double entityRange = config.useInteractionToolPickRange() ?
+                client.player.getEntityInteractionRange() :
+                config.toolPickRange();
+
+        HitResult hit = RaycastUtil.getHit(blockRange, entityRange, !config.toolPickFluids(), false);
         if (hit == null) {
             return;
         }
@@ -61,7 +62,7 @@ public class ToolPicker {
         if (hit.getType() == HitResult.Type.ENTITY) {
             Entity entity = ((EntityHitResult) hit).getEntity();
             if (entity instanceof LivingEntity livingEntity) {
-                giveOrSwitchTool(Tools.SWORD, livingEntity.getGroup());
+                giveOrSwitchTool(Tools.SWORD, livingEntity);
             }
         }
         else {
@@ -106,8 +107,8 @@ public class ToolPicker {
         giveOrSwitchTool(tool, null);
     }
 
-    private static void giveOrSwitchTool(Tools tool, EntityGroup eGroup) {
-        ItemStack bestTool = client.player.getAbilities().creativeMode ? createBestTool(tool, eGroup) : findBestTool(client.player, tool, eGroup);
+    private static void giveOrSwitchTool(Tools tool, Entity entity) {
+        ItemStack bestTool = client.player.getAbilities().creativeMode ? createBestTool(tool, entity) : findBestTool(client.player, tool, entity);
         if (bestTool != null) {
             InventoryManager.pickOrPlaceItemInInventory(bestTool);
         }
@@ -116,10 +117,10 @@ public class ToolPicker {
     /**
      * Find the best available tool inside the player's inventory of the provided tool type
      * @param tool Tool type
-     * @param eGroup Should only be provided with a sword to find the best enchantment to kill the entity
+     * @param entity Should only be provided with a sword to find the best enchantment to kill the entity
      * @return Player's best available tool as ItemStack or null if none are found
      */
-    public static ItemStack findBestTool(PlayerEntity player, Tools tool, EntityGroup eGroup) {
+    public static ItemStack findBestTool(PlayerEntity player, Tools tool, Entity entity) {
         PlayerInventory inventory = player.getInventory();
         if (tool.equals(Tools.BUCKET)) {
             ItemStack bucket = Items.BUCKET.getDefaultStack();
@@ -142,7 +143,7 @@ public class ToolPicker {
                 continue;
             }
 
-            int score = tool.equals(Tools.SWORD) ? calculateSwordScore(itemStack, eGroup) : calculateToolScore(itemStack);
+            int score = tool.equals(Tools.SWORD) ? calculateSwordScore(itemStack, entity) : calculateToolScore(itemStack);
             if (score > bestToolScore || (bestTool != null && score == bestToolScore && itemStack.getDamage() < bestTool.getDamage())) {
                 bestTool = itemStack;
                 bestToolScore = score;
@@ -184,11 +185,11 @@ public class ToolPicker {
         return score;
     }
 
-    private static int calculateSwordScore(ItemStack item, EntityGroup eGroup) {
+    private static int calculateSwordScore(ItemStack item, Entity entity) {
         int score = 0;
         if (item.getItem() instanceof SwordItem swordItem) {
-            score += swordItem.getAttackDamage();
-            score += EnchantmentHelper.getAttackDamage(item, eGroup == null ? EntityGroup.DEFAULT : eGroup);
+            score += swordItem.getMaxDamage();
+            score += EnchantmentHelper.getAttackDamage(item, entity.getType());
         }
 
         return score;
@@ -197,10 +198,10 @@ public class ToolPicker {
     /**
      * Get the best available tool with configured enchantments of the provided tool type
      * @param tool Tool type
-     * @param eGroup Should only be provided with a sword to determine the best enchantment to kill the entity
+     * @param entity Should only be provided with a sword to determine the best enchantment to kill the entity
      * @return Best available tool as ItemStack
      */
-    public static ItemStack createBestTool(Tools tool, EntityGroup eGroup) {
+    public static ItemStack createBestTool(Tools tool, Entity entity) {
         ItemStack bestTool = switch (tool) {
             case PICKAXE -> Items.NETHERITE_PICKAXE.getDefaultStack();
             case AXE -> Items.NETHERITE_AXE.getDefaultStack();
@@ -211,8 +212,8 @@ public class ToolPicker {
             case BUCKET -> Items.BUCKET.getDefaultStack();
         };
 
-        Map<Enchantment, Integer> enchantments = config.getEnchantments(tool, eGroup);
-        EnchantmentHelper.set(enchantments, bestTool);
+        ItemEnchantmentsComponent enchantments = config.getEnchantments(tool, entity);
+        EnchantmentHelper.set(bestTool, enchantments);
 
         return bestTool;
     }

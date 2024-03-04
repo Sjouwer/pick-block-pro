@@ -7,9 +7,11 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry.Category;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.Tooltip;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.CollapsibleObject;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.TransitiveObject;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.Entity;
+import net.minecraft.registry.tag.EntityTypeTags;
 
 import java.util.*;
 
@@ -294,73 +296,73 @@ public class ModConfig implements ConfigData {
         return toolPicker.preferSwordForBamboo;
     }
 
-    public Map<Enchantment, Integer> getEnchantments(Tools tool, EntityGroup eGroup) {
+    public ItemEnchantmentsComponent getEnchantments(Tools tool, Entity entity) {
         if (!toolPicker.enchantTools) {
-            return Collections.emptyMap();
+            return ItemEnchantmentsComponent.DEFAULT;
         }
 
-        HashMap<Enchantment, Integer> enchantments = new HashMap<>();
+        ItemEnchantmentsComponent.Builder enchantments = new ItemEnchantmentsComponent.Builder(ItemEnchantmentsComponent.DEFAULT);
         switch (tool) {
             case PICKAXE -> getExtendedEnchantments(toolPicker.pickaxeEnchantments, enchantments);
             case AXE -> getExtendedEnchantments(toolPicker.axeEnchantments, enchantments);
             case SHOVEL -> getExtendedEnchantments(toolPicker.shovelEnchantments, enchantments);
             case HOE -> getExtendedEnchantments(toolPicker.hoeEnchantments, enchantments);
             case SHEARS -> getBaseEnchantments(toolPicker.shearEnchantments, enchantments);
-            case SWORD -> getSwordEnchantments(toolPicker.swordEnchantments, enchantments, eGroup);
+            case SWORD -> getSwordEnchantments(toolPicker.swordEnchantments, enchantments, entity);
         }
 
-        return enchantments;
+        return enchantments.build();
     }
 
-    private void getBaseEnchantments(BaseEnchantments base, HashMap<Enchantment, Integer> enchantments) {
+    private void getBaseEnchantments(BaseEnchantments base, ItemEnchantmentsComponent.Builder enchantments) {
         if (base.efficiency > 0) {
-            enchantments.put(Enchantments.EFFICIENCY, Math.min(base.efficiency, 255));
+            enchantments.add(Enchantments.EFFICIENCY, Math.min(base.efficiency, 255));
         }
         if (base.unbreaking > 0) {
-            enchantments.put(Enchantments.UNBREAKING, Math.min(base.unbreaking, 255));
+            enchantments.add(Enchantments.UNBREAKING, Math.min(base.unbreaking, 255));
         }
         if (base.mending) {
-            enchantments.put(Enchantments.MENDING, 1);
+            enchantments.add(Enchantments.MENDING, 1);
         }
     }
 
-    private void getExtendedEnchantments(ExtendedEnchantments extended, HashMap<Enchantment, Integer> enchantments) {
+    private void getExtendedEnchantments(ExtendedEnchantments extended, ItemEnchantmentsComponent.Builder enchantments) {
         getBaseEnchantments(extended.base, enchantments);
         if (extended.silkTouch && (extended.fortune <= 0 || toolPicker.preferSilkTouch)) {
-            enchantments.put(Enchantments.SILK_TOUCH, 1);
+            enchantments.add(Enchantments.SILK_TOUCH, 1);
         }
         else if (extended.fortune > 0) {
-            enchantments.put(Enchantments.FORTUNE, Math.min(extended.fortune, 255));
+            enchantments.add(Enchantments.FORTUNE, Math.min(extended.fortune, 255));
         }
     }
 
-    private void getSwordEnchantments(SwordEnchantments sword, HashMap<Enchantment, Integer> enchantments, EntityGroup eGroup) {
+    private void getSwordEnchantments(SwordEnchantments sword, ItemEnchantmentsComponent.Builder enchantments, Entity entity) {
         if (sword.unbreaking > 0) {
-            enchantments.put(Enchantments.UNBREAKING, Math.min(sword.unbreaking, 255));
+            enchantments.add(Enchantments.UNBREAKING, Math.min(sword.unbreaking, 255));
         }
         if (sword.sweeping > 0) {
-            enchantments.put(Enchantments.SWEEPING, Math.min(sword.sweeping, 255));
+            enchantments.add(Enchantments.SWEEPING_EDGE, Math.min(sword.sweeping, 255));
         }
         if (sword.looting > 0) {
-            enchantments.put(Enchantments.LOOTING, Math.min(sword.looting, 255));
+            enchantments.add(Enchantments.LOOTING, Math.min(sword.looting, 255));
         }
         if (sword.fireAspect > 0) {
-            enchantments.put(Enchantments.FIRE_ASPECT, Math.min(sword.fireAspect, 255));
+            enchantments.add(Enchantments.FIRE_ASPECT, Math.min(sword.fireAspect, 255));
         }
         if (sword.knockback > 0) {
-            enchantments.put(Enchantments.KNOCKBACK, Math.min(sword.knockback, 255));
+            enchantments.add(Enchantments.KNOCKBACK, Math.min(sword.knockback, 255));
         }
         if (sword.mending) {
-            enchantments.put(Enchantments.MENDING, 1);
+            enchantments.add(Enchantments.MENDING, 1);
         }
-        if (sword.bane > 0 && eGroup != null && eGroup.equals(EntityGroup.ARTHROPOD)) {
-            enchantments.put(Enchantments.BANE_OF_ARTHROPODS, Math.min(sword.bane, 255));
+        if (sword.bane > 0 && entity != null && entity.getType().isIn(EntityTypeTags.ARTHROPOD)) {
+            enchantments.add(Enchantments.BANE_OF_ARTHROPODS, Math.min(sword.bane, 255));
         }
-        else if (sword.smite > 0 && eGroup != null && eGroup.equals(EntityGroup.UNDEAD)) {
-            enchantments.put(Enchantments.SMITE, Math.min(sword.smite, 255));
+        else if (sword.smite > 0 && entity != null && entity.getType().isIn(EntityTypeTags.UNDEAD)) {
+            enchantments.add(Enchantments.SMITE, Math.min(sword.smite, 255));
         }
         else if (sword.sharpness > 0) {
-            enchantments.put(Enchantments.SHARPNESS, Math.min(sword.sharpness, 255));
+            enchantments.add(Enchantments.SHARPNESS, Math.min(sword.sharpness, 255));
         }
     }
 

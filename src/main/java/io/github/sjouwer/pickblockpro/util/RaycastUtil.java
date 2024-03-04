@@ -17,12 +17,13 @@ public final class RaycastUtil {
 
     /**
      * Raycast from the camera (player's eyes) forward
-     * @param range How far to cast in blocks
+     * @param blockRange How far to cast for blocks in block lengths
+     * @param entityRange How far to cast for entities in block lengths
      * @param ignoreFluids Should the cast ignore fluids, making it pass through it
      * @param ignoreEntities Should the cast ignore entities, making it pass through them
      * @return Result of the raycast
      */
-    public static HitResult getHit(double range, boolean ignoreFluids, boolean ignoreEntities) {
+    public static HitResult getHit(double blockRange, double entityRange, boolean ignoreFluids, boolean ignoreEntities) {
         if (client.cameraEntity == null || client.world == null) {
             PickBlockPro.LOGGER.error("Tried to raycast outside of play; no world and/or camera");
             return null;
@@ -32,16 +33,16 @@ public final class RaycastUtil {
         Entity player = client.cameraEntity;
         Vec3d vector = player.getRotationVec(client.getTickDelta());
         Vec3d rayStart = player.getCameraPosVec(client.getTickDelta());
-        Vec3d rayEnd = rayStart.add(vector.multiply(range));
+        Vec3d rayEnd = rayStart.add(vector.multiply(blockRange));
         BlockHitResult blockHit = client.world.raycast(new RaycastContext(rayStart, rayEnd, RaycastContext.ShapeType.OUTLINE, fluidHandling, player));
 
         if (ignoreEntities) {
             return blockHit;
         }
 
-        Box box = player.getBoundingBox().stretch(vector.multiply(range));
-        double range2 = range * range;
-        EntityHitResult entityHit = ProjectileUtil.raycast(player, rayStart, rayEnd, box, entityX -> !entityX.isSpectator() && entityX.canHit(), range2);
+        Box box = player.getBoundingBox().stretch(vector.multiply(entityRange));
+        double rangeSquared = entityRange * entityRange;
+        EntityHitResult entityHit = ProjectileUtil.raycast(player, rayStart, rayEnd, box, entityX -> !entityX.isSpectator() && entityX.canHit(), rangeSquared);
 
         if (entityHit == null) {
             return blockHit;
