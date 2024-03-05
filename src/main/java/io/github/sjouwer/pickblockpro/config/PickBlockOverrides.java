@@ -5,18 +5,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.util.InfoProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
+import net.minecraft.command.argument.ItemStringReader;
 import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.registry.BuiltinRegistries;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -68,11 +66,13 @@ public class PickBlockOverrides {
                 return false;
             }
 
+            ItemStringReader itemReader = new ItemStringReader(BuiltinRegistries.createWrapperLookup());
             Map<String, JsonElement> objectMap = new HashMap<>();
             rootElement.getAsJsonObject().entrySet().forEach(s -> objectMap.put(s.getKey(), s.getValue()));
+
             JsonElement blockOverridesElement = objectMap.get("Block to ItemStack");
             if (blockOverridesElement != null) {
-                parseBlockOverrides(blockOverridesElement);
+                parseBlockOverrides(blockOverridesElement, itemReader);
             }
             else {
                 InfoProvider.sendMessage(Text.literal("No Block Overrides found"));
@@ -80,7 +80,7 @@ public class PickBlockOverrides {
 
             JsonElement entityOverridesElement = objectMap.get("Entity to ItemStack");
             if (entityOverridesElement != null) {
-                parseEntityOverrides(entityOverridesElement);
+                parseEntityOverrides(entityOverridesElement, itemReader);
             }
             else {
                 InfoProvider.sendMessage(Text.literal("No Entity Overrides found"));
@@ -99,14 +99,14 @@ public class PickBlockOverrides {
         return false;
     }
 
-    private static void parseBlockOverrides(JsonElement blockOverridesElement) {
+    private static void parseBlockOverrides(JsonElement blockOverridesElement, ItemStringReader itemReader) {
         blockOverrides.clear();
         errors = 0;
         LinkedHashMap<String, String> overrideMap = gson.fromJson(blockOverridesElement, new TypeToken<LinkedHashMap<String, String>>(){}.getType());
         for (Map.Entry<String, String> entry : overrideMap.entrySet()) {
             Block block = idToBlock(entry.getKey());
-            ItemStack stack = idToItemStack(entry.getValue());
-            if (block != null && stack != null) {
+            ItemStack stack = idToItemStack(entry.getValue(), itemReader);
+            if (block != null && !stack.isEmpty()) {
                 blockOverrides.put(block, stack);
             }
         }
@@ -114,14 +114,14 @@ public class PickBlockOverrides {
         sendResultMessage("block", blockOverrides.size(), errors);
     }
 
-    private static void parseEntityOverrides(JsonElement entityOverridesElement) {
+    private static void parseEntityOverrides(JsonElement entityOverridesElement, ItemStringReader itemReader) {
         entityOverrides.clear();
         errors = 0;
         LinkedHashMap<String, String> overrideMap = gson.fromJson(entityOverridesElement, new TypeToken<LinkedHashMap<String, String>>(){}.getType());
         for (Map.Entry<String, String> entry : overrideMap.entrySet()) {
             EntityType<?> entity = idToEntity(entry.getKey());
-            ItemStack stack = idToItemStack(entry.getValue());
-            if (entity != null && stack != null) {
+            ItemStack stack = idToItemStack(entry.getValue(), itemReader);
+            if (entity != null && !stack.isEmpty()) {
                 entityOverrides.put(entity, stack);
             }
         }
@@ -161,34 +161,21 @@ public class PickBlockOverrides {
         }
     }
 
-    private static ItemStack idToItemStack(String id) {
-        String itemId = id;
-        String itemNbt = "";
-        if (id.contains("{")) {
-            itemId = id.substring(0, id.indexOf("{"));
-            itemNbt = id.substring(id.indexOf("{"));
-        }
+    private static ItemStack idToItemStack(String id, ItemStringReader itemReader) {
+        try {
+            ItemStringReader.ItemResult itemResult = itemReader.consume(new StringReader(id));
+            ItemStack stack = new ItemStack(itemResult.item());
+            stack.applyComponentsFrom(itemResult.components());
 
-        Identifier identifier = stringToId(itemId);
-        Item item = Registries.ITEM.get(identifier);
-        if (item.equals(Items.AIR)) {
-            InfoProvider.sendWarning(Text.literal("Failed to parse Item ID: " + itemId));
+            return stack;
+        }
+        catch (CommandSyntaxException e) {
+            InfoProvider.sendWarning(Text.literal("Failed to parse item: " + id));
+            InfoProvider.sendError(Text.literal(e.getMessage()));
             errors++;
-            return null;
         }
 
-        ItemStack stack = new ItemStack(item);
-        if (!itemNbt.isEmpty()) {
-            try {
-                stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(StringNbtReader.parse(itemNbt)));
-            }
-            catch (CommandSyntaxException e) {
-                InfoProvider.sendWarning(Text.literal("Failed to parse NBT data: " + itemNbt));
-                errors++;
-            }
-        }
-
-        return stack;
+        return ItemStack.EMPTY;
     }
 
     private static Identifier stringToId(String id) {
