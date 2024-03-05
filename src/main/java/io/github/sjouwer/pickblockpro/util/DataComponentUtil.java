@@ -82,7 +82,7 @@ public class DataComponentUtil {
         for (Property<?> property : blockState.getProperties()) {
             String key = property.getName();
             if (!config.blockStateTagBlacklist().contains(key)) {
-                String value = blockState.get(property).toString();
+                String value = blockState.get(property).toString().toLowerCase();
                 properties.put(key, value);
             }
         }
