@@ -1,11 +1,15 @@
 {
-    "key.categories.pick_block_pro": "Pick Block Pro",
-    "key.pick_block_pro.id_picker": "ID Picker",
-    "key.pick_block_pro.tool_picker": "Tool Picker",
+    "modmenu.nameTranslation.pickblockpro": "Pick Block Pro",
+    "modmenu.summaryTranslation.pickblockpro": "An advanced client side Block, Entity, NBT, Tool and ID picker",
+    "modmenu.descriptionTranslation.pickblockpro": "An advanced client side Block, Entity, NBT, Tool and ID picker",
+
+    "key.categories.pickblockpro": "Pick Block Pro",
+    "key.pickblockpro.idPicker": "ID Picker",
+    "key.pickblockpro.toolPicker": "Tool Picker",
 
     "text.autoconfig.pickblockpro/config.title": "Pick Block Pro - Config",
 
-    "text.autoconfig.pickblockpro/config.category.block_picker_settings": "Block Picker",
+    "text.autoconfig.pickblockpro/config.category.blockPickerSettings": "Block Picker",
     "text.autoconfig.pickblockpro/config.option.blockPicker.range": "Block picker range",
     "text.autoconfig.pickblockpro/config.option.blockPicker.range.@Tooltip": "Range in blocks of the block picker \nwhen NOT in creative mode. \nMinecraft default: 4.5",
     "text.autoconfig.pickblockpro/config.option.blockPicker.useInteractionRange": "Use interaction range",
@@ -33,7 +37,7 @@
     "text.autoconfig.pickblockpro/config.option.blockPicker.entityTagBlacklist": "Entity Tag Blacklist",
     "text.autoconfig.pickblockpro/config.option.blockPicker.entityTagBlacklist.@Tooltip": "Entity tags that should not be copied \nwhen using CTRL + Pick Entity. \nSeparate each tag by a comma. \nTags are case sensitive",
 
-    "text.autoconfig.pickblockpro/config.category.id_picker_settings": "ID Picker",
+    "text.autoconfig.pickblockpro/config.category.idPickerSettings": "ID Picker",
     "text.autoconfig.pickblockpro/config.option.idPicker.range": "ID picker range",
     "text.autoconfig.pickblockpro/config.option.idPicker.range.@Tooltip": "Range in blocks of the ID picker",
     "text.autoconfig.pickblockpro/config.option.idPicker.useInteractionRange": "Use interaction range",
@@ -65,7 +69,7 @@
     "text.autoconfig.pickblockpro/config.option.idPicker.entityTagBlacklist": "Entity Tag Blacklist",
     "text.autoconfig.pickblockpro/config.option.idPicker.entityTagBlacklist.@Tooltip": "Entity tags that should not be \ncopied when using the tag picker. \nSeparate each tag by a comma. \nTags are case sensitive",
 
-    "text.autoconfig.pickblockpro/config.category.tool_picker_settings": "Tool Picker",
+    "text.autoconfig.pickblockpro/config.category.toolPickerSettings": "Tool Picker",
     "text.autoconfig.pickblockpro/config.option.toolPicker.range": "Tool picker range",
     "text.autoconfig.pickblockpro/config.option.toolPicker.range.@Tooltip": "Range in blocks of the tool picker",
     "text.autoconfig.pickblockpro/config.option.toolPicker.useInteractionRange": "Use interaction range",
@@ -132,7 +136,7 @@
     "text.autoconfig.pickblockpro/config.option.toolPicker.swordEnchantments.knockback": "Knockback",
     "text.autoconfig.pickblockpro/config.option.toolPicker.swordEnchantments.mending": "Mending",
 
-    "text.autoconfig.pickblockpro/config.category.inventory_settings": "Inventory",
+    "text.autoconfig.pickblockpro/config.category.inventorySettings": "Inventory",
     "text.autoconfig.pickblockpro/config.option.inventory.searchThroughContainers": "Search through item-containers",
     "text.autoconfig.pickblockpro/config.option.inventory.searchThroughContainers.@Tooltip": "Also search through item-containers \nlike shulkers and bundles to find \nthe picked item (survival only)",
     "text.autoconfig.pickblockpro/config.option.inventory.stayInSameSlot": "Stay in same hotbar slot",
@@ -149,13 +153,10 @@
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot8": "Lock 8th slot",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot9": "Lock 9th slot",
 
-    "text.pick_block_pro.message.copied": "Copied to clipboard: ",
-    "text.pick_block_pro.message.allSlotsLocked": "Can't pick block, all slots have been locked! Unlock at least 1 slot in the config settings of the mod",
-    "text.pick_block_pro.message.nothingToPick": "There is nothing to pick! Enable picking for blocks, entities or both in the config settings of the mod",
-    "text.pick_block_pro.message.allToolsBelowThreshold": "All suitable tools are below the durability threshold!",
+    "text.pickblockpro.message.copied": "Copied to clipboard: ",
+    "text.pickblockpro.message.allSlotsLocked": "Can't pick block, all slots have been locked! Unlock at least 1 slot in the config settings of the mod",
+    "text.pickblockpro.message.nothingToPick": "There is nothing to pick! Enable picking for blocks, entities or both in the config settings of the mod",
+    "text.pickblockpro.message.allToolsBelowThreshold": "All suitable tools are below the durability threshold!",
 
-    "text.pick_block_pro.name.framed": "Framed %s",
-
-    "modmenu.summaryTranslation.pickblockpro": "An advanced client side Block, Entity, NBT, Tool and ID picker",
-    "modmenu.descriptionTranslation.pickblockpro": "An advanced client side Block, Entity, NBT, Tool and ID picker"
+    "text.pickblockpro.itemName.framed": "Framed %s"
 }

@@ -52,7 +52,7 @@ public class BlockPicker {
         }
 
         if (!config.blockPickEntities() && !config.blockPickBlocks()) {
-            InfoProvider.sendError(Text.translatable("text.pick_block_pro.message.nothingToPick"));
+            InfoProvider.sendError(Text.translatable("text.pickblockpro.message.nothingToPick"));
             return;
         }
 
@@ -126,7 +126,7 @@ public class BlockPicker {
             return itemFrameStack;
         }
 
-        MutableText name = Text.translatable("text.pick_block_pro.name.framed", framedItem.getName());
+        MutableText name = Text.translatable("text.pickblockpro.itemName.framed", framedItem.getName());
         name.setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.YELLOW));
         itemFrameStack.set(DataComponentTypes.CUSTOM_NAME, name);
 

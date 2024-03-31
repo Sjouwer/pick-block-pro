@@ -129,7 +129,7 @@ public final class InventoryManager {
         if (slot == -1) slot = findUnlockedHotbarSlot();
 
         if (slot == -1) {
-            InfoProvider.sendError(Text.translatable("text.pick_block_pro.message.allSlotsLocked"));
+            InfoProvider.sendError(Text.translatable("text.pickblockpro.message.allSlotsLocked"));
             return false;
         }
 

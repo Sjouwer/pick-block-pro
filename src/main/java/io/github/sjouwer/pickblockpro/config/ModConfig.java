@@ -1,5 +1,6 @@
 package io.github.sjouwer.pickblockpro.config;
 
+import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.picker.ToolPicker.Tools;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
@@ -17,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("FieldMayBeFinal")
-@Config(name = "pickblockpro/config")
+@Config(name = PickBlockPro.NAMESPACE + "/config")
 public class ModConfig implements ConfigData {
     static class BlockPicker {
         @Tooltip
@@ -160,13 +161,13 @@ public class ModConfig implements ConfigData {
         private LockedSlots lockedSlots = new LockedSlots();
     }
 
-    @TransitiveObject @Category("block_picker_settings")
+    @TransitiveObject @Category("blockPickerSettings")
     private BlockPicker blockPicker = new BlockPicker();
-    @TransitiveObject @Category("id_picker_settings")
+    @TransitiveObject @Category("idPickerSettings")
     private IdPicker idPicker = new IdPicker();
-    @TransitiveObject @Category("tool_picker_settings")
+    @TransitiveObject @Category("toolPickerSettings")
     private ToolPicker toolPicker = new ToolPicker();
-    @TransitiveObject @Category("inventory_settings")
+    @TransitiveObject @Category("inventorySettings")
     private Inventory inventory = new Inventory();
 
     public double blockBlockPickRange(PlayerEntity player) {

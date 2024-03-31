@@ -1,9 +1,11 @@
 {
-    "key.categories.pick_block_pro": "选择方块专业版",
-    "key.pick_block_pro.id_picker": "ID 选择器",
-    "key.pick_block_pro.tool_picker": "工具选择器",
+    "key.categories.pickblockpro": "选择方块专业版",
+    "key.pickblockpro.idPicker": "ID 选择器",
+    "key.pickblockpro.toolPicker": "工具选择器",
+
     "text.autoconfig.pickblockpro/config.title": "Pick Block Pro - 配置",
-    "text.autoconfig.pickblockpro/config.category.block_picker_settings": "区块选择器",
+
+    "text.autoconfig.pickblockpro/config.category.blockPickerSettings": "区块选择器",
     "text.autoconfig.pickblockpro/config.option.blockPicker.range": "方块选择范围",
     "text.autoconfig.pickblockpro/config.option.blockPicker.range.@Tooltip": "方块选择器的方块范围",
     "text.autoconfig.pickblockpro/config.option.blockPicker.pickBlocks": "选择方块",
@@ -16,7 +18,8 @@
     "text.autoconfig.pickblockpro/config.option.blockPicker.pickFire.@Tooltip": "采火时获得打火石",
     "text.autoconfig.pickblockpro/config.option.blockPicker.pickLight": "采光",
     "text.autoconfig.pickblockpro/config.option.blockPicker.pickLight.@Tooltip": "采摘太阳或月亮时，要有挡光板",
-    "text.autoconfig.pickblockpro/config.category.id_picker_settings": "ID 选择器",
+
+    "text.autoconfig.pickblockpro/config.category.idPickerSettings": "ID 选择器",
     "text.autoconfig.pickblockpro/config.option.idPicker.range": "ID 选择器范围",
     "text.autoconfig.pickblockpro/config.option.idPicker.range.@Tooltip": "ID 选择器的范围",
     "text.autoconfig.pickblockpro/config.option.idPicker.pickBlocks": "选择方块 ID",
@@ -31,7 +34,8 @@
     "text.autoconfig.pickblockpro/config.option.idPicker.addProperties.@Tooltip": "添加已选择 ID 的属性",
     "text.autoconfig.pickblockpro/config.option.idPicker.copyToClipboard": "轻松复制 ID",
     "text.autoconfig.pickblockpro/config.option.idPicker.copyToClipboard.@Tooltip": "将选取的 ID 直接复制到剪贴板",
-    "text.autoconfig.pickblockpro/config.category.tool_picker_settings": "工具选择器",
+
+    "text.autoconfig.pickblockpro/config.category.toolPickerSettings": "工具选择器",
     "text.autoconfig.pickblockpro/config.option.toolPicker.range": "工具选择器范围",
     "text.autoconfig.pickblockpro/config.option.toolPicker.range.@Tooltip": "工具选择器的范围",
     "text.autoconfig.pickblockpro/config.option.toolPicker.pickFluids": "工具采集液体",
@@ -44,6 +48,7 @@
     "text.autoconfig.pickblockpro/config.option.toolPicker.preferSwordForBamboo.@Tooltip": "更喜欢用剑而不是斧头来砍竹子",
     "text.autoconfig.pickblockpro/config.option.toolPicker.enchantTools": "附魔工具",
     "text.autoconfig.pickblockpro/config.option.toolPicker.enchantTools.@Tooltip": "在创意中选择工具时附魔工具（并非所有服务器都支持）",
+
     "text.autoconfig.pickblockpro/config.option.toolPicker.pickaxeEnchantments": "创造性的卡车附魔器",
     "text.autoconfig.pickblockpro/config.option.toolPicker.pickaxeEnchantments.base.unbreaking": "耐久",
     "text.autoconfig.pickblockpro/config.option.toolPicker.pickaxeEnchantments.base.efficiency": "效率",
@@ -92,7 +97,8 @@
     "text.autoconfig.pickblockpro/config.option.toolPicker.swordEnchantments.fireAspect": "火焰附加",
     "text.autoconfig.pickblockpro/config.option.toolPicker.swordEnchantments.knockback": "Kockback",
     "text.autoconfig.pickblockpro/config.option.toolPicker.swordEnchantments.mending": "经验修补",
-    "text.autoconfig.pickblockpro/config.category.inventory_settings": "库存",
+
+    "text.autoconfig.pickblockpro/config.category.inventorySettings": "库存",
     "text.autoconfig.pickblockpro/config.option.inventory.searchThroughContainers": "搜索项目容器",
     "text.autoconfig.pickblockpro/config.option.inventory.searchThroughContainers.@Tooltip": "也可以通过物品容器搜索 \n如shulkers和bundles来寻找 \n被选中的物品（仅限生存）。",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots": "锁定的热键槽",
@@ -106,8 +112,10 @@
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot7": "锁定第 7 个插槽",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot8": "锁定第 8 个插槽",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot9": "锁定第 9 个插槽",
-    "text.pick_block_pro.message.copied": "复制到剪贴板：",
-    "text.pick_block_pro.message.allSlotsLocked": "无法选择方块，所有插槽都已锁定！在模组的配置设置中解锁至少 1 个插槽",
-    "text.pick_block_pro.message.nothingToPick": "没有什么可挑选的！在模组的配置设置中启用方块、实体或两者的挑选",
-    "text.pick_block_pro.name.framed": "帧 %s"
+
+    "text.pickblockpro.message.copied": "复制到剪贴板：",
+    "text.pickblockpro.message.allSlotsLocked": "无法选择方块，所有插槽都已锁定！在模组的配置设置中解锁至少 1 个插槽",
+    "text.pickblockpro.message.nothingToPick": "没有什么可挑选的！在模组的配置设置中启用方块、实体或两者的挑选",
+
+    "text.pickblockpro.itemName.framed": "帧 %s"
 }

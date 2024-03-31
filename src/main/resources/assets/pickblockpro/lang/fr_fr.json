@@ -1,11 +1,15 @@
 {
-    "key.categories.pick_block_pro": "Pick Block Pro",
-    "key.pick_block_pro.id_picker": "Sélecteur d'ID",
-    "key.pick_block_pro.tool_picker": "Sélecteur d'Outil",
+    "modmenu.nameTranslation.pickblockpro": "Pick Block Pro",
+    "modmenu.summaryTranslation.pickblockpro": "Un sélecteur avancé côté client pour les blocs, entités, NBT, outils et ID",
+    "modmenu.descriptionTranslation.pickblockpro": "Un sélecteur avancé côté client pour les blocs, entités, NBT, outils et ID",
+
+    "key.categories.pickblockpro": "Pick Block Pro",
+    "key.pickblockpro.idPicker": "Sélecteur d'ID",
+    "key.pickblockpro.toolPicker": "Sélecteur d'Outil",
 
     "text.autoconfig.pickblockpro/config.title": "Pick Block Pro - Config",
 
-    "text.autoconfig.pickblockpro/config.category.block_picker_settings": "Sélecteur de Blocs",
+    "text.autoconfig.pickblockpro/config.category.blockPickerSettings": "Sélecteur de Blocs",
     "text.autoconfig.pickblockpro/config.option.blockPicker.range": "Portée du sélecteur de blocs",
     "text.autoconfig.pickblockpro/config.option.blockPicker.range.@Tooltip": "Portée en blocs du sélecteur de blocs",
     "text.autoconfig.pickblockpro/config.option.blockPicker.pickBlocks": "Sélectionner des blocs",
@@ -25,7 +29,7 @@
     "text.autoconfig.pickblockpro/config.option.blockPicker.entityTagBlacklist": "Liste noire des tags d'entité",
     "text.autoconfig.pickblockpro/config.option.blockPicker.entityTagBlacklist.@Tooltip": "Les tags d'entité qui ne doivent pas être copiés\nlors de l'utilisation de CTRL + Sélectionner une entité.\nSéparez chaque tag par une virgule.\nLes tags sont sensibles à la casse",
 
-    "text.autoconfig.pickblockpro/config.category.id_picker_settings": "Paramètres du Sélecteur d'ID",
+    "text.autoconfig.pickblockpro/config.category.idPickerSettings": "Paramètres du Sélecteur d'ID",
     "text.autoconfig.pickblockpro/config.option.idPicker.range": "Portée du sélecteur d'ID",
     "text.autoconfig.pickblockpro/config.option.idPicker.range.@Tooltip": "Portée en blocs du sélecteur d'ID",
     "text.autoconfig.pickblockpro/config.option.idPicker.pickBlocks": "Sélectionner des ID de blocs",
@@ -55,7 +59,7 @@
     "text.autoconfig.pickblockpro/config.option.idPicker.entityTagBlacklist": "Liste noire des tags d'entité",
     "text.autoconfig.pickblockpro/config.option.idPicker.entityTagBlacklist.@Tooltip": "Les tags d'entité qui ne doivent pas être copiés\nlors de l'utilisation du sélecteur de tags. \nSéparez chaque tag par une virgule.\nLes tags sont sensibles à la case",
 
-    "text.autoconfig.pickblockpro/config.category.tool_picker_settings": "Sélecteur d'Outils",
+    "text.autoconfig.pickblockpro/config.category.toolPickerSettings": "Sélecteur d'Outils",
     "text.autoconfig.pickblockpro/config.option.toolPicker.range": "Portée du sélecteur d'outils",
     "text.autoconfig.pickblockpro/config.option.toolPicker.range.@Tooltip": "Portée en blocs du sélecteur d'outils",
     "text.autoconfig.pickblockpro/config.option.toolPicker.pickFluids": "Sélectionner des fluides avec l'outil",
@@ -107,7 +111,7 @@
     "text.autoconfig.pickblockpro/config.option.toolPicker.shearEnchantments.mending": "Raccommodage",
     "text.autoconfig.pickblockpro/config.option.toolPicker.swordEnchantments": "Enchantements d'épée créatifs",
     "text.autoconfig.pickblockpro/config.option.toolPicker.swordEnchantments.unbreaking": "Solidité",
-    "text.autoconfig.pickblockpro/config.option.toolPicker.swordEnchantments.Tranchant": "Tranchant",
+    "text.autoconfig.pickblockpro/config.option.toolPicker.swordEnchantments.sharpness": "Tranchant",
     "text.autoconfig.pickblockpro/config.option.toolPicker.swordEnchantments.bane": "Fléau des arthropodes",
     "text.autoconfig.pickblockpro/config.option.toolPicker.swordEnchantments.bane.@Tooltip": "Ce sera ajouté uniquement si l'entité sélectionnée par l'outil est un arthropode. \nRéglez à 0 si vous préférez toujours obtenir Tranchant à la place",
     "text.autoconfig.pickblockpro/config.option.toolPicker.swordEnchantments.smite": "Châtiment",
@@ -118,7 +122,7 @@
     "text.autoconfig.pickblockpro/config.option.toolPicker.swordEnchantments.knockback": "Recul",
     "text.autoconfig.pickblockpro/config.option.toolPicker.swordEnchantments.mending": "Raccommodage",
 
-    "text.autoconfig.pickblockpro/config.category.inventory_settings": "Inventaire",
+    "text.autoconfig.pickblockpro/config.category.inventorySettings": "Inventaire",
     "text.autoconfig.pickblockpro/config.option.inventory.searchThroughContainers": "Rechercher dans les conteneurs d'Items",
     "text.autoconfig.pickblockpro/config.option.inventory.searchThroughContainers.@Tooltip": "Recherche également dans les conteneurs d'objets tels que les Shulkers et les sacs pour trouver l'objet sélectionné (uniquement en mode survie)",
     "text.autoconfig.pickblockpro/config.option.inventory.stayInSameSlot": "Reste dans la même case de la barre d'accès rapide",
@@ -135,12 +139,9 @@
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot8": "Verrouiller le 8e emplacement",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot9": "Verrouiller le 9e emplacement",
 
-    "text.pick_block_pro.message.copied": "Copié dans le Presse-Papiers: ",
-    "text.pick_block_pro.message.allSlotsLocked": "Impossible de choisir un bloc, tous les emplacements sont verrouillés ! Déverrouillez au moins 1 emplacement dans les paramètres de configuration du mod",
-    "text.pick_block_pro.message.nothingToPick": "Il n'y a rien à choisir ! Activez la sélection pour les blocs, les entités ou les deux dans les paramètres de configuration du mod",
+    "text.pickblockpro.message.copied": "Copié dans le Presse-Papiers: ",
+    "text.pickblockpro.message.allSlotsLocked": "Impossible de choisir un bloc, tous les emplacements sont verrouillés ! Déverrouillez au moins 1 emplacement dans les paramètres de configuration du mod",
+    "text.pickblockpro.message.nothingToPick": "Il n'y a rien à choisir ! Activez la sélection pour les blocs, les entités ou les deux dans les paramètres de configuration du mod",
 
-    "text.pick_block_pro.name.framed": "%s encadré",
-
-    "modmenu.summaryTranslation.pickblockpro": "Un sélecteur avancé côté client pour les blocs, entités, NBT, outils et ID",
-    "modmenu.descriptionTranslation.pickblockpro": "Un sélecteur avancé côté client pour les blocs, entités, NBT, outils et ID"
+    "text.pickblockpro.itemName.framed": "%s encadré"
 }

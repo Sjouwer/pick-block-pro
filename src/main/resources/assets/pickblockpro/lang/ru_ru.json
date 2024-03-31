@@ -1,11 +1,15 @@
 {
-    "key.categories.pick_block_pro": "Pick Block Pro",
-    "key.pick_block_pro.id_picker": "Получение id",
-    "key.pick_block_pro.tool_picker": "Выбор инструмента",
+    "modmenu.nameTranslation.pickblockpro": "Pick Block Pro",
+    "modmenu.summaryTranslation.pickblockpro": "Продвинутое получение блоков, инструментов, сущностей, id и NBT.",
+    "modmenu.descriptionTranslation.pickblockpro": "Продвинутое получение блоков, инструментов, сущностей, их идентификаторов и данных.",
+
+    "key.categories.pickblockpro": "Pick Block Pro",
+    "key.pickblockpro.idPicker": "Получение id",
+    "key.pickblockpro.toolPicker": "Выбор инструмента",
 
     "text.autoconfig.pickblockpro/config.title": "Настройки Pick Block Pro",
 
-    "text.autoconfig.pickblockpro/config.category.block_picker_settings": "Выбор блока",
+    "text.autoconfig.pickblockpro/config.category.blockPickerSettings": "Выбор блока",
     "text.autoconfig.pickblockpro/config.option.blockPicker.range": "Расстояние выбора блока",
     "text.autoconfig.pickblockpro/config.option.blockPicker.range.@Tooltip": "Предельное расстояние в блоках для выбора",
     "text.autoconfig.pickblockpro/config.option.blockPicker.pickBlocks": "Выбирать блоки",
@@ -25,7 +29,7 @@
     "text.autoconfig.pickblockpro/config.option.blockPicker.entityTagBlacklist": "Чёрный список тегов сущностей",
     "text.autoconfig.pickblockpro/config.option.blockPicker.entityTagBlacklist.@Tooltip": "Теги сущностей, которые не следует копировать\nпри использовании Ctrl + Выбор блока.\n §6ℹ§r Разделяйте параметры запятой.\n §c⚠§r Параметры чувствительны к регистру!",
     
-    "text.autoconfig.pickblockpro/config.category.id_picker_settings": "Получение id",
+    "text.autoconfig.pickblockpro/config.category.idPickerSettings": "Получение id",
     "text.autoconfig.pickblockpro/config.option.idPicker.range": "Расстояние выбора id",
     "text.autoconfig.pickblockpro/config.option.idPicker.range.@Tooltip": "Предельное расстояние в блоках для получения id",
     "text.autoconfig.pickblockpro/config.option.idPicker.pickBlocks": "Выбирать id блока",
@@ -43,7 +47,7 @@
     "text.autoconfig.pickblockpro/config.option.idPicker.enableHotbarPicker": "Включить выбор id из инвентаря",
     "text.autoconfig.pickblockpro/config.option.idPicker.enableHotbarPicker.@Tooltip": "Когда чат открыт, используйте:\nCtrl + <слот инвентаря>",
 
-    "text.autoconfig.pickblockpro/config.category.tool_picker_settings": "Выбор инструмента",
+    "text.autoconfig.pickblockpro/config.category.toolPickerSettings": "Выбор инструмента",
     "text.autoconfig.pickblockpro/config.option.toolPicker.range": "Расстояние выбора инструмента",
     "text.autoconfig.pickblockpro/config.option.toolPicker.range.@Tooltip": "Предельное расстояние в блоках для выбора инструмента",
     "text.autoconfig.pickblockpro/config.option.toolPicker.pickFluids": "Инструмент для жидкостей",
@@ -106,7 +110,7 @@
     "text.autoconfig.pickblockpro/config.option.toolPicker.swordEnchantments.knockback": "Отбрасывание",
     "text.autoconfig.pickblockpro/config.option.toolPicker.swordEnchantments.mending": "Починка",
 
-    "text.autoconfig.pickblockpro/config.category.inventory_settings": "Инвентарь",
+    "text.autoconfig.pickblockpro/config.category.inventorySettings": "Инвентарь",
     "text.autoconfig.pickblockpro/config.option.inventory.searchThroughContainers": "Поиск внутри предметов-хранилищ",
     "text.autoconfig.pickblockpro/config.option.inventory.searchThroughContainers.@Tooltip": "Выполнять поиск в том числе и по содержимому\nпредметов, таких как ящики шалкера или мешочки\n(только для выживания)",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots": "Заблокированные слоты инвентаря",
@@ -121,12 +125,9 @@
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot8": "Заблокировать восьмой слот",
     "text.autoconfig.pickblockpro/config.option.inventory.lockedSlots.slot9": "Заблокировать девятый слот",
 
-    "text.pick_block_pro.message.copied": "Данные скопированы в буфер обмена: ",
-    "text.pick_block_pro.message.allSlotsLocked": "Невозможно взять блок, все слоты заблокированы! Разблокируйте хотя бы один слот в настройках мода.",
-    "text.pick_block_pro.message.nothingToPick": "Выбирать нечего! Активируйте выбор блоков и/или сущностей в настройках мода.",
+    "text.pickblockpro.message.copied": "Данные скопированы в буфер обмена: ",
+    "text.pickblockpro.message.allSlotsLocked": "Невозможно взять блок, все слоты заблокированы! Разблокируйте хотя бы один слот в настройках мода.",
+    "text.pickblockpro.message.nothingToPick": "Выбирать нечего! Активируйте выбор блоков и/или сущностей в настройках мода.",
 
-    "text.pick_block_pro.name.framed": "%s в рамке",
-    
-    "modmenu.summaryTranslation.pickblockpro": "Продвинутое получение блоков, инструментов, сущностей, id и NBT.",
-    "modmenu.descriptionTranslation.pickblockpro": "Продвинутое получение блоков, инструментов, сущностей, их идентификаторов и данных."
+    "text.pickblockpro.itemName.framed": "%s в рамке"
 }

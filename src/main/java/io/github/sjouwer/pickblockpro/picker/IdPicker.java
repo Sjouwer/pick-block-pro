@@ -52,7 +52,7 @@ public class IdPicker {
         }
 
         if (!config.idPickEntities() && !config.idPickBlocks()) {
-            InfoProvider.sendError(Text.translatable("text.pick_block_pro.message.nothingToPick"));
+            InfoProvider.sendError(Text.translatable("text.pickblockpro.message.nothingToPick"));
             return;
         }
 
@@ -76,7 +76,7 @@ public class IdPicker {
 
         if (config.copyToClipboard()){
             client.keyboard.setClipboard(id.getString());
-            InfoProvider.sendMessage(Text.translatable("text.pick_block_pro.message.copied").formatted(Formatting.DARK_GREEN));
+            InfoProvider.sendMessage(Text.translatable("text.pickblockpro.message.copied").formatted(Formatting.DARK_GREEN));
         }
 
         InfoProvider.sendMessage(id);
