@@ -9,7 +9,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -89,9 +88,15 @@ public class NbtUtil {
             blockEntityCompound.remove("x");
             blockEntityCompound.remove("y");
             blockEntityCompound.remove("z");
+
+            boolean containsNoBlockEntityData = blockEntityCompound.isEmpty()
+                    || blockEntityCompound.contains(ID_KEY) && blockEntityCompound.getSize() == 1;
+            if (containsNoBlockEntityData) {
+                return;
+            }
         }
 
-        BlockItem.setBlockEntityNbt(stack, blockEntity.getType(), blockEntityCompound);
+        stack.setSubNbt(BLOCK_ENTITY_KEY, blockEntityCompound);
 
         if (addLore) {
             addLore(stack, "\"(+BlockEntity NBT)\"");
