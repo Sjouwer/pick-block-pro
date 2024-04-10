@@ -7,9 +7,9 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Saddleable;
-import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -53,13 +53,6 @@ public class NbtUtil {
     public static NbtCompound getEntityNbt(Entity entity) {
         NbtCompound entityCompound = entity.writeNbt(new NbtCompound());
 
-        if (entity instanceof HorseEntity horse && horse.hasArmorInSlot()) {
-            NbtCompound armorCompound = new NbtCompound();
-            armorCompound.putString(ID_KEY, horse.getArmorType().getItem().toString());
-            armorCompound.putInt(COUNT_KEY, 1);
-            entityCompound.put("ArmorItem", armorCompound);
-        }
-
         if (entity instanceof Saddleable saddleable && saddleable.isSaddled()) {
             NbtCompound saddleCompound = new NbtCompound();
             saddleCompound.putString(ID_KEY, Items.SADDLE.toString());
@@ -89,11 +82,16 @@ public class NbtUtil {
 
         if (stack.getItem() instanceof PlayerHeadItem && blockEntityCompound.contains(PlayerHeadItem.SKULL_OWNER_KEY)) {
             NbtCompound skullCompound = blockEntityCompound.getCompound(PlayerHeadItem.SKULL_OWNER_KEY);
-            stack.getOrCreateNbt().put(PlayerHeadItem.SKULL_OWNER_KEY, skullCompound);
-            return;
+            NbtCompound stackCompound = stack.getOrCreateNbt();
+            stackCompound.put(PlayerHeadItem.SKULL_OWNER_KEY, skullCompound);
+
+            blockEntityCompound.remove(PlayerHeadItem.SKULL_OWNER_KEY);
+            blockEntityCompound.remove("x");
+            blockEntityCompound.remove("y");
+            blockEntityCompound.remove("z");
         }
 
-        stack.setSubNbt(BLOCK_ENTITY_KEY, blockEntityCompound);
+        BlockItem.setBlockEntityNbt(stack, blockEntity.getType(), blockEntityCompound);
 
         if (addLore) {
             addLore(stack, "\"(+BlockEntity NBT)\"");
@@ -131,6 +129,7 @@ public class NbtUtil {
         if (loreList == null) {
             loreList = new NbtList();
         }
+
         loreList.add(NbtString.of(tag));
         loreCompound.put(ItemStack.LORE_KEY, loreList);
         stack.setSubNbt(ItemStack.DISPLAY_KEY, loreCompound);
@@ -143,19 +142,9 @@ public class NbtUtil {
     }
 
     public static void cycleLightLevel(ItemStack light) {
-        NbtCompound blockStateTag = light.getSubNbt(BLOCK_STATE_KEY);
-        int newLightLvl;
-
-        if (blockStateTag == null) {
-            blockStateTag = new NbtCompound();
-            newLightLvl = 0;
-        }
-        else {
-            newLightLvl = blockStateTag.getInt(LEVEL_KEY) + 1;
-        }
-        if (newLightLvl == 16) {
-            newLightLvl = 0;
-        }
+        NbtCompound blockStateTag = light.getOrCreateSubNbt(BLOCK_STATE_KEY);
+        int newLightLvl = blockStateTag.contains(LEVEL_KEY) ? blockStateTag.getInt(LEVEL_KEY) + 1 : 0;
+        if (newLightLvl == 16) newLightLvl = 0;
 
         blockStateTag.putInt(LEVEL_KEY, newLightLvl);
         light.setSubNbt(BLOCK_STATE_KEY, blockStateTag);
