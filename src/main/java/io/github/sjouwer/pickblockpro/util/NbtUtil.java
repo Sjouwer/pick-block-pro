@@ -7,6 +7,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Saddleable;
+import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -51,6 +52,11 @@ public class NbtUtil {
 
     public static NbtCompound getEntityNbt(Entity entity) {
         NbtCompound entityCompound = entity.writeNbt(new NbtCompound());
+        if (entity instanceof HorseEntity horse && horse.hasArmorInSlot()) {
+            NbtElement armorCompound = entityCompound.getList("ArmorItems", NbtElement.COMPOUND_TYPE).get(2);
+            entityCompound.put("ArmorItem", armorCompound);
+            entityCompound.remove("ArmorItems");
+        }
 
         if (entity instanceof Saddleable saddleable && saddleable.isSaddled()) {
             NbtCompound saddleCompound = new NbtCompound();
