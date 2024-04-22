@@ -100,7 +100,7 @@ public class DataComponentUtil {
 
     public static void addLore(ItemStack stack, String loreLine) {
         LoreComponent lore = stack.getOrDefault(DataComponentTypes.LORE, LoreComponent.DEFAULT);
-        stack.set(DataComponentTypes.LORE, lore.of(Text.literal(loreLine)));
+        stack.set(DataComponentTypes.LORE, lore.with(Text.literal(loreLine)));
     }
 
     public static void setLightLevel(ItemStack light, int level) {

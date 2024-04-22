@@ -23,6 +23,7 @@ import net.minecraft.item.ShearsItem;
 import net.minecraft.item.ShovelItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolItem;
+import net.minecraft.item.ToolMaterials;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
@@ -152,7 +153,7 @@ public class ToolPicker {
     private static int calculateToolScore(ItemStack item) {
         int score = 0;
         if (item.getItem() instanceof ToolItem toolItem) {
-            score += toolItem.getMaterial().getMiningLevel() * 10000;
+            score += getMiningLevel((ToolMaterials) toolItem.getMaterial()) * 10000;
         }
 
         if (config.preferSilkTouch()) {
@@ -177,10 +178,20 @@ public class ToolPicker {
         return score;
     }
 
+    private static int getMiningLevel(ToolMaterials material) {
+        return switch (material) {
+            case GOLD, WOOD -> 0;
+            case STONE -> 1;
+            case IRON -> 2;
+            case DIAMOND -> 3;
+            case NETHERITE -> 4;
+        };
+    }
+
     private static int calculateSwordScore(ItemStack item, Entity entity) {
         int score = 0;
         if (item.getItem() instanceof SwordItem swordItem) {
-            score += swordItem.getMaxDamage();
+            score += swordItem.getMaterial().getAttackDamage();
             score += EnchantmentHelper.getAttackDamage(item, entity.getType());
         }
 
