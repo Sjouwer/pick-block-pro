@@ -12,8 +12,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.ToolItem;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -63,19 +65,19 @@ public class ToolPicker {
         boolean foundTool = false;
         float bestToolScore = -1;
         for (int i = 0; i < MAIN_SIZE; i++) {
-            ItemStack itemStack = inventory.getStack(i);
-            if (!itemStack.isSuitableFor(state)) {
+            ItemStack stack = inventory.getStack(i);
+            if (!isCorrectTool(stack, state)) {
                 continue;
             }
 
             foundTool = true;
-            if (itemStack.getMaxDamage() - itemStack.getDamage() <= config.durabilityThreshold()) {
+            if (stack.getDamage() > 0 && stack.getMaxDamage() - stack.getDamage() <= config.durabilityThreshold()) {
                 continue;
             }
 
-            float score = calculateToolScore(itemStack);
-            if (score > bestToolScore || (bestTool != null && score == bestToolScore && itemStack.getDamage() < bestTool.getDamage())) {
-                bestTool = itemStack;
+            float score = calculateToolScore(stack, state);
+            if (score > bestToolScore || (bestTool != null && score == bestToolScore && stack.getDamage() < bestTool.getDamage())) {
+                bestTool = stack;
                 bestToolScore = score;
             }
         }
@@ -87,10 +89,29 @@ public class ToolPicker {
         return bestTool;
     }
 
-    private static float calculateToolScore(ItemStack item) {
+    @SuppressWarnings("deprecation")
+    private static boolean isCorrectTool(ItemStack stack, BlockState state) {
+        if (stack.isOf(Items.SHEARS) && state.isIn(BlockTags.WOOL)) {
+            return true;
+        }
+        if (stack.isIn(ItemTags.SWORDS) && state.isOf(Blocks.BAMBOO)) {
+            return true;
+        }
+        if (stack.isOf(Items.BUCKET) && (state.isLiquid() || state.isOf(Blocks.POWDER_SNOW))) {
+            return true;
+        }
+        return stack.isSuitableFor(state);
+    }
+
+    private static float calculateToolScore(ItemStack item, BlockState state) {
         float score = 0;
+
+        if (item.isIn(ItemTags.SWORDS) && state.isOf(Blocks.BAMBOO) && config.preferSwordForBamboo()) {
+            score += 1000000;
+        }
+
         if (item.getItem() instanceof ToolItem toolItem) {
-            score += toolItem.getMaterial().getMiningSpeedMultiplier() * toolItem.getMaterial().getDurability() * 10000;
+            score += toolItem.getMaterial().getMiningSpeedMultiplier() * toolItem.getMaterial().getDurability() * 1000;
         }
 
         if (config.preferSilkTouch()) {
