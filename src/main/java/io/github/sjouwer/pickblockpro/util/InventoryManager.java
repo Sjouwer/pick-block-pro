@@ -45,7 +45,7 @@ public final class InventoryManager {
     }
 
     private static void pickOrPlaceItemInInventory(ItemStack item, PlayerInventory inventory) {
-        boolean isCreative = client.player.getAbilities().creativeMode;
+        boolean isCreative = client.player.isCreative();
         int stackSlot = inventory.getSlotWithStack(item);
 
         //Item is not inside the inventory, if in survival search through item-containers to see if they contain the item

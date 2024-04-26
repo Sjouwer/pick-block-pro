@@ -6,30 +6,21 @@ import io.github.sjouwer.pickblockpro.util.*;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.AxeItem;
-import net.minecraft.item.BucketItem;
-import net.minecraft.item.HoeItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.PickaxeItem;
-import net.minecraft.item.ShearsItem;
-import net.minecraft.item.ShovelItem;
-import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolItem;
-import net.minecraft.item.ToolMaterials;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+
+import static net.minecraft.entity.player.PlayerInventory.MAIN_SIZE;
 
 public class ToolPicker {
     private static final MinecraftClient client = MinecraftClient.getInstance();
@@ -48,86 +39,32 @@ public class ToolPicker {
         }
 
         HitResult hit = RaycastUtil.getHit(config.blockToolPickRange(client.player), config.entityToolPickRange(client.player), !config.toolPickFluids(), false);
-        if (hit == null) {
+        if (hit == null || hit.getType() == HitResult.Type.MISS) {
             return;
         }
 
         if (hit.getType() == HitResult.Type.ENTITY) {
             Entity entity = ((EntityHitResult) hit).getEntity();
             if (entity instanceof LivingEntity livingEntity) {
-                giveOrSwitchTool(Tools.SWORD, livingEntity);
+                WeaponPicker.giveOrSwitchWeapon(livingEntity);
             }
         }
         else {
             BlockPos blockPos = ((BlockHitResult) hit).getBlockPos();
             BlockState state = client.world.getBlockState(blockPos);
-            pickMostSuitableTool(state);
+            giveOrSwitchTool(state);
         }
     }
 
-    @SuppressWarnings("deprecation")
-    private static void pickMostSuitableTool(BlockState state) {
-        if (state.isIn(BlockTags.WOOL) || state.isOf(Blocks.COBWEB)) {
-            giveOrSwitchTool(Tools.SHEARS);
-            return;
-        }
-        if (state.isOf(Blocks.BAMBOO) && config.preferSwordForBamboo()) {
-            giveOrSwitchTool(Tools.SWORD);
-            return;
-        }
-        if (state.isLiquid() || state.isOf(Blocks.POWDER_SNOW)) {
-            giveOrSwitchTool(Tools.BUCKET);
-            return;
-        }
-        if (state.isIn(BlockTags.PICKAXE_MINEABLE)) {
-            giveOrSwitchTool(Tools.PICKAXE);
-            return;
-        }
-        if (state.isIn(BlockTags.AXE_MINEABLE)) {
-            giveOrSwitchTool(Tools.AXE);
-            return;
-        }
-        if (state.isIn(BlockTags.SHOVEL_MINEABLE)) {
-            giveOrSwitchTool(Tools.SHOVEL);
-            return;
-        }
-        if (state.isIn(BlockTags.HOE_MINEABLE)) {
-            giveOrSwitchTool(Tools.HOE);
-        }
-    }
-
-    private static void giveOrSwitchTool(Tools tool) {
-        giveOrSwitchTool(tool, null);
-    }
-
-    private static void giveOrSwitchTool(Tools tool, Entity entity) {
-        ItemStack bestTool = client.player.getAbilities().creativeMode ? createBestTool(tool, entity) : findBestTool(client.player, tool, entity);
-        if (bestTool != null) {
-            InventoryManager.pickOrPlaceItemInInventory(bestTool);
-        }
-    }
-
-    /**
-     * Find the best available tool inside the player's inventory of the provided tool type
-     * @param tool Tool type
-     * @param entity Should only be provided with a sword to find the best enchantment to kill the entity
-     * @return Player's best available tool as ItemStack or null if none are found
-     */
-    public static ItemStack findBestTool(PlayerEntity player, Tools tool, Entity entity) {
-        PlayerInventory inventory = player.getInventory();
-        if (tool.equals(Tools.BUCKET)) {
-            ItemStack bucket = Items.BUCKET.getDefaultStack();
-            if (inventory.contains(bucket)) {
-                return bucket;
-            }
-        }
+    private static ItemStack findBestTool(BlockState state) {
+        PlayerInventory inventory = client.player.getInventory();
 
         ItemStack bestTool = null;
         boolean foundTool = false;
-        int bestToolScore = -1;
-        for (int i = 0; i < 36; i++) {
+        float bestToolScore = -1;
+        for (int i = 0; i < MAIN_SIZE; i++) {
             ItemStack itemStack = inventory.getStack(i);
-            if (!tool.getClassType().isInstance(itemStack.getItem())) {
+            if (!itemStack.isSuitableFor(state)) {
                 continue;
             }
 
@@ -136,7 +73,7 @@ public class ToolPicker {
                 continue;
             }
 
-            int score = tool.equals(Tools.SWORD) ? calculateSwordScore(itemStack, entity) : calculateToolScore(itemStack);
+            float score = calculateToolScore(itemStack);
             if (score > bestToolScore || (bestTool != null && score == bestToolScore && itemStack.getDamage() < bestTool.getDamage())) {
                 bestTool = itemStack;
                 bestToolScore = score;
@@ -144,16 +81,16 @@ public class ToolPicker {
         }
 
         if (foundTool && bestTool == null) {
-            InfoProvider.sendWarning(Text.translatable("text.pick_block_pro.message.allToolsBelowThreshold"));
+            InfoProvider.sendWarning(Text.translatable("text.pickblockpro.message.allToolsBelowThreshold"));
         }
 
         return bestTool;
     }
 
-    private static int calculateToolScore(ItemStack item) {
-        int score = 0;
+    private static float calculateToolScore(ItemStack item) {
+        float score = 0;
         if (item.getItem() instanceof ToolItem toolItem) {
-            score += getMiningLevel((ToolMaterials) toolItem.getMaterial()) * 10000;
+            score += toolItem.getMaterial().getMiningSpeedMultiplier() * toolItem.getMaterial().getDurability() * 10000;
         }
 
         if (config.preferSilkTouch()) {
@@ -178,66 +115,80 @@ public class ToolPicker {
         return score;
     }
 
-    private static int getMiningLevel(ToolMaterials material) {
-        return switch (material) {
-            case GOLD, WOOD -> 0;
-            case STONE -> 1;
-            case IRON -> 2;
-            case DIAMOND -> 3;
-            case NETHERITE -> 4;
-        };
-    }
-
-    private static int calculateSwordScore(ItemStack item, Entity entity) {
-        int score = 0;
-        if (item.getItem() instanceof SwordItem swordItem) {
-            score += swordItem.getMaterial().getAttackDamage();
-            score += EnchantmentHelper.getAttackDamage(item, entity.getType());
+    /**
+     * Give the player a fully enchanted tool
+     * Only works in creative mode
+     * @param tool Tool type to give and enchant
+     */
+    public static void giveTool(Tools tool) {
+        if (!client.player.isCreative()) {
+            InfoProvider.sendError(Text.translatable("text.pickblockpro.message.creativeRequired"));
+            return;
         }
 
-        return score;
+        ItemStack toolStack = config.getToolItemStack(tool);
+        InventoryManager.pickOrPlaceItemInInventory(toolStack);
+    }
+
+    private static void giveOrSwitchTool(BlockState state) {
+        ItemStack bestTool = client.player.isCreative()
+                ? createBestTool(state)
+                : findBestTool(state);
+
+        if (bestTool != null && !bestTool.isEmpty()) {
+            InventoryManager.pickOrPlaceItemInInventory(bestTool);
+        }
     }
 
     /**
      * Get the best available tool with configured enchantments of the provided tool type
-     * @param tool Tool type
-     * @param entity Should only be provided with a sword to determine the best enchantment to kill the entity
+     * @param state BlockState
      * @return Best available tool as ItemStack
      */
-    public static ItemStack createBestTool(Tools tool, Entity entity) {
-        ItemStack bestTool = switch (tool) {
-            case PICKAXE -> Items.NETHERITE_PICKAXE.getDefaultStack();
-            case AXE -> Items.NETHERITE_AXE.getDefaultStack();
-            case SHOVEL -> Items.NETHERITE_SHOVEL.getDefaultStack();
-            case HOE -> Items.NETHERITE_HOE.getDefaultStack();
-            case SWORD -> Items.NETHERITE_SWORD.getDefaultStack();
-            case SHEARS -> Items.SHEARS.getDefaultStack();
-            case BUCKET -> Items.BUCKET.getDefaultStack();
-        };
+    public static ItemStack createBestTool(BlockState state) {
+        Tools tool = getMostSuitableTool(state);
+        if (tool == null) {
+            return ItemStack.EMPTY;
+        }
 
-        ItemEnchantmentsComponent enchantments = config.getEnchantments(tool, entity);
-        EnchantmentHelper.set(bestTool, enchantments);
+        return config.getToolItemStack(tool);
+    }
 
-        return bestTool;
+    @SuppressWarnings("deprecation")
+    private static Tools getMostSuitableTool(BlockState state) {
+        if (state.isIn(BlockTags.WOOL) || state.isOf(Blocks.COBWEB)) {
+            return Tools.SHEARS;
+        }
+        if (state.isOf(Blocks.BAMBOO) && config.preferSwordForBamboo()) {
+            return Tools.SWORD;
+        }
+        if (state.isLiquid() || state.isOf(Blocks.POWDER_SNOW)) {
+            return Tools.BUCKET;
+        }
+        if (state.isIn(BlockTags.PICKAXE_MINEABLE)) {
+            return Tools.PICKAXE;
+        }
+        if (state.isIn(BlockTags.AXE_MINEABLE)) {
+            return Tools.AXE;
+        }
+        if (state.isIn(BlockTags.SHOVEL_MINEABLE)) {
+            return Tools.SHOVEL;
+        }
+        if (state.isIn(BlockTags.HOE_MINEABLE)) {
+            return Tools.HOE;
+        }
+
+        return null;
     }
 
     public enum Tools {
-        BUCKET(BucketItem.class),
-        PICKAXE(PickaxeItem.class),
-        AXE(AxeItem.class),
-        SHOVEL(ShovelItem.class),
-        HOE(HoeItem.class),
-        SWORD(SwordItem.class),
-        SHEARS(ShearsItem.class);
-
-
-        private final Class<?> classObject;
-        Tools(Class<?> classObj) {
-            this.classObject = classObj;
-        }
-
-        public Class<?> getClassType() {
-            return this.classObject;
-        }
+        PICKAXE,
+        AXE,
+        SHOVEL,
+        HOE,
+        SWORD,
+        SHEARS,
+        BUCKET,
+        FISHING_ROD
     }
 }

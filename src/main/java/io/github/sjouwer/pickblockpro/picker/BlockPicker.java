@@ -95,7 +95,7 @@ public class BlockPicker {
             item = entity.getPickBlockStack();
         }
 
-        if (item != null && client.player.getAbilities().creativeMode && Screen.hasControlDown()) {
+        if (item != null && client.player.isCreative() && Screen.hasControlDown()) {
             if (entity instanceof ItemFrameEntity itemFrame) {
                 item = createFramedItemStack(itemFrame);
             }
@@ -150,7 +150,7 @@ public class BlockPicker {
 
     private static ItemStack getFallingBlockItemStack(FallingBlockEntity fallingBlock) {
         ItemStack item = new ItemStack(fallingBlock.getBlockState().getBlock());
-        if (client.player.getAbilities().creativeMode && Screen.hasAltDown()) {
+        if (client.player.isCreative() && Screen.hasAltDown()) {
             DataComponentUtil.setBlockStateData(item, fallingBlock.getBlockState(), true);
         }
 
@@ -175,7 +175,7 @@ public class BlockPicker {
             item = block.getPickStack(client.world, blockPos, state);
         }
 
-        if (!item.isEmpty() && client.player.getAbilities().creativeMode) {
+        if (!item.isEmpty() && client.player.isCreative()) {
             if (Screen.hasControlDown() && state.hasBlockEntity()) {
                 BlockEntity blockEntity = client.world.getBlockEntity(blockPos);
                 DataComponentUtil.setBlockEntityData(item, blockEntity, client.world.getRegistryManager(), true);
@@ -231,7 +231,7 @@ public class BlockPicker {
     private static ItemStack giveOrCycleLight(int lightLvl) {
         PlayerEntity player = client.player;
         ItemStack mainHandStack = player.getMainHandStack();
-        if (mainHandStack.isOf(Items.LIGHT) && player.getAbilities().creativeMode) {
+        if (mainHandStack.isOf(Items.LIGHT) && player.isCreative()) {
             DataComponentUtil.cycleLightLevel(mainHandStack);
             InventoryManager.updateCreativeSlot(player.getInventory().selectedSlot);
             return ItemStack.EMPTY;

@@ -1,6 +1,8 @@
 package io.github.sjouwer.pickblockpro.config;
 
 import io.github.sjouwer.pickblockpro.PickBlockPro;
+import io.github.sjouwer.pickblockpro.config.tools.*;
+import io.github.sjouwer.pickblockpro.picker.WeaponPicker.Weapons;
 import io.github.sjouwer.pickblockpro.picker.ToolPicker.Tools;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
@@ -8,11 +10,9 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry.Category;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.Tooltip;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.CollapsibleObject;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.TransitiveObject;
-import net.minecraft.component.type.ItemEnchantmentsComponent;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 
 import java.util.Arrays;
 import java.util.List;
@@ -80,35 +80,6 @@ public class ModConfig implements ConfigData {
         private String entityTagBlacklist = "";
     }
 
-    static class BaseEnchantments {
-        private int unbreaking = 3;
-        private int efficiency = 5;
-        private boolean mending = true;
-    }
-
-    static class ExtendedEnchantments {
-        @TransitiveObject
-        private BaseEnchantments base = new BaseEnchantments();
-        @Tooltip
-        private boolean silkTouch = true;
-        @Tooltip
-        private int fortune = 3;
-    }
-
-    static class SwordEnchantments {
-        private int unbreaking = 3;
-        private int sharpness = 5;
-        @Tooltip
-        private int bane = 5;
-        @Tooltip
-        private int smite = 5;
-        private int sweeping = 3;
-        private int looting = 3;
-        private int fireAspect = 0;
-        private int knockback = 0;
-        private boolean mending = true;
-    }
-
     static class ToolPicker {
         @Tooltip
         private double range = 100;
@@ -119,25 +90,54 @@ public class ModConfig implements ConfigData {
         @Tooltip
         private boolean pickFluids = false;
         @Tooltip
+        private boolean enchantTools = true;
+        @CollapsibleObject
+        private ToolSettings tools = new ToolSettings();
+        @CollapsibleObject
+        private WeaponSettings weapons = new WeaponSettings();
+    }
+
+    static class ToolSettings {
+        @Tooltip
         private boolean preferSilkTouch = true;
         @Tooltip
         private boolean preferEfficiency = false;
         @Tooltip
         private boolean preferSwordForBamboo = true;
+        @CollapsibleObject
+        private Pickaxe pickaxe = new Pickaxe();
+        @CollapsibleObject
+        private Axe axe = new Axe();
+        @CollapsibleObject
+        private Shovel shovel = new Shovel();
+        @CollapsibleObject
+        private Hoe hoe = new Hoe();
+        @CollapsibleObject
+        private Shears shears = new Shears();
+        @CollapsibleObject
+        private FishingRod fishingRod = new FishingRod();
+    }
+
+    static class WeaponSettings {
+        @CollapsibleObject
+        private Sword sword = new Sword();
+        @CollapsibleObject
+        private Bow bow = new Bow();
+        @CollapsibleObject
+        private Crossbow crossbow = new Crossbow();
+        @CollapsibleObject
+        private Trident trident = new Trident();
+        @CollapsibleObject
+        private Mace mace = new Mace();
+    }
+
+    static class Inventory {
         @Tooltip
-        private boolean enchantTools = true;
-        @CollapsibleObject
-        private ExtendedEnchantments pickaxeEnchantments = new ExtendedEnchantments();
-        @CollapsibleObject
-        private ExtendedEnchantments axeEnchantments = new ExtendedEnchantments();
-        @CollapsibleObject
-        private ExtendedEnchantments shovelEnchantments = new ExtendedEnchantments();
-        @CollapsibleObject
-        private ExtendedEnchantments hoeEnchantments = new ExtendedEnchantments();
-        @CollapsibleObject
-        private BaseEnchantments shearEnchantments = new BaseEnchantments();
-        @CollapsibleObject
-        private SwordEnchantments swordEnchantments = new SwordEnchantments();
+        private boolean searchThroughContainers = true;
+        @Tooltip
+        private boolean stayInSameSlot = false;
+        @CollapsibleObject(startExpanded=true) @Tooltip
+        private LockedSlots lockedSlots = new LockedSlots();
     }
 
     static class LockedSlots {
@@ -152,15 +152,6 @@ public class ModConfig implements ConfigData {
         private boolean slot9 = false;
     }
 
-    static class Inventory {
-        @Tooltip
-        private boolean searchThroughContainers = true;
-        @Tooltip
-        private boolean stayInSameSlot = false;
-        @CollapsibleObject(startExpanded=true) @Tooltip
-        private LockedSlots lockedSlots = new LockedSlots();
-    }
-
     @TransitiveObject @Category("blockPickerSettings")
     private BlockPicker blockPicker = new BlockPicker();
     @TransitiveObject @Category("idPickerSettings")
@@ -171,7 +162,7 @@ public class ModConfig implements ConfigData {
     private Inventory inventory = new Inventory();
 
     public double blockBlockPickRange(PlayerEntity player) {
-        boolean isCreative = player.getAbilities().creativeMode;
+        boolean isCreative = player.isCreative();
         if (!isCreative && blockPicker.useInteractionRange || isCreative && blockPicker.useCreativeInteractionRange) {
             return player.getBlockInteractionRange();
         }
@@ -179,7 +170,7 @@ public class ModConfig implements ConfigData {
     }
 
     public double entityBlockPickRange(PlayerEntity player) {
-        boolean isCreative = player.getAbilities().creativeMode;
+        boolean isCreative = player.isCreative();
         if (!isCreative && blockPicker.useInteractionRange || isCreative && blockPicker.useCreativeInteractionRange) {
             return player.getEntityInteractionRange();
         }
@@ -306,86 +297,42 @@ public class ModConfig implements ConfigData {
         return toolPicker.pickFluids;
     }
 
+    public boolean enchantTools() { return toolPicker.enchantTools; }
+
     public boolean preferSilkTouch() {
-        return  toolPicker.preferSilkTouch;
+        return  toolPicker.tools.preferSilkTouch;
     }
 
     public boolean preferEfficiency() {
-        return  toolPicker.preferEfficiency;
+        return  toolPicker.tools.preferEfficiency;
     }
 
     public boolean preferSwordForBamboo() {
-        return toolPicker.preferSwordForBamboo;
+        return toolPicker.tools.preferSwordForBamboo;
     }
 
-    public ItemEnchantmentsComponent getEnchantments(Tools tool, Entity entity) {
-        if (!toolPicker.enchantTools) {
-            return ItemEnchantmentsComponent.DEFAULT;
-        }
-
-        ItemEnchantmentsComponent.Builder enchantments = new ItemEnchantmentsComponent.Builder(ItemEnchantmentsComponent.DEFAULT);
-        switch (tool) {
-            case PICKAXE -> getExtendedEnchantments(toolPicker.pickaxeEnchantments, enchantments);
-            case AXE -> getExtendedEnchantments(toolPicker.axeEnchantments, enchantments);
-            case SHOVEL -> getExtendedEnchantments(toolPicker.shovelEnchantments, enchantments);
-            case HOE -> getExtendedEnchantments(toolPicker.hoeEnchantments, enchantments);
-            case SHEARS -> getBaseEnchantments(toolPicker.shearEnchantments, enchantments);
-            case SWORD -> getSwordEnchantments(toolPicker.swordEnchantments, enchantments, entity);
-        }
-
-        return enchantments.build();
+    public ItemStack getToolItemStack(Tools tool) {
+        return switch (tool) {
+            case PICKAXE -> toolPicker.tools.pickaxe.getItemStack();
+            case AXE -> toolPicker.tools.axe.getItemStack();
+            case SHOVEL -> toolPicker.tools.shovel.getItemStack();
+            case HOE -> toolPicker.tools.hoe.getItemStack();
+            case SHEARS -> toolPicker.tools.shears.getItemStack();
+            case BUCKET -> Items.BUCKET.getDefaultStack();
+            case FISHING_ROD -> toolPicker.tools.fishingRod.getItemStack();
+            case SWORD -> toolPicker.weapons.sword.getItemStack();
+        };
     }
 
-    private void getBaseEnchantments(BaseEnchantments base, ItemEnchantmentsComponent.Builder enchantments) {
-        if (base.efficiency > 0) {
-            enchantments.add(Enchantments.EFFICIENCY, Math.min(base.efficiency, 255));
-        }
-        if (base.unbreaking > 0) {
-            enchantments.add(Enchantments.UNBREAKING, Math.min(base.unbreaking, 255));
-        }
-        if (base.mending) {
-            enchantments.add(Enchantments.MENDING, 1);
-        }
-    }
-
-    private void getExtendedEnchantments(ExtendedEnchantments extended, ItemEnchantmentsComponent.Builder enchantments) {
-        getBaseEnchantments(extended.base, enchantments);
-        if (extended.silkTouch && (extended.fortune <= 0 || toolPicker.preferSilkTouch)) {
-            enchantments.add(Enchantments.SILK_TOUCH, 1);
-        }
-        else if (extended.fortune > 0) {
-            enchantments.add(Enchantments.FORTUNE, Math.min(extended.fortune, 255));
-        }
-    }
-
-    private void getSwordEnchantments(SwordEnchantments sword, ItemEnchantmentsComponent.Builder enchantments, Entity entity) {
-        if (sword.unbreaking > 0) {
-            enchantments.add(Enchantments.UNBREAKING, Math.min(sword.unbreaking, 255));
-        }
-        if (sword.sweeping > 0) {
-            enchantments.add(Enchantments.SWEEPING_EDGE, Math.min(sword.sweeping, 255));
-        }
-        if (sword.looting > 0) {
-            enchantments.add(Enchantments.LOOTING, Math.min(sword.looting, 255));
-        }
-        if (sword.fireAspect > 0) {
-            enchantments.add(Enchantments.FIRE_ASPECT, Math.min(sword.fireAspect, 255));
-        }
-        if (sword.knockback > 0) {
-            enchantments.add(Enchantments.KNOCKBACK, Math.min(sword.knockback, 255));
-        }
-        if (sword.mending) {
-            enchantments.add(Enchantments.MENDING, 1);
-        }
-        if (sword.bane > 0 && entity != null && entity.getType().isIn(EntityTypeTags.ARTHROPOD)) {
-            enchantments.add(Enchantments.BANE_OF_ARTHROPODS, Math.min(sword.bane, 255));
-        }
-        else if (sword.smite > 0 && entity != null && entity.getType().isIn(EntityTypeTags.UNDEAD)) {
-            enchantments.add(Enchantments.SMITE, Math.min(sword.smite, 255));
-        }
-        else if (sword.sharpness > 0) {
-            enchantments.add(Enchantments.SHARPNESS, Math.min(sword.sharpness, 255));
-        }
+    public ItemStack getWeaponItemStack(Weapons weapon) {
+        return switch (weapon) {
+            case SWORD -> toolPicker.weapons.sword.getItemStack();
+            case AXE -> toolPicker.tools.axe.getItemStack();
+            case BOW -> toolPicker.weapons.bow.getItemStack();
+            case CROSSBOW -> toolPicker.weapons.crossbow.getItemStack();
+            case TRIDENT -> toolPicker.weapons.trident.getItemStack();
+            case MACE -> toolPicker.weapons.mace.getItemStack();
+        };
     }
 
     public boolean searchContainers() {
