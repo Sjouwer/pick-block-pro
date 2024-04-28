@@ -50,7 +50,7 @@ public class ToolPicker {
         if (hit.getType() == HitResult.Type.ENTITY) {
             Entity entity = ((EntityHitResult) hit).getEntity();
             if (entity instanceof LivingEntity livingEntity) {
-                WeaponPicker.giveOrSwitchWeapon(livingEntity);
+                WeaponPicker.giveOrSwitchWeapon(livingEntity.getType());
             }
         }
         else {

@@ -7,16 +7,15 @@ import io.github.sjouwer.pickblockpro.picker.ToolPicker.Tools;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Category;
-import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.Tooltip;
-import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.CollapsibleObject;
-import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.RequiresRestart;
-import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.TransitiveObject;
+import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.*;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @SuppressWarnings("FieldMayBeFinal")
 @Config(name = PickBlockPro.NAMESPACE + "/config")
@@ -122,6 +121,10 @@ public class ModConfig implements ConfigData {
     }
 
     static class WeaponSettings {
+        @Tooltip
+        private String preferredForBow = "blaze, creeper, ghast, phantom, skeleton";
+        @Tooltip
+        private String preferredForTrident = "elder_guardian, guardian";
         @Tooltip @RequiresRestart
         private boolean addWeaponsToOpTab = true;
         @CollapsibleObject
@@ -331,6 +334,16 @@ public class ModConfig implements ConfigData {
             case FISHING_ROD -> toolPicker.tools.fishingRod.getItemStack();
             case SWORD -> toolPicker.weapons.sword.getItemStack();
         };
+    }
+
+    public List<EntityType<?>> getBowPreferenceList() {
+        String[] idList = toolPicker.weapons.preferredForBow.split("\\s*,\\s*");
+        return Arrays.stream(idList).map(EntityType::get).flatMap(Optional::stream).toList();
+    }
+
+    public List<EntityType<?>> getTridentPreferenceList() {
+        String[] idList = toolPicker.weapons.preferredForTrident.split("\\s*,\\s*");
+        return Arrays.stream(idList).map(EntityType::get).flatMap(Optional::stream).toList();
     }
 
     public boolean addWeaponsToOpTab() {

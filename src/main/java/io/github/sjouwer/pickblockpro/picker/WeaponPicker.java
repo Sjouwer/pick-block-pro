@@ -8,9 +8,11 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolItem;
 import net.minecraft.text.Text;
@@ -21,7 +23,7 @@ public class WeaponPicker {
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final ModConfig config = PickBlockPro.getConfig();
 
-    private static ItemStack findBestWeapon(Entity entity) {
+    private static ItemStack findBestWeapon(EntityType<?> entityType) {
         PlayerInventory inventory = client.player.getInventory();
 
         ItemStack bestSword = null;
@@ -38,7 +40,7 @@ public class WeaponPicker {
                 continue;
             }
 
-            float score = calculateWeaponScore(itemStack, entity);
+            float score = calculateWeaponScore(itemStack, entityType);
             if (score > bestSwordScore || (bestSword != null && score == bestSwordScore && itemStack.getDamage() < bestSword.getDamage())) {
                 bestSword = itemStack;
                 bestSwordScore = score;
@@ -52,11 +54,21 @@ public class WeaponPicker {
         return bestSword;
     }
 
-    private static float calculateWeaponScore(ItemStack item, Entity entity) {
+    private static float calculateWeaponScore(ItemStack item, EntityType<?> entityType) {
         float score = 0;
-        score += entity != null ? EnchantmentHelper.getAttackDamage(item, entity.getType()) : 0;
+        score += EnchantmentHelper.getAttackDamage(item, entityType);
+
         if (item.getItem() instanceof ToolItem toolItem) {
             score += toolItem.getMaterial().getAttackDamage();
+        }
+
+        if (config.getBowPreferenceList().contains(entityType)) {
+            score += item.isOf(Items.BOW) ? 200 : 0;
+            score += item.isOf(Items.CROSSBOW) ? 100 : 0;
+        }
+
+        if (config.getTridentPreferenceList().contains(entityType)) {
+            score += item.isOf(Items.TRIDENT) ? 100 : 0;
         }
 
         return score;
@@ -77,10 +89,10 @@ public class WeaponPicker {
         InventoryManager.pickOrPlaceItemInInventory(toolStack);
     }
 
-    protected static void giveOrSwitchWeapon(Entity entity) {
+    protected static void giveOrSwitchWeapon(EntityType<?> entityType) {
         ItemStack bestWeapon = client.player.isCreative()
-                ? createBestWeapon(entity)
-                : findBestWeapon(entity);
+                ? createBestWeapon(entityType)
+                : findBestWeapon(entityType);
 
         if (bestWeapon != null && !bestWeapon.isEmpty()) {
             InventoryManager.pickOrPlaceItemInInventory(bestWeapon);
@@ -89,11 +101,11 @@ public class WeaponPicker {
 
     /**
      * Get the best available tool with configured enchantments of the provided tool type
-     * @param entity Entity to determine the best weapon and enchantment to kill it
+     * @param entityType EntityType to determine the best weapon and enchantment to kill it
      * @return Best available tool as ItemStack
      */
-    public static ItemStack createBestWeapon(Entity entity) {
-        Weapons weapon = getMostSuitableWeapon(entity);
+    public static ItemStack createBestWeapon(EntityType<?> entityType) {
+        Weapons weapon = getMostSuitableWeapon(entityType);
         if (weapon == null) {
             return ItemStack.EMPTY;
         }
@@ -101,14 +113,20 @@ public class WeaponPicker {
         return config.getWeaponItemStack(weapon);
     }
 
-    private static Weapons getMostSuitableWeapon(Entity entity) {
+    private static Weapons getMostSuitableWeapon(EntityType<?> entityType) {
+        if (config.getBowPreferenceList().contains(entityType)) {
+            return Weapons.BOW;
+        }
+        if (config.getTridentPreferenceList().contains(entityType)) {
+            return Weapons.TRIDENT;
+        }
         return Weapons.SWORD;
     }
 
     public static void addConfiguredWeaponsToOpUtilities() {
         if (config.addWeaponsToOpTab() && config.enchantTools()) {
             ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(entries -> {
-                for(Weapons weapon : Weapons.values()) {
+                for (Weapons weapon : Weapons.values()) {
                     if (weapon == Weapons.AXE && config.addToolsToOpTab()) {
                         continue;
                     }
