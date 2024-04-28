@@ -6,18 +6,20 @@ import io.github.sjouwer.pickblockpro.util.InfoProvider;
 import io.github.sjouwer.pickblockpro.util.InventoryManager;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.SwordItem;
-import net.minecraft.item.ToolItem;
 import net.minecraft.text.Text;
 
+import java.util.Optional;
+
 import static net.minecraft.entity.player.PlayerInventory.MAIN_SIZE;
+import static net.minecraft.item.Item.ATTACK_DAMAGE_MODIFIER_ID;
 
 public class WeaponPicker {
     private static final MinecraftClient client = MinecraftClient.getInstance();
@@ -31,7 +33,8 @@ public class WeaponPicker {
         float bestSwordScore = -1;
         for (int i = 0; i < MAIN_SIZE; i++) {
             ItemStack itemStack = inventory.getStack(i);
-            if (!(itemStack.getItem() instanceof SwordItem)) {
+            float score = calculateWeaponScore(itemStack, entityType);
+            if (score <= 0) {
                 continue;
             }
 
@@ -40,7 +43,6 @@ public class WeaponPicker {
                 continue;
             }
 
-            float score = calculateWeaponScore(itemStack, entityType);
             if (score > bestSwordScore || (bestSword != null && score == bestSwordScore && itemStack.getDamage() < bestSword.getDamage())) {
                 bestSword = itemStack;
                 bestSwordScore = score;
@@ -48,7 +50,7 @@ public class WeaponPicker {
         }
 
         if (foundSword && bestSword == null) {
-            InfoProvider.sendWarning(Text.translatable("text.pickblockpro.message.allToolsBelowThreshold"));
+            InfoProvider.sendWarning(Text.translatable("text.pickblockpro.message.allWeaponsBelowThreshold"));
         }
 
         return bestSword;
@@ -56,11 +58,18 @@ public class WeaponPicker {
 
     private static float calculateWeaponScore(ItemStack item, EntityType<?> entityType) {
         float score = 0;
-        score += EnchantmentHelper.getAttackDamage(item, entityType);
 
-        if (item.getItem() instanceof ToolItem toolItem) {
-            score += toolItem.getMaterial().getAttackDamage();
+        AttributeModifiersComponent component = item.getComponents().get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
+        if (component != null) {
+            Optional<Double> weaponDamage = component.modifiers().stream()
+                    .filter(m -> m.modifier().uuid().equals(ATTACK_DAMAGE_MODIFIER_ID)
+                            && m.modifier().name().equals("Weapon modifier"))
+                    .map(m -> m.modifier().value())
+                    .findAny();
+            score += weaponDamage.map(Double::floatValue).orElse(0F);
         }
+
+        score += EnchantmentHelper.getAttackDamage(item, entityType);
 
         if (config.getBowPreferenceList().contains(entityType)) {
             score += item.isOf(Items.BOW) ? 200 : 0;

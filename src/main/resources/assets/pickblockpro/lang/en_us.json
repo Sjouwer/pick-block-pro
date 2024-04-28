@@ -165,6 +165,7 @@
     "text.pickblockpro.message.allSlotsLocked": "Can't pick block, all slots have been locked! Unlock at least 1 slot in the config settings of the mod",
     "text.pickblockpro.message.nothingToPick": "There is nothing to pick! Enable picking for blocks, entities or both in the config settings of the mod",
     "text.pickblockpro.message.allToolsBelowThreshold": "All suitable tools are below the durability threshold!",
+    "text.pickblockpro.message.allWeaponsBelowThreshold": "All suitable weapons are below the durability threshold!",
     "text.pickblockpro.message.creativeRequired": "This action requires being in creative mode!",
 
     "text.pickblockpro.itemName.framed": "Framed %s"

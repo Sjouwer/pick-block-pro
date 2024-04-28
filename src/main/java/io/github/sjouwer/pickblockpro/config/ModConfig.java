@@ -122,7 +122,7 @@ public class ModConfig implements ConfigData {
 
     static class WeaponSettings {
         @Tooltip
-        private String preferredForBow = "blaze, creeper, ghast, phantom, skeleton";
+        private String preferredForBow = "creeper, ghast, phantom, skeleton";
         @Tooltip
         private String preferredForTrident = "elder_guardian, guardian";
         @Tooltip @RequiresRestart
