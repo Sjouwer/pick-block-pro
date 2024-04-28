@@ -2,6 +2,8 @@ package io.github.sjouwer.pickblockpro;
 
 import io.github.sjouwer.pickblockpro.config.FileHandler;
 import io.github.sjouwer.pickblockpro.config.PickBlockOverrides;
+import io.github.sjouwer.pickblockpro.picker.ToolPicker;
+import io.github.sjouwer.pickblockpro.picker.WeaponPicker;
 import me.shedaniel.autoconfig.ConfigHolder;
 import net.fabricmc.api.ClientModInitializer;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -27,5 +29,8 @@ public class PickBlockPro implements ClientModInitializer {
         PickBlockOverrides.parseOverrides();
         KeyBindings.registerKeyBindings();
         Commands.registerCommands();
+
+        ToolPicker.addConfiguredToolsToOpUtilities();
+        WeaponPicker.addConfiguredWeaponsToOpUtilities();
     }
 }

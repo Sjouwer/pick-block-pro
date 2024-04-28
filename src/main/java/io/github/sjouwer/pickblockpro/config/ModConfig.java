@@ -9,6 +9,7 @@ import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Category;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.Tooltip;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.CollapsibleObject;
+import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.RequiresRestart;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.TransitiveObject;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -104,6 +105,8 @@ public class ModConfig implements ConfigData {
         private boolean preferEfficiency = false;
         @Tooltip
         private boolean preferSwordForBamboo = true;
+        @Tooltip @RequiresRestart
+        private boolean addToolsToOpTab = true;
         @CollapsibleObject
         private Pickaxe pickaxe = new Pickaxe();
         @CollapsibleObject
@@ -119,6 +122,8 @@ public class ModConfig implements ConfigData {
     }
 
     static class WeaponSettings {
+        @Tooltip @RequiresRestart
+        private boolean addWeaponsToOpTab = true;
         @CollapsibleObject
         private Sword sword = new Sword();
         @CollapsibleObject
@@ -311,6 +316,10 @@ public class ModConfig implements ConfigData {
         return toolPicker.tools.preferSwordForBamboo;
     }
 
+    public boolean addToolsToOpTab() {
+        return toolPicker.tools.addToolsToOpTab;
+    }
+
     public ItemStack getToolItemStack(Tools tool) {
         return switch (tool) {
             case PICKAXE -> toolPicker.tools.pickaxe.getItemStack();
@@ -322,6 +331,10 @@ public class ModConfig implements ConfigData {
             case FISHING_ROD -> toolPicker.tools.fishingRod.getItemStack();
             case SWORD -> toolPicker.weapons.sword.getItemStack();
         };
+    }
+
+    public boolean addWeaponsToOpTab() {
+        return toolPicker.weapons.addWeaponsToOpTab;
     }
 
     public ItemStack getWeaponItemStack(Weapons weapon) {

@@ -3,6 +3,7 @@ package io.github.sjouwer.pickblockpro.picker;
 import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
 import io.github.sjouwer.pickblockpro.util.*;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -11,6 +12,7 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.ToolItem;
@@ -106,8 +108,9 @@ public class ToolPicker {
     private static float calculateToolScore(ItemStack item, BlockState state) {
         float score = 0;
 
-        if (item.isIn(ItemTags.SWORDS) && state.isOf(Blocks.BAMBOO) && config.preferSwordForBamboo()) {
-            score += 1000000;
+        if (item.isIn(ItemTags.SWORDS) && state.isOf(Blocks.BAMBOO) && config.preferSwordForBamboo()
+                || item.isOf(Items.SHEARS) && state.isOf(Blocks.COBWEB)) {
+            score += 100000000;
         }
 
         if (item.getItem() instanceof ToolItem toolItem) {
@@ -200,6 +203,19 @@ public class ToolPicker {
         }
 
         return null;
+    }
+
+    public static void addConfiguredToolsToOpUtilities() {
+        if (config.addToolsToOpTab() && config.enchantTools()) {
+            ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(entries -> {
+                for(Tools tool : Tools.values()) {
+                    if (tool == Tools.BUCKET || tool == Tools.SWORD && config.addWeaponsToOpTab()) {
+                        continue;
+                    }
+                    entries.add(config.getToolItemStack(tool));
+                }
+            });
+        }
     }
 
     public enum Tools {

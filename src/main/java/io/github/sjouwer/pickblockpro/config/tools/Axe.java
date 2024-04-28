@@ -12,5 +12,10 @@ public class Axe extends Tool {
     int fortune = 3;
     @Tooltip
     boolean silk_touch = true;
+    int sharpness = 5;
+    @Tooltip
+    int bane_of_arthropods = 5;
+    @Tooltip
+    int smite = 5;
     boolean mending = true;
 }

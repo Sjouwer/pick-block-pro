@@ -4,12 +4,15 @@ import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
 import io.github.sjouwer.pickblockpro.util.InfoProvider;
 import io.github.sjouwer.pickblockpro.util.InventoryManager;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolItem;
 import net.minecraft.text.Text;
 
 import static net.minecraft.entity.player.PlayerInventory.MAIN_SIZE;
@@ -51,9 +54,9 @@ public class WeaponPicker {
 
     private static float calculateWeaponScore(ItemStack item, Entity entity) {
         float score = 0;
-        if (item.getItem() instanceof SwordItem swordItem) {
-            score += swordItem.getMaterial().getAttackDamage();
-            score += entity == null ? 0 : EnchantmentHelper.getAttackDamage(item, entity.getType());
+        score += entity != null ? EnchantmentHelper.getAttackDamage(item, entity.getType()) : 0;
+        if (item.getItem() instanceof ToolItem toolItem) {
+            score += toolItem.getMaterial().getAttackDamage();
         }
 
         return score;
@@ -100,6 +103,19 @@ public class WeaponPicker {
 
     private static Weapons getMostSuitableWeapon(Entity entity) {
         return Weapons.SWORD;
+    }
+
+    public static void addConfiguredWeaponsToOpUtilities() {
+        if (config.addWeaponsToOpTab() && config.enchantTools()) {
+            ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(entries -> {
+                for(Weapons weapon : Weapons.values()) {
+                    if (weapon == Weapons.AXE && config.addToolsToOpTab()) {
+                        continue;
+                    }
+                    entries.add(config.getWeaponItemStack(weapon));
+                }
+            });
+        }
     }
 
     public enum Weapons {
