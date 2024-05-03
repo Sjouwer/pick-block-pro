@@ -5,6 +5,7 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 
 public class Mace extends Tool {
+    @Tooltip
     String item = Registries.ITEM.getId(Items.MACE).toString();
     int unbreaking = 3;
     int density = 5;

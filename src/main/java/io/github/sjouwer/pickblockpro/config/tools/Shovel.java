@@ -5,6 +5,7 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 
 public class Shovel extends Tool {
+    @Tooltip
     String item = Registries.ITEM.getId(Items.NETHERITE_SHOVEL).toString();
     int unbreaking = 3;
     int efficiency = 5;

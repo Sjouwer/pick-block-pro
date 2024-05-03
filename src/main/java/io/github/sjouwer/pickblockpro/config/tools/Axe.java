@@ -5,6 +5,7 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 
 public class Axe extends Tool {
+    @Tooltip
     String item = Registries.ITEM.getId(Items.NETHERITE_AXE).toString();
     int unbreaking = 3;
     int efficiency = 5;

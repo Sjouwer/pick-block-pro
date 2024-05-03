@@ -25,7 +25,9 @@ public class PickBlockProMixinPlugin implements IMixinConfigPlugin {
         String[] packageTree = mixinClassName.split("\\.");
         if(Arrays.asList(packageTree).contains("compat")){
             String modId = packageTree[packageTree.length - 2];
-            return FabricLoader.getInstance().isModLoaded(modId);
+            List<String> loadedModIds = FabricLoader.getInstance().getAllMods()
+                    .stream().map(m -> m.getMetadata().getId().replace("-", "")).toList();
+            return loadedModIds.contains(modId);
         }
         return true;
     }

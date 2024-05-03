@@ -5,6 +5,7 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 
 public class Sword extends Tool {
+    @Tooltip
     String item = Registries.ITEM.getId(Items.NETHERITE_SWORD).toString();
     int unbreaking = 3;
     int sharpness = 5;

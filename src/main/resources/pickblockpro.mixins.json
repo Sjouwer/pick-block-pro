@@ -11,7 +11,9 @@
     "KeyboardMixin",
     "MinecraftClientMixin",
     "VerticallyAttachableBlockItemAccessor",
-    "compat.litematica.WorldUtilsMixin"
+    "compat.litematica.WorldUtilsMixin",
+    "compat.clothconfig.FieldBuilderMixin",
+    "compat.clothconfig.DefaultGuiTransformersMixin"
   ],
   "injectors": {
     "defaultRequire": 1
