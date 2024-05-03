@@ -89,8 +89,6 @@ public class ModConfig implements ConfigData {
         private int durabilityThreshold = 20;
         @Tooltip
         private boolean pickFluids = false;
-        @Tooltip
-        private boolean enchantTools = true;
         @CollapsibleObject
         private ToolSettings tools = new ToolSettings();
         @CollapsibleObject
@@ -104,8 +102,10 @@ public class ModConfig implements ConfigData {
         private boolean preferEfficiency = false;
         @Tooltip
         private boolean preferSwordForBamboo = true;
+        @Tooltip
+        private boolean enchantTools = true;
         @Tooltip @RequiresRestart
-        private boolean addToolsToOpTab = true;
+        private boolean addToOpUtilities = true;
         @CollapsibleObject
         private Pickaxe pickaxe = new Pickaxe();
         @CollapsibleObject
@@ -125,8 +125,10 @@ public class ModConfig implements ConfigData {
         private String preferredForBow = "creeper, ghast, phantom, skeleton";
         @Tooltip
         private String preferredForTrident = "elder_guardian, guardian";
+        @Tooltip
+        private boolean enchantWeapons = true;
         @Tooltip @RequiresRestart
-        private boolean addWeaponsToOpTab = true;
+        private boolean addToOpUtilities = true;
         @CollapsibleObject
         private Sword sword = new Sword();
         @CollapsibleObject
@@ -305,8 +307,6 @@ public class ModConfig implements ConfigData {
         return toolPicker.pickFluids;
     }
 
-    public boolean enchantTools() { return toolPicker.enchantTools; }
-
     public boolean preferSilkTouch() {
         return  toolPicker.tools.preferSilkTouch;
     }
@@ -319,20 +319,22 @@ public class ModConfig implements ConfigData {
         return toolPicker.tools.preferSwordForBamboo;
     }
 
-    public boolean addToolsToOpTab() {
-        return toolPicker.tools.addToolsToOpTab;
+    public boolean enchantTools() { return toolPicker.tools.enchantTools; }
+
+    public boolean addToolsToOpUtilities() {
+        return toolPicker.tools.addToOpUtilities;
     }
 
     public ItemStack getToolItemStack(Tools tool) {
         return switch (tool) {
-            case PICKAXE -> toolPicker.tools.pickaxe.getItemStack();
-            case AXE -> toolPicker.tools.axe.getItemStack();
-            case SHOVEL -> toolPicker.tools.shovel.getItemStack();
-            case HOE -> toolPicker.tools.hoe.getItemStack();
-            case SHEARS -> toolPicker.tools.shears.getItemStack();
+            case PICKAXE -> toolPicker.tools.pickaxe.getItemStack(enchantTools());
+            case AXE -> toolPicker.tools.axe.getItemStack(enchantTools());
+            case SHOVEL -> toolPicker.tools.shovel.getItemStack(enchantTools());
+            case HOE -> toolPicker.tools.hoe.getItemStack(enchantTools());
+            case SHEARS -> toolPicker.tools.shears.getItemStack(enchantTools());
             case BUCKET -> Items.BUCKET.getDefaultStack();
-            case FISHING_ROD -> toolPicker.tools.fishingRod.getItemStack();
-            case SWORD -> toolPicker.weapons.sword.getItemStack();
+            case FISHING_ROD -> toolPicker.tools.fishingRod.getItemStack(enchantTools());
+            case SWORD -> toolPicker.weapons.sword.getItemStack(enchantTools());
         };
     }
 
@@ -346,18 +348,20 @@ public class ModConfig implements ConfigData {
         return Arrays.stream(idList).map(EntityType::get).flatMap(Optional::stream).toList();
     }
 
-    public boolean addWeaponsToOpTab() {
-        return toolPicker.weapons.addWeaponsToOpTab;
+    public boolean enchantWeapons() { return toolPicker.weapons.enchantWeapons; }
+
+    public boolean addWeaponsToOpUtilities() {
+        return toolPicker.weapons.addToOpUtilities;
     }
 
     public ItemStack getWeaponItemStack(Weapons weapon) {
         return switch (weapon) {
-            case SWORD -> toolPicker.weapons.sword.getItemStack();
-            case AXE -> toolPicker.tools.axe.getItemStack();
-            case BOW -> toolPicker.weapons.bow.getItemStack();
-            case CROSSBOW -> toolPicker.weapons.crossbow.getItemStack();
-            case TRIDENT -> toolPicker.weapons.trident.getItemStack();
-            case MACE -> toolPicker.weapons.mace.getItemStack();
+            case SWORD -> toolPicker.weapons.sword.getItemStack(enchantWeapons());
+            case AXE -> toolPicker.tools.axe.getItemStack(enchantWeapons());
+            case BOW -> toolPicker.weapons.bow.getItemStack(enchantWeapons());
+            case CROSSBOW -> toolPicker.weapons.crossbow.getItemStack(enchantWeapons());
+            case TRIDENT -> toolPicker.weapons.trident.getItemStack(enchantWeapons());
+            case MACE -> toolPicker.weapons.mace.getItemStack(enchantWeapons());
         };
     }
 

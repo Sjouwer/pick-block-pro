@@ -133,10 +133,10 @@ public class WeaponPicker {
     }
 
     public static void addConfiguredWeaponsToOpUtilities() {
-        if (config.addWeaponsToOpTab() && config.enchantTools()) {
+        if (config.addWeaponsToOpUtilities() && config.enchantWeapons()) {
             ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(entries -> {
                 for (Weapons weapon : Weapons.values()) {
-                    if (weapon == Weapons.AXE && config.addToolsToOpTab()) {
+                    if (weapon == Weapons.AXE && config.addToolsToOpUtilities()) {
                         continue;
                     }
                     entries.add(config.getWeaponItemStack(weapon));

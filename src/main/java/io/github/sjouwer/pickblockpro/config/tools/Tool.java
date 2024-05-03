@@ -63,11 +63,10 @@ public class Tool {
         }
     }
 
-    public ItemStack getItemStack() {
-        ModConfig config = PickBlockPro.getConfig();
+    public ItemStack getItemStack(boolean enchantItem) {
         ItemStack toolStack = getItem().getDefaultStack();
 
-        if (config.enchantTools()) {
+        if (enchantItem) {
             ItemEnchantmentsComponent.Builder enchantments = new ItemEnchantmentsComponent.Builder(ItemEnchantmentsComponent.DEFAULT);
             getEnchantments(enchantments);
             EnchantmentHelper.set(toolStack, enchantments.build());

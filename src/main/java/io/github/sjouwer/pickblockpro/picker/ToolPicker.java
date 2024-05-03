@@ -206,10 +206,10 @@ public class ToolPicker {
     }
 
     public static void addConfiguredToolsToOpUtilities() {
-        if (config.addToolsToOpTab() && config.enchantTools()) {
+        if (config.addToolsToOpUtilities() && config.enchantTools()) {
             ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(entries -> {
                 for(Tools tool : Tools.values()) {
-                    if (tool == Tools.BUCKET || tool == Tools.SWORD && config.addWeaponsToOpTab()) {
+                    if (tool == Tools.BUCKET || tool == Tools.SWORD && config.addWeaponsToOpUtilities()) {
                         continue;
                     }
                     entries.add(config.getToolItemStack(tool));
