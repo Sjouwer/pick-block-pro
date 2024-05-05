@@ -119,7 +119,7 @@ public class WeaponPicker {
             return ItemStack.EMPTY;
         }
 
-        return config.getWeaponItemStack(weapon);
+        return config.getWeaponItemStack(weapon, entityType);
     }
 
     private static Weapons getMostSuitableWeapon(EntityType<?> entityType) {

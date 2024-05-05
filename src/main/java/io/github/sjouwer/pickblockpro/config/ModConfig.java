@@ -104,7 +104,9 @@ public class ModConfig implements ConfigData {
         private boolean preferSwordForBamboo = true;
         @Tooltip
         private boolean enchantTools = true;
-        @Tooltip @RequiresRestart
+        @Tooltip
+        private boolean allowIncompatibleEnchantments = false;
+        @Tooltip
         private boolean addToOpUtilities = true;
         @CollapsibleObject
         private Pickaxe pickaxe = new Pickaxe();
@@ -127,7 +129,9 @@ public class ModConfig implements ConfigData {
         private String preferredForTrident = "elder_guardian, guardian";
         @Tooltip
         private boolean enchantWeapons = true;
-        @Tooltip @RequiresRestart
+        @Tooltip
+        private boolean allowIncompatibleEnchantments = false;
+        @Tooltip
         private boolean addToOpUtilities = true;
         @CollapsibleObject
         private Sword sword = new Sword();
@@ -321,20 +325,29 @@ public class ModConfig implements ConfigData {
 
     public boolean enchantTools() { return toolPicker.tools.enchantTools; }
 
+    public boolean allowIncompatibleToolEnchantments () { return toolPicker.tools.allowIncompatibleEnchantments; }
+
     public boolean addToolsToOpUtilities() {
         return toolPicker.tools.addToOpUtilities;
     }
 
     public ItemStack getToolItemStack(Tools tool) {
         return switch (tool) {
-            case PICKAXE -> toolPicker.tools.pickaxe.getItemStack(enchantTools());
-            case AXE -> toolPicker.tools.axe.getItemStack(enchantTools());
-            case SHOVEL -> toolPicker.tools.shovel.getItemStack(enchantTools());
-            case HOE -> toolPicker.tools.hoe.getItemStack(enchantTools());
-            case SHEARS -> toolPicker.tools.shears.getItemStack(enchantTools());
+            case PICKAXE -> toolPicker.tools.pickaxe.getItemStack(
+                    enchantTools(), allowIncompatibleToolEnchantments());
+            case AXE -> toolPicker.tools.axe.getItemStack(
+                    enchantTools(), allowIncompatibleToolEnchantments());
+            case SHOVEL -> toolPicker.tools.shovel.getItemStack(
+                    enchantTools(), allowIncompatibleToolEnchantments());
+            case HOE -> toolPicker.tools.hoe.getItemStack(
+                    enchantTools(), allowIncompatibleToolEnchantments());
+            case SHEARS -> toolPicker.tools.shears.getItemStack(
+                    enchantTools(), allowIncompatibleToolEnchantments());
+            case FISHING_ROD -> toolPicker.tools.fishingRod.getItemStack(
+                    enchantTools(), allowIncompatibleToolEnchantments());
+            case SWORD -> toolPicker.weapons.sword.getItemStack(
+                    enchantTools(), allowIncompatibleToolEnchantments());
             case BUCKET -> Items.BUCKET.getDefaultStack();
-            case FISHING_ROD -> toolPicker.tools.fishingRod.getItemStack(enchantTools());
-            case SWORD -> toolPicker.weapons.sword.getItemStack(enchantTools());
         };
     }
 
@@ -350,18 +363,30 @@ public class ModConfig implements ConfigData {
 
     public boolean enchantWeapons() { return toolPicker.weapons.enchantWeapons; }
 
+    public boolean allowIncompatibleWeaponEnchantments () { return toolPicker.weapons.allowIncompatibleEnchantments; }
+
     public boolean addWeaponsToOpUtilities() {
         return toolPicker.weapons.addToOpUtilities;
     }
 
     public ItemStack getWeaponItemStack(Weapons weapon) {
+        return getWeaponItemStack(weapon, null);
+    }
+
+    public ItemStack getWeaponItemStack(Weapons weapon, EntityType<?> entity) {
         return switch (weapon) {
-            case SWORD -> toolPicker.weapons.sword.getItemStack(enchantWeapons());
-            case AXE -> toolPicker.tools.axe.getItemStack(enchantWeapons());
-            case BOW -> toolPicker.weapons.bow.getItemStack(enchantWeapons());
-            case CROSSBOW -> toolPicker.weapons.crossbow.getItemStack(enchantWeapons());
-            case TRIDENT -> toolPicker.weapons.trident.getItemStack(enchantWeapons());
-            case MACE -> toolPicker.weapons.mace.getItemStack(enchantWeapons());
+            case SWORD -> toolPicker.weapons.sword.getItemStack(
+                    enchantWeapons(), allowIncompatibleWeaponEnchantments(), entity);
+            case AXE -> toolPicker.tools.axe.getItemStack(
+                    enchantWeapons(), allowIncompatibleWeaponEnchantments(), entity);
+            case BOW -> toolPicker.weapons.bow.getItemStack(
+                    enchantWeapons(), allowIncompatibleWeaponEnchantments(), entity);
+            case CROSSBOW -> toolPicker.weapons.crossbow.getItemStack(
+                    enchantWeapons(), allowIncompatibleWeaponEnchantments(), entity);
+            case TRIDENT -> toolPicker.weapons.trident.getItemStack(
+                    enchantWeapons(), allowIncompatibleWeaponEnchantments(), entity);
+            case MACE -> toolPicker.weapons.mace.getItemStack(
+                    enchantWeapons(), allowIncompatibleWeaponEnchantments(), entity);
         };
     }
 
