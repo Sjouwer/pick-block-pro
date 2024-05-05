@@ -11,7 +11,7 @@ public class Mace extends Tool {
     int density = 5;
     int breach = 4;
     int wind_burst = 3;
-    int fire_aspect = 0;
+    int fire_aspect = 2;
     @Tooltip
     int bane_of_arthropods = 5;
     @Tooltip

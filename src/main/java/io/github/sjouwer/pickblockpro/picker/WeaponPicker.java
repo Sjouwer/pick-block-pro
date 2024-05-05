@@ -28,7 +28,7 @@ public class WeaponPicker {
     private static ItemStack findBestWeapon(EntityType<?> entityType) {
         PlayerInventory inventory = client.player.getInventory();
 
-        ItemStack bestSword = null;
+        ItemStack bestSword = ItemStack.EMPTY;
         boolean foundSword = false;
         float bestSwordScore = -1;
         for (int i = 0; i < MAIN_SIZE; i++) {
@@ -43,13 +43,13 @@ public class WeaponPicker {
                 continue;
             }
 
-            if (score > bestSwordScore || (bestSword != null && score == bestSwordScore && itemStack.getDamage() < bestSword.getDamage())) {
+            if (score > bestSwordScore || (!bestSword.isEmpty() && score == bestSwordScore && itemStack.getDamage() < bestSword.getDamage())) {
                 bestSword = itemStack;
                 bestSwordScore = score;
             }
         }
 
-        if (foundSword && bestSword == null) {
+        if (foundSword && bestSword.isEmpty()) {
             InfoProvider.sendWarning(Text.translatable("text.pickblockpro.message.allWeaponsBelowThreshold"));
         }
 
@@ -103,7 +103,7 @@ public class WeaponPicker {
                 ? createBestWeapon(entityType)
                 : findBestWeapon(entityType);
 
-        if (bestWeapon != null && !bestWeapon.isEmpty()) {
+        if (!bestWeapon.isEmpty()) {
             InventoryManager.pickOrPlaceItemInInventory(bestWeapon);
         }
     }

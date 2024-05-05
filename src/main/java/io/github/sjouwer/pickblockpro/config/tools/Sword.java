@@ -11,8 +11,8 @@ public class Sword extends Tool {
     int sharpness = 5;
     int sweeping_edge = 3;
     int looting = 3;
-    int knockback = 0;
-    int fire_aspect = 0;
+    int knockback = 2;
+    int fire_aspect = 2;
     @Tooltip
     int bane_of_arthropods = 5;
     @Tooltip

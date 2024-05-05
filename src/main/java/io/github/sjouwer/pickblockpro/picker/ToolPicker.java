@@ -63,7 +63,7 @@ public class ToolPicker {
     private static ItemStack findBestTool(BlockState state) {
         PlayerInventory inventory = client.player.getInventory();
 
-        ItemStack bestTool = null;
+        ItemStack bestTool = ItemStack.EMPTY;
         boolean foundTool = false;
         float bestToolScore = -1;
         for (int i = 0; i < MAIN_SIZE; i++) {
@@ -78,13 +78,13 @@ public class ToolPicker {
             }
 
             float score = calculateToolScore(stack, state);
-            if (score > bestToolScore || (bestTool != null && score == bestToolScore && stack.getDamage() < bestTool.getDamage())) {
+            if (score > bestToolScore || (!bestTool.isEmpty() && score == bestToolScore && stack.getDamage() < bestTool.getDamage())) {
                 bestTool = stack;
                 bestToolScore = score;
             }
         }
 
-        if (foundTool && bestTool == null) {
+        if (foundTool && bestTool.isEmpty()) {
             InfoProvider.sendWarning(Text.translatable("text.pickblockpro.message.allToolsBelowThreshold"));
         }
 
@@ -159,7 +159,7 @@ public class ToolPicker {
                 ? createBestTool(state)
                 : findBestTool(state);
 
-        if (bestTool != null && !bestTool.isEmpty()) {
+        if (!bestTool.isEmpty()) {
             InventoryManager.pickOrPlaceItemInInventory(bestTool);
         }
     }
