@@ -4,8 +4,17 @@ import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.component.Component;
+import net.minecraft.component.ComponentChanges;
+import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.*;
+import net.minecraft.component.type.BlockStateComponent;
+import net.minecraft.component.type.BundleContentsComponent;
+import net.minecraft.component.type.ContainerComponent;
+import net.minecraft.component.type.LoreComponent;
+import net.minecraft.component.type.NbtComponent;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Saddleable;
@@ -21,6 +30,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DataComponentUtil {
@@ -62,19 +72,51 @@ public class DataComponentUtil {
         return entityCompound;
     }
 
+    @SuppressWarnings("deprecation")
     public static void setBlockEntityData(ItemStack stack, BlockEntity blockEntity, DynamicRegistryManager registryManager, boolean addLore) {
-        NbtCompound blockEntityCompound = blockEntity.createNbtWithIdentifyingData(registryManager);
+        NbtCompound blockEntityCompound = blockEntity.createComponentlessNbtWithIdentifyingData(registryManager);
         config.blockEntityTagBlacklist().forEach(blockEntityCompound::remove);
-        if (blockEntityCompound.isEmpty()) {
+        if (blockEntity instanceof SkullBlockEntity) {
+            blockEntityCompound.remove("x");
+            blockEntityCompound.remove("y");
+            blockEntityCompound.remove("z");
+        }
+
+        ComponentMap components = blockEntity.createComponentMap();
+        ComponentChanges changes = removeBlacklistedComponents(components, config.blockEntityTagBlacklist());
+
+        if (blockEntityCompound.isEmpty() && components.size() == changes.size()) {
             return;
         }
 
+        blockEntity.removeFromCopiedStackNbt(blockEntityCompound);
         BlockItem.setBlockEntityData(stack, blockEntity.getType(), blockEntityCompound);
-        stack.applyComponentsFrom(blockEntity.createComponentMap());
+        stack.applyComponentsFrom(components);
+        stack.applyChanges(changes);
 
         if (addLore) {
             addLore(stack, "+BlockEntity Data");
         }
+    }
+
+    private static ComponentChanges removeBlacklistedComponents(ComponentMap components, List<String> blacklist) {
+        var componentsToDelete = components.stream()
+                .filter(c -> isBlacklisted(c, blacklist))
+                .map(Component::type)
+                .toList();
+
+        ComponentChanges.Builder changes = ComponentChanges.builder();
+        componentsToDelete.forEach(changes::remove);
+        return changes.build();
+    }
+
+    private static boolean isBlacklisted(Component<?> component, List<String> blacklist) {
+        String typeName = component.type().toString();
+        if (typeName.contains(":")) {
+            typeName = typeName.substring(typeName.indexOf(":") + 1);
+        }
+
+        return blacklist.contains(typeName);
     }
 
     public static void setBlockStateData(ItemStack stack, BlockState blockState, boolean addLore) {

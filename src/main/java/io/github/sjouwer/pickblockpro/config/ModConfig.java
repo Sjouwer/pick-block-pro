@@ -20,6 +20,19 @@ import java.util.Optional;
 @SuppressWarnings("FieldMayBeFinal")
 @Config(name = PickBlockPro.NAMESPACE + "/config")
 public class ModConfig implements ConfigData {
+    @Category("blockPickerSettings")
+    @TransitiveObject
+    private BlockPicker blockPicker = new BlockPicker();
+    @Category("idPickerSettings")
+    @TransitiveObject
+    private IdPicker idPicker = new IdPicker();
+    @Category("toolPickerSettings")
+    @TransitiveObject
+    private ToolPicker toolPicker = new ToolPicker();
+    @Category("inventorySettings")
+    @TransitiveObject
+    private Inventory inventory = new Inventory();
+
     static class BlockPicker {
         @Tooltip
         private double range = 100;
@@ -165,15 +178,6 @@ public class ModConfig implements ConfigData {
         private boolean slot8 = false;
         private boolean slot9 = false;
     }
-
-    @TransitiveObject @Category("blockPickerSettings")
-    private BlockPicker blockPicker = new BlockPicker();
-    @TransitiveObject @Category("idPickerSettings")
-    private IdPicker idPicker = new IdPicker();
-    @TransitiveObject @Category("toolPickerSettings")
-    private ToolPicker toolPicker = new ToolPicker();
-    @TransitiveObject @Category("inventorySettings")
-    private Inventory inventory = new Inventory();
 
     public double blockBlockPickRange(PlayerEntity player) {
         boolean isCreative = player.isCreative();

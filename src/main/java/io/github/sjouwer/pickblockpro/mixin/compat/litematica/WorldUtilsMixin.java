@@ -22,6 +22,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(WorldUtils.class)
 public class WorldUtilsMixin {
+
+    /**
+     * Mixin to make Litematica's Pick Block use the range, modifiers and inventory management of PBP
+     */
     @Inject(method = "doSchematicWorldPickBlock", at = @At("HEAD"), cancellable = true)
     private static void overrideLitematicaPickBlock(boolean closest, MinecraftClient mc, CallbackInfoReturnable<Boolean> info)
     {
@@ -36,30 +40,31 @@ public class WorldUtilsMixin {
                 pos = RayTraceUtils.getFurthestSchematicWorldBlockBeforeVanilla(mc.world, mc.player, config.blockBlockPickRange(mc.player), true);
             }
 
-            if (pos != null) {
-                World world = SchematicWorldHandler.getSchematicWorld();
-                BlockState state = world.getBlockState(pos);
-                ItemStack stack = MaterialCache.getInstance().getRequiredBuildItemForState(state, world, pos);
+            if (pos == null) {
+                info.setReturnValue(false);
+                return;
+            }
 
-                if (!stack.isEmpty()) {
-                    if (isCreative) {
-                        if (Screen.hasControlDown() && state.hasBlockEntity()) {
-                            BlockEntity blockEntity = world.getBlockEntity(pos);
-                            DataComponentUtil.setBlockEntityData(stack, blockEntity, mc.world.getRegistryManager(), true);
-                        }
-                        if (Screen.hasAltDown()) {
-                            DataComponentUtil.setBlockStateData(stack, state, true);
-                        }
-                    }
-
-                    InventoryManager.pickOrPlaceItemInInventory(stack);
-                }
-
+            World world = SchematicWorldHandler.getSchematicWorld();
+            BlockState state = world.getBlockState(pos);
+            ItemStack stack = MaterialCache.getInstance().getRequiredBuildItemForState(state, world, pos);
+            if (stack.isEmpty()) {
                 info.setReturnValue(true);
                 return;
             }
 
-            info.setReturnValue(false);
+            if (isCreative) {
+                if (Screen.hasControlDown() && state.hasBlockEntity()) {
+                    BlockEntity blockEntity = world.getBlockEntity(pos);
+                    DataComponentUtil.setBlockEntityData(stack, blockEntity, mc.world.getRegistryManager(), true);
+                }
+                if (Screen.hasAltDown()) {
+                    DataComponentUtil.setBlockStateData(stack, state, true);
+                }
+            }
+
+            InventoryManager.pickOrPlaceItemInInventory(stack);
+            info.setReturnValue(true);
         }
     }
 }

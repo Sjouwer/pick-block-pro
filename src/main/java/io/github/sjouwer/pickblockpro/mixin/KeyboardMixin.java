@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -16,8 +17,12 @@ import org.lwjgl.glfw.GLFW;
 
 @Mixin(Keyboard.class)
 public class KeyboardMixin {
+    @Unique
     private final MinecraftClient client = MinecraftClient.getInstance();
 
+    /**
+     * Mixin to provide the item ID directly in chat when using CTRL + hotbarslot when chat is open
+     */
     @Inject(method = "onKey", at = @At("HEAD"), cancellable = true)
     public void getHotbarItemId(long window, int key, int scancode, int action, int modifiers, final CallbackInfo info) {
         Screen screen = client.currentScreen;

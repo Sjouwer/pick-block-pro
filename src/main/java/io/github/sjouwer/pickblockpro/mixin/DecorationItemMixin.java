@@ -15,7 +15,11 @@ import java.util.List;
 @Mixin(DecorationItem.class)
 public class DecorationItemMixin {
 
-    //Remove the painting title from the tooltip if the itemStack's custom name is already the same title
+    /**
+     * Remove the painting title from the tooltip if the itemStack's custom name is already the same title.
+     * Added this mixin because CTRL + Entity Pick on a painting will give the painting with the title in
+     * the item name to make it easier to distinguish from other paintings inside the hotbar/inventory.
+     */
     @Inject(method="appendTooltip", at=@At("TAIL"))
     public void removeTitleTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type, CallbackInfo ci) {
         if (tooltip.size() > 1 && stack.getName().getString().equals(tooltip.get(1).getString())) {

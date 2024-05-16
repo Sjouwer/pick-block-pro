@@ -96,14 +96,10 @@ public class BlockPicker {
         }
 
         if (item != null && client.player.isCreative() && Screen.hasControlDown()) {
-            if (entity instanceof ItemFrameEntity itemFrame) {
-                item = createFramedItemStack(itemFrame);
-            }
-            else if (entity instanceof PaintingEntity paintingEntity) {
-                item = createPaintingVariantStack(paintingEntity);
-            }
-            else {
-                DataComponentUtil.setEntityData(item, entity, true);
+            switch (entity) {
+                case ItemFrameEntity itemFrame -> item = createFramedItemStack(itemFrame);
+                case PaintingEntity paintingEntity -> item = createPaintingVariantStack(paintingEntity);
+                default -> DataComponentUtil.setEntityData(item, entity, true);
             }
         }
 
