@@ -114,6 +114,10 @@ public class Tool {
                     Enchantments.BANE_OF_ARTHROPODS));
         }
 
+        if (enchantments.getLevel(Enchantments.DENSITY) > 0) {
+            enchantments.remove(containsAny(Enchantments.BREACH));
+        }
+
         if (enchantments.getLevel(Enchantments.SILK_TOUCH) > 0 && PickBlockPro.getConfig().preferSilkTouch()) {
             enchantments.remove(containsAny(Enchantments.FORTUNE));
         }
@@ -133,6 +137,7 @@ public class Tool {
             enchantments.remove(containsAny(Enchantments.RIPTIDE));
         }
     }
+
     private Predicate<RegistryEntry<Enchantment>> containsAny(Enchantment... enchantment) {
         return e -> Arrays.stream(enchantment).anyMatch(f -> f.equals(e.value()));
     }

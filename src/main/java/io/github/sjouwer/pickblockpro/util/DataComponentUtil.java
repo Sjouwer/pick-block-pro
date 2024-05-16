@@ -74,7 +74,10 @@ public class DataComponentUtil {
 
     @SuppressWarnings("deprecation")
     public static void setBlockEntityData(ItemStack stack, BlockEntity blockEntity, DynamicRegistryManager registryManager, boolean addLore) {
+        boolean dataAdded = false;
+
         NbtCompound blockEntityCompound = blockEntity.createComponentlessNbtWithIdentifyingData(registryManager);
+        blockEntity.removeFromCopiedStackNbt(blockEntityCompound);
         config.blockEntityTagBlacklist().forEach(blockEntityCompound::remove);
         if (blockEntity instanceof SkullBlockEntity) {
             blockEntityCompound.remove("x");
@@ -82,19 +85,20 @@ public class DataComponentUtil {
             blockEntityCompound.remove("z");
         }
 
-        ComponentMap components = blockEntity.createComponentMap();
-        ComponentChanges changes = removeBlacklistedComponents(components, config.blockEntityTagBlacklist());
-
-        if (blockEntityCompound.isEmpty() && components.size() == changes.size()) {
-            return;
+        if (!blockEntityCompound.isEmpty()) {
+            BlockItem.setBlockEntityData(stack, blockEntity.getType(), blockEntityCompound);
+            dataAdded = true;
         }
 
-        blockEntity.removeFromCopiedStackNbt(blockEntityCompound);
-        BlockItem.setBlockEntityData(stack, blockEntity.getType(), blockEntityCompound);
-        stack.applyComponentsFrom(components);
-        stack.applyChanges(changes);
+        ComponentMap components = blockEntity.createComponentMap();
+        ComponentChanges changes = removeBlacklistedComponents(components, config.blockEntityTagBlacklist());
+        if (components.size() != changes.size()) {
+            stack.applyComponentsFrom(components);
+            stack.applyChanges(changes);
+            dataAdded = true;
+        }
 
-        if (addLore) {
+        if (addLore && dataAdded) {
             addLore(stack, "+BlockEntity Data");
         }
     }
