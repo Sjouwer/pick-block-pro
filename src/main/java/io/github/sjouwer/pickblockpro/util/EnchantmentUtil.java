@@ -40,7 +40,7 @@ public class EnchantmentUtil {
         try {
             Field[] enchantments = Enchantments.class.getDeclaredFields();
             for(Field enchantment: enchantments) {
-                if (enchantment.canAccess(Enchantments.class) && enchantment.getType().equals(RegistryKey.class)) {
+                if (enchantment.getType().equals(RegistryKey.class)) {
                     RegistryKey<?> key = (RegistryKey<?>) enchantment.get(Enchantments.class);
                     if (key.getValue().equals(id)) return true;
                 }
