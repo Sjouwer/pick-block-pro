@@ -2,24 +2,26 @@ package io.github.sjouwer.pickblockpro.picker;
 
 import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
+import io.github.sjouwer.pickblockpro.util.EnchantmentUtil;
 import io.github.sjouwer.pickblockpro.util.InfoProvider;
 import io.github.sjouwer.pickblockpro.util.InventoryManager;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 import static net.minecraft.entity.player.PlayerInventory.MAIN_SIZE;
-import static net.minecraft.item.Item.ATTACK_DAMAGE_MODIFIER_ID;
 
 public class WeaponPicker {
     private static final MinecraftClient client = MinecraftClient.getInstance();
@@ -30,10 +32,10 @@ public class WeaponPicker {
 
         ItemStack bestSword = ItemStack.EMPTY;
         boolean foundSword = false;
-        float bestSwordScore = -1;
+        double bestSwordScore = -1;
         for (int i = 0; i < MAIN_SIZE; i++) {
             ItemStack itemStack = inventory.getStack(i);
-            float score = calculateWeaponScore(itemStack, entityType);
+            double score = calculateWeaponScore(itemStack, entityType);
             if (score <= 0) {
                 continue;
             }
@@ -56,31 +58,32 @@ public class WeaponPicker {
         return bestSword;
     }
 
-    private static float calculateWeaponScore(ItemStack item, EntityType<?> entityType) {
-        float score = 0;
+    private static double calculateWeaponScore(ItemStack itemStack, EntityType<?> entityType) {
+        double score = 0;
 
-        AttributeModifiersComponent component = item.getComponents().get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
-        if (component != null) {
-            Optional<Double> weaponDamage = component.modifiers().stream()
-                    .filter(m -> m.modifier().uuid().equals(ATTACK_DAMAGE_MODIFIER_ID)
-                            && m.modifier().name().equals("Weapon modifier"))
-                    .map(m -> m.modifier().value())
-                    .findAny();
-            score += weaponDamage.map(Double::floatValue).orElse(0F);
-        }
-
-        score += EnchantmentHelper.getAttackDamage(item, entityType);
+        score += getBaseDamage(itemStack);
 
         if (config.getBowPreferenceList().contains(entityType)) {
-            score += item.isOf(Items.BOW) ? 200 : 0;
-            score += item.isOf(Items.CROSSBOW) ? 100 : 0;
+            score += itemStack.isOf(Items.BOW) ? 200 : 0;
+            score += itemStack.isOf(Items.CROSSBOW) ? 100 : 0;
         }
 
         if (config.getTridentPreferenceList().contains(entityType)) {
-            score += item.isOf(Items.TRIDENT) ? 100 : 0;
+            score += itemStack.isOf(Items.TRIDENT) ? 100 : 0;
         }
 
         return score;
+    }
+
+    private static double getBaseDamage(ItemStack stack) {
+        final List<Double> baseDamage = new ArrayList<>();
+        stack.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT).modifiers().forEach(m -> {
+            if (m.matches(EntityAttributes.GENERIC_ATTACK_DAMAGE, Item.BASE_ATTACK_DAMAGE_MODIFIER_ID)) {
+                baseDamage.add(m.modifier().value());
+            }
+        });
+
+        return baseDamage.stream().mapToDouble(d -> d).sum();
     }
 
     /**

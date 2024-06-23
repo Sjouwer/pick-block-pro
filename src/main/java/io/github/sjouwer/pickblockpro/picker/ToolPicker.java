@@ -4,8 +4,10 @@ import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
 import io.github.sjouwer.pickblockpro.util.*;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.BrushableBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -24,11 +26,19 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static net.minecraft.entity.player.PlayerInventory.MAIN_SIZE;
 
 public class ToolPicker {
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final ModConfig config = PickBlockPro.getConfig();
+    private static final List<Block> shearable = Arrays.asList(
+            Blocks.COBWEB, Blocks.VINE, Blocks.CAVE_VINES, Blocks.CAVE_VINES_PLANT, Blocks.WEEPING_VINES,
+            Blocks.TWISTING_VINES, Blocks.DEAD_BUSH, Blocks.FERN, Blocks.LARGE_FERN, Blocks.GLOW_LICHEN,
+            Blocks.HANGING_ROOTS, Blocks.SHORT_GRASS, Blocks.TALL_GRASS, Blocks.SEAGRASS, Blocks.TALL_SEAGRASS,
+            Blocks.TRIPWIRE, Blocks.NETHER_SPROUTS);
 
     private ToolPicker() {
     }
@@ -68,7 +78,7 @@ public class ToolPicker {
         float bestToolScore = -1;
         for (int i = 0; i < MAIN_SIZE; i++) {
             ItemStack stack = inventory.getStack(i);
-            if (!isCorrectTool(stack, state)) {
+            if (!isSuitableTool(stack, state)) {
                 continue;
             }
 
@@ -92,8 +102,8 @@ public class ToolPicker {
     }
 
     @SuppressWarnings("deprecation")
-    private static boolean isCorrectTool(ItemStack stack, BlockState state) {
-        if (stack.isOf(Items.SHEARS) && state.isIn(BlockTags.WOOL)) {
+    private static boolean isSuitableTool(ItemStack stack, BlockState state) {
+        if (stack.isOf(Items.SHEARS) && (state.isIn(BlockTags.WOOL) || shearable.contains(state.getBlock()))) {
             return true;
         }
         if (stack.isIn(ItemTags.SWORDS) && state.isOf(Blocks.BAMBOO)) {
@@ -102,39 +112,43 @@ public class ToolPicker {
         if (stack.isOf(Items.BUCKET) && (state.isLiquid() || state.isOf(Blocks.POWDER_SNOW))) {
             return true;
         }
+        if (stack.isOf(Items.BRUSH) && state.getBlock() instanceof BrushableBlock) {
+            return true;
+        }
         return stack.isSuitableFor(state);
     }
 
-    private static float calculateToolScore(ItemStack item, BlockState state) {
+    private static float calculateToolScore(ItemStack stack, BlockState state) {
         float score = 0;
 
-        if (item.isIn(ItemTags.SWORDS) && state.isOf(Blocks.BAMBOO) && config.preferSwordForBamboo()
-                || item.isOf(Items.SHEARS) && state.isOf(Blocks.COBWEB)) {
+        if (stack.isIn(ItemTags.SWORDS) && state.isOf(Blocks.BAMBOO) && config.preferSwordForBamboo()
+                || stack.isOf(Items.SHEARS) && shearable.contains(state.getBlock())
+                || state.getBlock() instanceof BrushableBlock) {
             score += 100000000;
         }
 
-        if (item.getItem() instanceof ToolItem toolItem) {
+        if (stack.getItem() instanceof ToolItem toolItem) {
             score += toolItem.getMaterial().getMiningSpeedMultiplier() * toolItem.getMaterial().getDurability() * 1000;
         }
 
         if (config.preferSilkTouch()) {
-            score += EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, item) * 400;
-            score += EnchantmentHelper.getLevel(Enchantments.FORTUNE, item) * 100;
+            score += EnchantmentHelper.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.SILK_TOUCH), stack) * 400;
+            score += EnchantmentHelper.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.FORTUNE), stack) * 100;
         }
         else {
-            score += EnchantmentHelper.getLevel(Enchantments.FORTUNE, item) * 150;
-            score += EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, item) * 100;
+            score += EnchantmentHelper.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.FORTUNE), stack) * 150;
+            score += EnchantmentHelper.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.SILK_TOUCH), stack) * 100;
         }
 
         if (config.preferEfficiency()) {
-            score += EnchantmentHelper.getLevel(Enchantments.EFFICIENCY, item) * 500;
+            score += EnchantmentHelper.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.EFFICIENCY), stack) * 500;
         }
         else {
-            score += EnchantmentHelper.getLevel(Enchantments.EFFICIENCY, item) * 10;
+            score += EnchantmentHelper.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.EFFICIENCY), stack) * 10;
         }
 
-        score += EnchantmentHelper.getLevel(Enchantments.UNBREAKING, item);
-        score += EnchantmentHelper.getLevel(Enchantments.MENDING, item) * 5;
+        score += EnchantmentHelper.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.UNBREAKING), stack);
+        score += EnchantmentHelper.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.MENDING), stack) * 5;
 
         return score;
     }
@@ -180,11 +194,14 @@ public class ToolPicker {
 
     @SuppressWarnings("deprecation")
     private static Tools getMostSuitableTool(BlockState state) {
-        if (state.isIn(BlockTags.WOOL) || state.isOf(Blocks.COBWEB)) {
+        if (state.isIn(BlockTags.WOOL) || shearable.contains(state.getBlock())) {
             return Tools.SHEARS;
         }
         if (state.isOf(Blocks.BAMBOO) && config.preferSwordForBamboo()) {
             return Tools.SWORD;
+        }
+        if (state.getBlock() instanceof BrushableBlock) {
+            return Tools.BRUSH;
         }
         if (state.isLiquid() || state.isOf(Blocks.POWDER_SNOW)) {
             return Tools.BUCKET;
@@ -226,6 +243,7 @@ public class ToolPicker {
         SWORD,
         SHEARS,
         BUCKET,
-        FISHING_ROD
+        FISHING_ROD,
+        BRUSH
     }
 }

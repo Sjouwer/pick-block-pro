@@ -1,6 +1,7 @@
 package io.github.sjouwer.pickblockpro.config.tools;
 
 import io.github.sjouwer.pickblockpro.PickBlockPro;
+import io.github.sjouwer.pickblockpro.util.EnchantmentUtil;
 import io.github.sjouwer.pickblockpro.util.InfoProvider;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
@@ -11,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.text.Text;
@@ -27,13 +29,14 @@ public class Tool {
         Field[] fields = this.getClass().getDeclaredFields();
         for(Field field: fields) {
             try {
+                RegistryEntry<Enchantment> enchantment = EnchantmentUtil.getRegistryEntry(field.getName());
+                if (enchantment == null) continue;
+
                 if (field.getType().equals(int.class)) {
-                    Enchantment enchantment = getEnchantment(field.getName());
-                    int level = Math.min(field.getInt(this), allowIncompatibleEnchantments ? 255 : enchantment.getMaxLevel());
+                    int level = Math.min(field.getInt(this), allowIncompatibleEnchantments ? 255 : enchantment.value().getMaxLevel());
                     enchantments.add(enchantment, level);
                 }
                 if (field.getType().equals(boolean.class) && field.getBoolean(this)) {
-                    Enchantment enchantment = getEnchantment(field.getName());
                     enchantments.add(enchantment, 1);
                 }
             }
@@ -48,11 +51,6 @@ public class Tool {
         }
 
         return enchantments.build();
-    }
-
-    private Enchantment getEnchantment(String name) {
-        Identifier identifier = Identifier.tryParse(name);
-        return Registries.ENCHANTMENT.get(identifier);
     }
 
     public Item getItem() {
@@ -94,14 +92,14 @@ public class Tool {
     }
 
     private void filterEnchantments(ItemEnchantmentsComponent.Builder enchantments, EntityType<?> entity) {
-        if (entity != null && entity.isIn(EntityTypeTags.UNDEAD) && enchantments.getLevel(Enchantments.SMITE) > 0) {
+        if (entity != null && entity.isIn(EntityTypeTags.UNDEAD) && enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.SMITE)) > 0) {
             enchantments.remove(containsAny(
                     Enchantments.SHARPNESS,
                     Enchantments.BANE_OF_ARTHROPODS,
                     Enchantments.BREACH,
                     Enchantments.DENSITY));
         }
-        else if (entity != null && entity.isIn(EntityTypeTags.ARTHROPOD) && enchantments.getLevel(Enchantments.BANE_OF_ARTHROPODS) > 0) {
+        else if (entity != null && entity.isIn(EntityTypeTags.ARTHROPOD) && enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.BANE_OF_ARTHROPODS)) > 0) {
             enchantments.remove(containsAny(
                     Enchantments.SHARPNESS,
                     Enchantments.SMITE,
@@ -114,31 +112,32 @@ public class Tool {
                     Enchantments.BANE_OF_ARTHROPODS));
         }
 
-        if (enchantments.getLevel(Enchantments.DENSITY) > 0) {
+        if (enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.DENSITY)) > 0) {
             enchantments.remove(containsAny(Enchantments.BREACH));
         }
 
-        if (enchantments.getLevel(Enchantments.SILK_TOUCH) > 0 && PickBlockPro.getConfig().preferSilkTouch()) {
-            enchantments.remove(containsAny(Enchantments.FORTUNE));
+        if (enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.SILK_TOUCH)) > 0 && PickBlockPro.getConfig().preferSilkTouch()) {
+            enchantments.remove(containsAny((Enchantments.FORTUNE)));
         }
-        else if (enchantments.getLevel(Enchantments.FORTUNE) > 0) {
+        else if (enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.FORTUNE)) > 0) {
             enchantments.remove(containsAny(Enchantments.SILK_TOUCH));
         }
 
-        if (enchantments.getLevel(Enchantments.INFINITY) > 0) {
+        if (enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.INFINITY)) > 0) {
             enchantments.remove(containsAny(Enchantments.MENDING));
         }
 
-        if (enchantments.getLevel(Enchantments.MULTISHOT) > 0) {
+        if (enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.MULTISHOT)) > 0) {
             enchantments.remove(containsAny(Enchantments.PIERCING));
         }
 
-        if (enchantments.getLevel(Enchantments.CHANNELING) > 0 || enchantments.getLevel(Enchantments.LOYALTY) > 0) {
+        if (enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.CHANNELING)) > 0 || enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.LOYALTY)) > 0) {
             enchantments.remove(containsAny(Enchantments.RIPTIDE));
         }
     }
 
-    private Predicate<RegistryEntry<Enchantment>> containsAny(Enchantment... enchantment) {
-        return e -> Arrays.stream(enchantment).anyMatch(f -> f.equals(e.value()));
+    @SafeVarargs
+    private Predicate<RegistryEntry<Enchantment>> containsAny(RegistryKey<Enchantment>... enchantments) {
+        return e -> e.getKey().isPresent() && Arrays.asList(enchantments).contains(e.getKey().get());
     }
 }

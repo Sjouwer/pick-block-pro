@@ -132,6 +132,8 @@ public class ModConfig implements ConfigData {
         @CollapsibleObject
         private Shears shears = new Shears();
         @CollapsibleObject
+        private Brush brush = new Brush();
+        @CollapsibleObject
         private FishingRod fishingRod = new FishingRod();
     }
 
@@ -348,6 +350,8 @@ public class ModConfig implements ConfigData {
             case SHEARS -> toolPicker.tools.shears.getItemStack(
                     enchantTools(), allowIncompatibleToolEnchantments());
             case FISHING_ROD -> toolPicker.tools.fishingRod.getItemStack(
+                    enchantTools(), allowIncompatibleToolEnchantments());
+            case BRUSH -> toolPicker.tools.brush.getItemStack(
                     enchantTools(), allowIncompatibleToolEnchantments());
             case SWORD -> toolPicker.weapons.sword.getItemStack(
                     enchantTools(), allowIncompatibleToolEnchantments());

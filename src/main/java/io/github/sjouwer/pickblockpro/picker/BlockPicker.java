@@ -197,13 +197,14 @@ public class BlockPicker {
             return ItemStack.EMPTY;
         }
 
-        double skyAngle = client.world.getSkyAngle(client.getTickDelta()) + .25;
+        float tickDelta = client.getRenderTickCounter().getTickDelta(true);
+        double skyAngle = client.world.getSkyAngle(tickDelta) + .25;
         if (skyAngle > 1) {
             skyAngle --;
         }
         skyAngle *= 360;
 
-        Vec3d playerVector = client.player.getRotationVec(client.getTickDelta());
+        Vec3d playerVector = client.player.getRotationVec(tickDelta);
         double playerAngle = Math.atan2(playerVector.y, playerVector.x) * 180 / Math.PI;
         if (playerAngle < 0) {
             playerAngle += 360;

@@ -165,7 +165,7 @@ public class PickBlockOverrides {
         try {
             ItemStringReader.ItemResult itemResult = itemReader.consume(new StringReader(id));
             ItemStack stack = new ItemStack(itemResult.item());
-            stack.applyComponentsFrom(itemResult.components());
+            stack.applyChanges(itemResult.components());
 
             return stack;
         }
@@ -181,7 +181,7 @@ public class PickBlockOverrides {
     private static Identifier stringToId(String id) {
         Identifier identifier = Identifier.tryParse(id);
         if (identifier == null) {
-            return new Identifier("minecraft:air");
+            return Identifier.of("minecraft:air");
         }
         return identifier;
     }

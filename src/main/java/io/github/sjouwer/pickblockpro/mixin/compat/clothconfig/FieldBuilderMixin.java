@@ -1,8 +1,8 @@
 package io.github.sjouwer.pickblockpro.mixin.compat.clothconfig;
 
 import io.github.sjouwer.pickblockpro.PickBlockPro;
+import io.github.sjouwer.pickblockpro.util.EnchantmentUtil;
 import me.shedaniel.clothconfig2.impl.builders.FieldBuilder;
-import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Identifier;
@@ -26,14 +26,15 @@ public class FieldBuilderMixin {
      */
     @Inject(method = "getFieldNameKey", at = @At("HEAD"), cancellable = true)
     public final void returnMinecraftTranslationKey(CallbackInfoReturnable<Text> info) {
-        if (fieldNameKey.getContent() instanceof TranslatableTextContent translatable
-                && translatable.getKey().contains(PickBlockPro.NAMESPACE)) {
+        if (fieldNameKey.getContent() instanceof TranslatableTextContent translatable && translatable.getKey().contains(PickBlockPro.NAMESPACE)) {
             String key = translatable.getKey();
             String fieldName = key.substring(key.lastIndexOf('.') + 1);
             if (fieldName.equals("item")) {
                 info.setReturnValue(Text.translatable("text.autoconfig.pickblockpro/config.option.toolPicker.item"));
             }
-            if (Registries.ENCHANTMENT.getIds().contains(new Identifier(fieldName.toLowerCase()))) {
+
+            Identifier id = Identifier.tryParse(fieldName.toLowerCase());
+            if (EnchantmentUtil.isVanillaEnchantment(id)) {
                 info.setReturnValue(Text.translatable("enchantment.minecraft." + fieldName));
             }
         }

@@ -31,8 +31,9 @@ public final class RaycastUtil {
 
         RaycastContext.FluidHandling fluidHandling = ignoreFluids ? RaycastContext.FluidHandling.NONE : RaycastContext.FluidHandling.ANY;
         Entity player = client.cameraEntity;
-        Vec3d vector = player.getRotationVec(client.getTickDelta());
-        Vec3d rayStart = player.getCameraPosVec(client.getTickDelta());
+        float tickDelta = client.getRenderTickCounter().getTickDelta(true);
+        Vec3d vector = player.getRotationVec(tickDelta);
+        Vec3d rayStart = player.getCameraPosVec(tickDelta);
         Vec3d rayEnd = rayStart.add(vector.multiply(blockRange));
         BlockHitResult blockHit = client.world.raycast(new RaycastContext(rayStart, rayEnd, RaycastContext.ShapeType.OUTLINE, fluidHandling, player));
 
