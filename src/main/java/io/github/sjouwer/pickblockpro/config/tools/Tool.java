@@ -22,6 +22,8 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
+import static io.github.sjouwer.pickblockpro.util.EnchantmentUtil.getLevel;
+
 //Field stuff needed to get it to work with Auto Config without needing to use a lot of duplicate code
 public class Tool {
     public ItemEnchantmentsComponent getEnchantments(boolean allowIncompatibleEnchantments, EntityType<?> entity) {
@@ -92,14 +94,14 @@ public class Tool {
     }
 
     private void filterEnchantments(ItemEnchantmentsComponent.Builder enchantments, EntityType<?> entity) {
-        if (entity != null && entity.isIn(EntityTypeTags.UNDEAD) && enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.SMITE)) > 0) {
+        if (entity != null && entity.isIn(EntityTypeTags.UNDEAD) && getLevel(enchantments, Enchantments.SMITE) > 0) {
             enchantments.remove(containsAny(
                     Enchantments.SHARPNESS,
                     Enchantments.BANE_OF_ARTHROPODS,
                     Enchantments.BREACH,
                     Enchantments.DENSITY));
         }
-        else if (entity != null && entity.isIn(EntityTypeTags.ARTHROPOD) && enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.BANE_OF_ARTHROPODS)) > 0) {
+        else if (entity != null && entity.isIn(EntityTypeTags.ARTHROPOD) && getLevel(enchantments, Enchantments.BANE_OF_ARTHROPODS) > 0) {
             enchantments.remove(containsAny(
                     Enchantments.SHARPNESS,
                     Enchantments.SMITE,
@@ -112,26 +114,26 @@ public class Tool {
                     Enchantments.BANE_OF_ARTHROPODS));
         }
 
-        if (enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.DENSITY)) > 0) {
+        if (getLevel(enchantments, Enchantments.DENSITY) > 0) {
             enchantments.remove(containsAny(Enchantments.BREACH));
         }
 
-        if (enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.SILK_TOUCH)) > 0 && PickBlockPro.getConfig().preferSilkTouch()) {
+        if (getLevel(enchantments, Enchantments.SILK_TOUCH) > 0 && PickBlockPro.getConfig().preferSilkTouch()) {
             enchantments.remove(containsAny((Enchantments.FORTUNE)));
         }
-        else if (enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.FORTUNE)) > 0) {
+        else if (getLevel(enchantments, Enchantments.FORTUNE) > 0) {
             enchantments.remove(containsAny(Enchantments.SILK_TOUCH));
         }
 
-        if (enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.INFINITY)) > 0) {
+        if (getLevel(enchantments, Enchantments.INFINITY) > 0) {
             enchantments.remove(containsAny(Enchantments.MENDING));
         }
 
-        if (enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.MULTISHOT)) > 0) {
+        if (getLevel(enchantments, Enchantments.MULTISHOT) > 0) {
             enchantments.remove(containsAny(Enchantments.PIERCING));
         }
 
-        if (enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.CHANNELING)) > 0 || enchantments.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.LOYALTY)) > 0) {
+        if (getLevel(enchantments, Enchantments.CHANNELING) > 0 || getLevel(enchantments, Enchantments.LOYALTY) > 0) {
             enchantments.remove(containsAny(Enchantments.RIPTIDE));
         }
     }

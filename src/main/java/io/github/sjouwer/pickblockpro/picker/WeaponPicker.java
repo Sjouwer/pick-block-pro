@@ -62,6 +62,7 @@ public class WeaponPicker {
         double score = 0;
 
         score += getBaseDamage(itemStack);
+        score += EnchantmentUtil.getItemEnchantmentsTotalDamage(itemStack, entityType);
 
         if (config.getBowPreferenceList().contains(entityType)) {
             score += itemStack.isOf(Items.BOW) ? 200 : 0;
@@ -76,14 +77,14 @@ public class WeaponPicker {
     }
 
     private static double getBaseDamage(ItemStack stack) {
-        final List<Double> baseDamage = new ArrayList<>();
+        List<Double> baseDamage = new ArrayList<>();
         stack.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT).modifiers().forEach(m -> {
             if (m.matches(EntityAttributes.GENERIC_ATTACK_DAMAGE, Item.BASE_ATTACK_DAMAGE_MODIFIER_ID)) {
                 baseDamage.add(m.modifier().value());
             }
         });
 
-        return baseDamage.stream().mapToDouble(d -> d).sum();
+        return baseDamage.stream().reduce(0d, Double::sum);
     }
 
     /**

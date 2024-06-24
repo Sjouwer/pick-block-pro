@@ -9,7 +9,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.BrushableBlock;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -30,6 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static net.minecraft.entity.player.PlayerInventory.MAIN_SIZE;
+import static io.github.sjouwer.pickblockpro.util.EnchantmentUtil.getLevel;
 
 public class ToolPicker {
     private static final MinecraftClient client = MinecraftClient.getInstance();
@@ -132,23 +132,23 @@ public class ToolPicker {
         }
 
         if (config.preferSilkTouch()) {
-            score += EnchantmentHelper.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.SILK_TOUCH), stack) * 400;
-            score += EnchantmentHelper.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.FORTUNE), stack) * 100;
+            score += getLevel(Enchantments.SILK_TOUCH, stack) * 400;
+            score += getLevel(Enchantments.FORTUNE, stack) * 100;
         }
         else {
-            score += EnchantmentHelper.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.FORTUNE), stack) * 150;
-            score += EnchantmentHelper.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.SILK_TOUCH), stack) * 100;
+            score += getLevel(Enchantments.FORTUNE, stack) * 150;
+            score += getLevel(Enchantments.SILK_TOUCH, stack) * 100;
         }
 
         if (config.preferEfficiency()) {
-            score += EnchantmentHelper.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.EFFICIENCY), stack) * 500;
+            score += getLevel(Enchantments.EFFICIENCY, stack) * 500;
         }
         else {
-            score += EnchantmentHelper.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.EFFICIENCY), stack) * 10;
+            score += getLevel(Enchantments.EFFICIENCY, stack) * 10;
         }
 
-        score += EnchantmentHelper.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.UNBREAKING), stack);
-        score += EnchantmentHelper.getLevel(EnchantmentUtil.getRegistryEntry(Enchantments.MENDING), stack) * 5;
+        score += getLevel(Enchantments.UNBREAKING, stack);
+        score += getLevel(Enchantments.MENDING, stack) * 5;
 
         return score;
     }
