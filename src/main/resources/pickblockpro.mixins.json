@@ -8,8 +8,6 @@
     "BucketItemAccessor",
     "ChatScreenAccessor",
     "DecorationItemMixin",
-    "EntityPredicateAccessor",
-    "EntityPropertiesLootConditionAccessor",
     "KeyboardMixin",
     "MinecraftClientMixin",
     "VerticallyAttachableBlockItemAccessor",

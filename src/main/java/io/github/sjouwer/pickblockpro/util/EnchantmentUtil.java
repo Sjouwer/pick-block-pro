@@ -1,7 +1,5 @@
 package io.github.sjouwer.pickblockpro.util;
 
-import io.github.sjouwer.pickblockpro.mixin.EntityPredicateAccessor;
-import io.github.sjouwer.pickblockpro.mixin.EntityPropertiesLootConditionAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
@@ -13,6 +11,7 @@ import net.minecraft.enchantment.effect.EnchantmentValueEffect;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.EntityPropertiesLootCondition;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -85,16 +84,14 @@ public class EnchantmentUtil {
         return damage.stream().reduce(0d, Double::sum);
     }
 
-    @SuppressWarnings("UnreachableCode") // It's not unreachable...
     public static double getEffectDamage(EnchantmentEffectEntry<EnchantmentValueEffect> effectEntry, int level, EntityType<?> entityType) {
         float effectDamage = effectEntry.effect().apply(level, Random.create(), 0);
 
-        if (effectEntry.requirements().isPresent() && effectEntry.requirements().get() instanceof EntityPropertiesLootCondition) {
-            var condition = (EntityPropertiesLootConditionAccessor) effectEntry.requirements().get();
-            if (condition.getPredicate().isPresent()) {
-                var predicate = (EntityPredicateAccessor) (Object) condition.getPredicate().get();
-                if (predicate.getType().isPresent()) {
-                    return predicate.getType().get().matches(entityType) ? effectDamage : 0;
+        if (effectEntry.requirements().isPresent() && effectEntry.requirements().get() instanceof EntityPropertiesLootCondition condition) {
+            if (condition.predicate().isPresent()) {
+                EntityPredicate predicate = condition.predicate().get();
+                if (predicate.type().isPresent()) {
+                    return predicate.type().get().matches(entityType) ? effectDamage : 0;
                 }
             }
         }
