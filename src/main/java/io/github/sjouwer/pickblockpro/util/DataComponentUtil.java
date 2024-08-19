@@ -96,6 +96,10 @@ public class DataComponentUtil {
             stack.applyComponentsFrom(components);
             stack.applyChanges(changes);
             dataAdded = true;
+
+            if (components.size() == 1 && components.contains(DataComponentTypes.PROFILE)) {
+                addLore = false;
+            }
         }
 
         if (addLore && dataAdded) {
@@ -145,8 +149,11 @@ public class DataComponentUtil {
     }
 
     public static void addLore(ItemStack stack, String loreLine) {
+        Text loreTextLine = Text.literal(loreLine);
         LoreComponent lore = stack.getOrDefault(DataComponentTypes.LORE, LoreComponent.DEFAULT);
-        stack.set(DataComponentTypes.LORE, lore.with(Text.literal(loreLine)));
+        if (!lore.lines().contains(loreTextLine)) {
+            stack.set(DataComponentTypes.LORE, lore.with(loreTextLine));
+        }
     }
 
     public static void setLightLevel(ItemStack light, int level) {
