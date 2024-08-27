@@ -20,8 +20,8 @@ repositories {
         url = 'https://maven.terraformersmc.com/releases/'
     }
     maven {
-        name = 'CurseForge'
-        url = "https://cursemaven.com"
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
     }
 }
 
@@ -40,8 +40,8 @@ dependencies {
     modImplementation "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}"
 
     //Litematica
-    modCompileOnly "curse.maven:litematica-308892:${project.litematica_version}"
-    //modRuntimeOnly "curse.maven:malilib-303119:${project.malilib_version}"
+    modImplementation "maven.modrinth:litematica:${project.litematica_version}"
+    modRuntimeOnly "maven.modrinth:malilib:${project.malilib_version}"
 }
 
 processResources {
