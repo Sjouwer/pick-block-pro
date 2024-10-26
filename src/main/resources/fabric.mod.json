@@ -38,10 +38,10 @@
   ],
 
   "depends": {
-    "minecraft": ">=1.21",
-    "fabricloader": ">=0.15.1",
-    "fabric-api": ">=0.100.0",
-    "cloth-config": ">=15.0.0"
+    "minecraft": ">=1.21.2",
+    "fabricloader": ">=0.16.0",
+    "fabric-api": ">=0.106.1",
+    "cloth-config": ">=16.0.0"
   },
 
   "suggests": {

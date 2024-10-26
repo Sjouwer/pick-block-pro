@@ -43,8 +43,12 @@ public class EnchantmentUtil {
             return null;
         }
 
-        Registry<Enchantment> registry = client.world.getRegistryManager().get(RegistryKeys.ENCHANTMENT);
-        Optional<RegistryEntry.Reference<Enchantment>> enchantment = registry.getEntry(id);
+        Optional<Registry<Enchantment>> registry = client.world.getRegistryManager().getOptional(RegistryKeys.ENCHANTMENT);
+        if (registry.isEmpty()) {
+            return null;
+        }
+
+        Optional<RegistryEntry.Reference<Enchantment>> enchantment = registry.get().getEntry(id);
         return enchantment.orElse(null);
     }
 

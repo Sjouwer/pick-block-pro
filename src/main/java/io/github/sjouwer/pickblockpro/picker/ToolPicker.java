@@ -16,7 +16,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.ToolItem;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
@@ -127,9 +126,7 @@ public class ToolPicker {
             score += 100000000;
         }
 
-        if (stack.getItem() instanceof ToolItem toolItem) {
-            score += toolItem.getMaterial().getMiningSpeedMultiplier() * toolItem.getMaterial().getDurability() * 1000;
-        }
+        score += stack.getMiningSpeedMultiplier(state) * stack.getMaxDamage() * 1000;
 
         if (config.preferSilkTouch()) {
             score += getLevel(Enchantments.SILK_TOUCH, stack) * 400;

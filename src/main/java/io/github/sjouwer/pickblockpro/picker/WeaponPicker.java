@@ -79,7 +79,7 @@ public class WeaponPicker {
     private static double getBaseDamage(ItemStack stack) {
         List<Double> baseDamage = new ArrayList<>();
         stack.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT).modifiers().forEach(m -> {
-            if (m.matches(EntityAttributes.GENERIC_ATTACK_DAMAGE, Item.BASE_ATTACK_DAMAGE_MODIFIER_ID)) {
+            if (m.matches(EntityAttributes.ATTACK_DAMAGE, Item.BASE_ATTACK_DAMAGE_MODIFIER_ID)) {
                 baseDamage.add(m.modifier().value());
             }
         });
