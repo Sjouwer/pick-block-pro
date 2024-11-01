@@ -91,6 +91,13 @@ public class PickBlockOverrides {
         catch (JsonSyntaxException e) {
             PickBlockPro.LOGGER.warn("\"" + file.getName() + "\" is not properly formatted and could not be loaded: " + e.getCause().getMessage());
         }
+        catch (IllegalStateException e) {
+            PickBlockPro.LOGGER.warn("Unable load Pick Block Overrides, another mod causes registry issues:");
+            var suppressedIssues = e.getSuppressed();
+            for (Throwable issue : suppressedIssues) {
+                PickBlockPro.LOGGER.warn(issue.getMessage());
+            }
+        }
         catch (IOException e) {
             PickBlockPro.LOGGER.error("Failed to load \"" + file.getName() + "\"");
             e.printStackTrace();
