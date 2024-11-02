@@ -55,14 +55,14 @@ public class PickBlockOverrides {
     public static boolean parseOverrides() {
         File file = FileHandler.getOverridesFile();
         if (!file.exists()) {
-            PickBlockPro.LOGGER.warn("Failed to load \"" + file.getName() + "\" because it doesn't exist (anymore)");
+            PickBlockPro.LOGGER.warn("Failed to load \"{}\" because it doesn't exist (anymore)", file.getName());
             return false;
         }
 
         try (FileReader reader = new FileReader(file)) {
             JsonElement rootElement = JsonParser.parseReader(reader);
             if (!rootElement.isJsonObject()) {
-                PickBlockPro.LOGGER.warn("\"" + file.getName() + "\" doesn't appear to be an actual json and could not be loaded");
+                PickBlockPro.LOGGER.warn("\"{}\" doesn't appear to be an actual json and could not be loaded", file.getName());
                 return false;
             }
 
@@ -89,17 +89,16 @@ public class PickBlockOverrides {
             return true;
         }
         catch (JsonSyntaxException e) {
-            PickBlockPro.LOGGER.warn("\"" + file.getName() + "\" is not properly formatted and could not be loaded: " + e.getCause().getMessage());
+            PickBlockPro.LOGGER.warn("\"{}\" is not properly formatted and could not be loaded: {}", file.getName(), e.getCause().getMessage());
         }
         catch (IllegalStateException e) {
             PickBlockPro.LOGGER.warn("Unable load Pick Block Overrides, another mod causes registry issues:");
-            var suppressedIssues = e.getSuppressed();
-            for (Throwable issue : suppressedIssues) {
+            for (Throwable issue : e.getSuppressed()) {
                 PickBlockPro.LOGGER.warn(issue.getMessage());
             }
         }
         catch (IOException e) {
-            PickBlockPro.LOGGER.error("Failed to load \"" + file.getName() + "\"");
+            PickBlockPro.LOGGER.error("Failed to load \"{}\"", file.getName());
             e.printStackTrace();
         }
 
