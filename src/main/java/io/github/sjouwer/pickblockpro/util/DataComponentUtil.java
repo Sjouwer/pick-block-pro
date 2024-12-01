@@ -1,5 +1,6 @@
 package io.github.sjouwer.pickblockpro.util;
 
+import com.mojang.authlib.GameProfile;
 import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
 import net.minecraft.block.BlockState;
@@ -28,10 +29,12 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringHelper;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class DataComponentUtil {
     private static final ModConfig config = PickBlockPro.getConfig();
@@ -181,8 +184,10 @@ public class DataComponentUtil {
     }
 
     public static void setSkullOwner(ItemStack skull, PlayerEntity player) {
-        ProfileComponent profile = new ProfileComponent(player.getGameProfile());
-        skull.set(DataComponentTypes.PROFILE, profile);
+        GameProfile profile = player.getGameProfile();
+        ProfileComponent component = new ProfileComponent(StringHelper.isValidPlayerName(profile.getName()) ?
+            Optional.of(profile.getName()) : Optional.empty(), Optional.of(profile.getId()), profile.getProperties());
+        skull.set(DataComponentTypes.PROFILE, component);
     }
 
     public static int getAmountStored(ItemStack storage, Item item) {
