@@ -4,8 +4,6 @@ import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
 import io.github.sjouwer.pickblockpro.config.PickBlockOverrides;
 import io.github.sjouwer.pickblockpro.util.*;
-import net.fabricmc.fabric.api.event.client.player.ClientPickBlockApplyCallback;
-import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
@@ -61,7 +59,7 @@ public class BlockPicker {
             return;
         }
 
-        ItemStack item = ClientPickBlockGatherCallback.EVENT.invoker().pick(player, hit);
+        ItemStack item = ItemStack.EMPTY;
         if (hit.getType() == HitResult.Type.ENTITY) {
             item = getEntityItemStack(hit, item);
         }
@@ -72,10 +70,6 @@ public class BlockPicker {
 
         if (item.isEmpty() && hit.getType() == HitResult.Type.MISS && config.blockPickLight()) {
             item = getLightFromSunOrMoon();
-        }
-
-        if (!item.isEmpty()) {
-            item = ClientPickBlockApplyCallback.EVENT.invoker().pick(player, hit, item);
         }
 
         if (!item.isEmpty()) {
@@ -168,7 +162,7 @@ public class BlockPicker {
         }
 
         if (item.isEmpty()) {
-            item = block.getPickStack(client.world, blockPos, state);
+            item = state.getPickStack(client.world, blockPos, Screen.hasControlDown());
         }
 
         if (!item.isEmpty() && client.player.isCreative()) {

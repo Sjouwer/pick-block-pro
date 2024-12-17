@@ -74,7 +74,7 @@ public final class InventoryManager {
         if (isCreative) {
             int currentSlot = inventory.selectedSlot;
             int emptySlot = inventory.getEmptySlot();
-            inventory.addPickBlock(item);
+            inventory.swapStackWithHotbar(item);
             updateCreativeSlot(currentSlot);
             if (emptySlot >= HOTBAR_SIZE) {
                 updateCreativeSlot(emptySlot);
