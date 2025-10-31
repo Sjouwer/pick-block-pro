@@ -74,9 +74,14 @@ public final class InventoryManager {
         if (isCreative) {
             int currentSlot = inventory.selectedSlot;
             int emptySlot = inventory.getEmptySlot();
-            inventory.addPickBlock(item);
+
+            // Place the item directly into the currently selected hotbar slot
+            inventory.setStack(currentSlot, item.copy());
             updateCreativeSlot(currentSlot);
+
+            // Optionally fill next empty slot (to preserve vanilla behavior)
             if (emptySlot >= HOTBAR_SIZE) {
+                inventory.setStack(emptySlot, item.copy());
                 updateCreativeSlot(emptySlot);
             }
         }

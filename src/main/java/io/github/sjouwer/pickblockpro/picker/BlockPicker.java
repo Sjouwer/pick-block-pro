@@ -4,8 +4,7 @@ import io.github.sjouwer.pickblockpro.PickBlockPro;
 import io.github.sjouwer.pickblockpro.config.ModConfig;
 import io.github.sjouwer.pickblockpro.config.PickBlockOverrides;
 import io.github.sjouwer.pickblockpro.util.*;
-import net.fabricmc.fabric.api.event.client.player.ClientPickBlockApplyCallback;
-import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
+import net.fabricmc.fabric.api.event.player.PlayerPickItemEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
@@ -38,11 +37,39 @@ public class BlockPicker {
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final ModConfig config = PickBlockPro.getConfig();
 
-    private BlockPicker() {
+    private BlockPicker() {}
+
+    /**
+     * Register Fabric PlayerPickItemEvents listeners (replaces old ClientPickBlock callbacks)
+     */
+    public static void register() {
+        // Custom handling for blocks
+        PlayerPickItemEvents.BLOCK.register((player, pos, state, includeData) -> {
+            if (client.player == null || client.world == null) return null;
+
+            ItemStack item = getBlockItemStack(pos, state);
+            if (!item.isEmpty()) {
+                InventoryManager.pickOrPlaceItemInInventory(item);
+                return item;
+            }
+            return null; // let vanilla handle if we didn't override
+        });
+
+        // Custom handling for entities
+        PlayerPickItemEvents.ENTITY.register((player, entity, includeData) -> {
+            if (client.player == null || client.world == null) return null;
+
+            ItemStack item = getEntityItemStack(entity);
+            if (!item.isEmpty()) {
+                InventoryManager.pickOrPlaceItemInInventory(item);
+                return item;
+            }
+            return null;
+        });
     }
 
     /**
-     * Provide the player with the item of the block or entity they are looking at
+     * Manual "pick block" method (triggered by user logic, keybind, etc.)
      */
     public static void pickBlock() {
         PlayerEntity player = client.player;
@@ -56,26 +83,24 @@ public class BlockPicker {
             return;
         }
 
-        HitResult hit = RaycastUtil.getHit(config.blockBlockPickRange(player), config.entityBlockPickRange(player), !config.blockPickFluids(), !config.blockPickEntities());
-        if (hit == null) {
-            return;
-        }
+        HitResult hit = RaycastUtil.getHit(
+                config.blockBlockPickRange(player),
+                config.entityBlockPickRange(player),
+                !config.blockPickFluids(),
+                !config.blockPickEntities()
+        );
+        if (hit == null) return;
 
-        ItemStack item = ClientPickBlockGatherCallback.EVENT.invoker().pick(player, hit);
-        if (hit.getType() == HitResult.Type.ENTITY) {
-            item = getEntityItemStack(hit, item);
-        }
+        ItemStack item = ItemStack.EMPTY;
 
-        if (hit.getType() == HitResult.Type.BLOCK && config.blockPickBlocks()) {
-            item = getBlockItemStack(hit, item);
-        }
-
-        if (item.isEmpty() && hit.getType() == HitResult.Type.MISS && config.blockPickLight()) {
+        if (hit.getType() == HitResult.Type.ENTITY && config.blockPickEntities()) {
+            item = getEntityItemStack(((EntityHitResult) hit).getEntity());
+        } else if (hit.getType() == HitResult.Type.BLOCK && config.blockPickBlocks()) {
+            BlockPos pos = ((BlockHitResult) hit).getBlockPos();
+            BlockState state = client.world.getBlockState(pos);
+            item = getBlockItemStack(pos, state);
+        } else if (hit.getType() == HitResult.Type.MISS && config.blockPickLight()) {
             item = getLightFromSunOrMoon();
-        }
-
-        if (!item.isEmpty()) {
-            item = ClientPickBlockApplyCallback.EVENT.invoker().pick(player, hit, item);
         }
 
         if (!item.isEmpty()) {
@@ -83,29 +108,27 @@ public class BlockPicker {
         }
     }
 
-    private static ItemStack getEntityItemStack(HitResult hit, ItemStack item) {
-        Entity entity = ((EntityHitResult) hit).getEntity();
+    private static ItemStack getEntityItemStack(Entity entity) {
+        ItemStack item = ItemStack.EMPTY;
 
         ItemStack override = PickBlockOverrides.getEntityOverride(entity.getType());
-        if (override != null) {
-            item = override;
-        }
+        if (override != null) item = override;
 
-        if (item.isEmpty()) {
-            item = entity.getPickBlockStack();
-        }
+        if (item.isEmpty()) item = entity.getPickBlockStack();
 
         if (item != null && client.player.isCreative() && Screen.hasControlDown()) {
-            switch (entity) {
-                case ItemFrameEntity itemFrame -> item = createFramedItemStack(itemFrame);
-                case PaintingEntity paintingEntity -> item = createPaintingVariantStack(paintingEntity);
-                default -> DataComponentUtil.setEntityData(item, entity, true);
+            if (entity instanceof ItemFrameEntity itemFrame) {
+                item = createFramedItemStack(itemFrame);
+            } else if (entity instanceof PaintingEntity paintingEntity) {
+                item = createPaintingVariantStack(paintingEntity);
+            } else {
+                DataComponentUtil.setEntityData(item, entity, true);
             }
         }
 
-        if (entity instanceof PlayerEntity player) {
+        if (entity instanceof PlayerEntity playerEntity) {
             item = new ItemStack(Items.PLAYER_HEAD);
-            DataComponentUtil.setSkullOwner(item, player);
+            DataComponentUtil.setSkullOwner(item, playerEntity);
         }
 
         if (entity instanceof FallingBlockEntity fallingBlock) {
@@ -116,11 +139,11 @@ public class BlockPicker {
     }
 
     private static ItemStack createFramedItemStack(ItemFrameEntity itemFrame) {
-        ItemStack itemFrameStack = new ItemStack(itemFrame instanceof GlowItemFrameEntity ? Items.GLOW_ITEM_FRAME : Items.ITEM_FRAME);
+        ItemStack itemFrameStack = new ItemStack(
+                itemFrame instanceof GlowItemFrameEntity ? Items.GLOW_ITEM_FRAME : Items.ITEM_FRAME
+        );
         ItemStack framedItem = itemFrame.getHeldItemStack();
-        if (framedItem.isOf(Items.AIR)) {
-            return itemFrameStack;
-        }
+        if (framedItem.isOf(Items.AIR)) return itemFrameStack;
 
         MutableText name = Text.translatable("text.pickblockpro.itemName.framed", framedItem.getName());
         name.setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.YELLOW));
@@ -149,31 +172,27 @@ public class BlockPicker {
         if (client.player.isCreative() && Screen.hasAltDown()) {
             DataComponentUtil.setBlockStateData(item, fallingBlock.getBlockState(), true);
         }
-
         return item;
     }
 
-    private static ItemStack getBlockItemStack(HitResult hit, ItemStack item) {
-        BlockPos blockPos = ((BlockHitResult) hit).getBlockPos();
-        BlockState state = client.world.getBlockState(blockPos);
+    private static ItemStack getBlockItemStack(BlockPos pos, BlockState state) {
         Block block = state.getBlock();
+        ItemStack item = ItemStack.EMPTY;
 
         ItemStack override = PickBlockOverrides.getBlockOverride(block);
-        if (override != null) {
-            item = override;
-        }
+        if (override != null) item = override;
 
         if (item.isEmpty() && block instanceof FluidBlock) {
             item = state.getFluidState().getFluid().getBucketItem().getDefaultStack();
         }
 
         if (item.isEmpty()) {
-            item = block.getPickStack(client.world, blockPos, state);
+            item = state.getBlock().asItem().getDefaultStack();
         }
 
         if (!item.isEmpty() && client.player.isCreative()) {
             if (Screen.hasControlDown() && state.hasBlockEntity()) {
-                BlockEntity blockEntity = client.world.getBlockEntity(blockPos);
+                BlockEntity blockEntity = client.world.getBlockEntity(pos);
                 DataComponentUtil.setBlockEntityData(item, blockEntity, client.world.getRegistryManager(), true);
             }
             if (Screen.hasAltDown()) {
@@ -185,41 +204,29 @@ public class BlockPicker {
     }
 
     private static ItemStack getLightFromSunOrMoon() {
-        //Make sure we're in the overworld
-        if (client.world.getRegistryKey() != World.OVERWORLD) {
-            return ItemStack.EMPTY;
-        }
+        if (client.world.getRegistryKey() != World.OVERWORLD) return ItemStack.EMPTY;
 
-        //Do another raycast with a longer reach to make sure there is nothing in the way of the sun or moon
         int distance = client.options.getViewDistance().getValue() * 32;
         HitResult hit = RaycastUtil.getHit(distance, distance, false, false);
-        if (hit == null || hit.getType() != HitResult.Type.MISS) {
-            return ItemStack.EMPTY;
-        }
+        if (hit == null || hit.getType() != HitResult.Type.MISS) return ItemStack.EMPTY;
 
         float tickDelta = client.getRenderTickCounter().getTickDelta(true);
         double skyAngle = client.world.getSkyAngle(tickDelta) + .25;
-        if (skyAngle > 1) {
-            skyAngle --;
-        }
+        if (skyAngle > 1) skyAngle--;
         skyAngle *= 360;
 
         Vec3d playerVector = client.player.getRotationVec(tickDelta);
         double playerAngle = Math.atan2(playerVector.y, playerVector.x) * 180 / Math.PI;
-        if (playerAngle < 0) {
-            playerAngle += 360;
-        }
+        if (playerAngle < 0) playerAngle += 360;
 
         double angleDifference = skyAngle - playerAngle;
 
-        //Sun
         if (Math.abs(playerVector.z) < 0.076 && Math.abs(angleDifference) < 4.3) {
-            return giveOrCycleLight(15);
+            return giveOrCycleLight(15); // Sun
         }
 
-        //Moon
         if (Math.abs(playerVector.z) < 0.051 && Math.abs(angleDifference - 180) < 3) {
-            return giveOrCycleLight(7);
+            return giveOrCycleLight(7); // Moon
         }
 
         return ItemStack.EMPTY;
